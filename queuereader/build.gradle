@@ -1,0 +1,57 @@
+group = 'org.endeavourhealth.im_inbound_pipeline'
+version = '1.0-SNAPSHOT'
+
+dependencies {
+  implementation libs.assertJ
+  implementation libs.jacksonDatabind
+  implementation libs.springContext
+  implementation libs.springDataJpa
+  implementation libs.springOauthServer
+  implementation libs.springSecurity
+  implementation libs.springWeb
+  implementation libs.springdoc
+
+  runtimeOnly libs.springDevTools
+
+  testImplementation libs.cucumber
+  testImplementation libs.cucumberJunit
+  testImplementation libs.junit
+  testImplementation libs.junitSuite
+  testImplementation libs.mockito
+  testImplementation libs.springTest
+  testImplementation libs.springTestSecurity
+  testImplementation libs.systemStubs
+
+  compileOnly libs.jacksonAnnotations
+  compileOnly libs.lombok
+
+  annotationProcessor libs.jacksonAnnotations
+  annotationProcessor libs.lombok
+}
+
+test {
+  useJUnitPlatform()
+}
+
+configurations {
+  cucumberRuntime {
+    extendsFrom testImplementation
+  }
+}
+
+task cucumberCli() {
+  dependsOn assemble, testClasses
+  doLast {
+    javaexec {
+      main = "io.cucumber.core.cli.Main"
+      classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+      args = [
+        '--plugin', 'pretty',
+        '--plugin', 'html:build/reports/cucumber/cucumber-report.html',
+        '--glue', 'org.endeavourhealth.im-inbound-pipeline',
+        'src/test/resources']
+    }
+  }
+}
+
+description = 'Inbound Pipeline Queue Reader'

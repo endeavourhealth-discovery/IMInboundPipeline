@@ -1,0 +1,34 @@
+ext {
+    versions = [
+            cucumber            : '7.15.0',
+            jackson             : '2.16.0',
+            junit               : '5.10.1',
+            junitRunner         : '1.10.1',
+            lombok              : '1.18.30',
+            mockito             : '5.14.2',
+            spring              : '3.3.2',
+            springContext       : '6.1.1',
+            springTestSecurity  : '6.2.0'
+    ]
+    libs = [
+            cucumber          : "io.cucumber:cucumber-java:$versions.cucumber",
+            cucumberJunit     : "io.cucumber:cucumber-java:$versions.cucumber",
+            jacksonAnnotations: "com.fasterxml.jackson.core:jackson-annotations:$versions.jackson",
+            jacksonDatabind   : "com.fasterxml.jackson.core:jackson-databind:$versions.jackson",
+            junit             : "org.junit.jupiter:junit-jupiter-api:$versions.junit",
+            junitSuite        : "org.junit.platform:junit-platform-suite:$versions.junitSuite",
+            lombok            : "org.projectlombok:lombok:$versions.lombok",
+            mockito           : "org.mockito:mockito-junit-jupiter:$versions.mockito",
+            springContext     : "org.springframework:spring-context:$versions.springContext",
+            springDataJpa     : "org.springframework.boot:spring-boot-starter-data-jpa:$versions.spring",
+            springDevTools    : "org.springframework.boot:spring-boot-devtools:$versions.spring",
+            springdoc         : "org.springdoc:springdoc-openapi-starter-webmvc-ui:$versions.springdoc",
+            springOauthServer : "org.springframework.boot:spring-boot-starter-oauth2-resource-server:$versions.spring",
+            springSecurity    : "org.springframework.boot:spring-boot-starter-security:$versions.spring",
+            springTest        : "org.springframework.boot:spring-boot-starter-test:$versions.spring",
+            springTestSecurity: "org.springframework.security:spring-security-test:$versions.springTestSecurity",
+            springTomcat      : "org.springframework.boot:spring-boot-starter-tomcat:$versions.spring",
+            springWeb         : "org.springframework.boot:spring-boot-starter-web:$versions.spring",
+
+    ]
+}

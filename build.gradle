@@ -1,0 +1,55 @@
+plugins {
+	id 'java'
+	id 'groovy-gradle-plugin'
+}
+
+repositories {
+	gradlePluginPortal()
+}
+
+apply from: "dependencies.gradle"
+sourceCompatibility = '17'
+
+println "Build environment = [$ENV]"
+if (ENV == 'prod') {
+	build.finalizedBy 'publish'
+}
+
+allprojects {
+	apply plugin: 'java-library'
+	apply plugin: 'maven-publish'
+	apply plugin: 'jacoco'
+
+	group = 'org.endeavourhealth.im_inbound_pipeline'
+	version = '1.0-SNAPSHOT'
+
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
+
+	tasks.withType(JavaCompile) {
+		options.encoding = 'UTF-8'
+	}
+
+	jacocoTestReport {
+		reports {
+			xml.required.set(true)
+		}
+	}
+
+	test.finalizedBy jacocoTestReport
+
+	repositories {
+		mavenLocal()
+		mavenCentral()
+		maven {
+			url = uri('https://artifactory.endhealth.co.uk/repository/maven-releases')
+		}
+		maven {
+			url = uri('https://artifactory.endhealth.co.uk/repository/maven-snapshots')
+		}
+	}
+}
+
+task myJavadocs(type: Javadoc) {
+	source = sourceSets.main.allJava
+}
