@@ -8,6 +8,7 @@ ext {
       lombok              : '1.18.30',
       mockito             : '5.14.2',
       spring              : '3.3.2',
+      springdoc           : '2.3.0',
       springContext       : '6.1.1',
       springTestSecurity  : '6.2.0',
       systemStubs         : '2.1.7',
