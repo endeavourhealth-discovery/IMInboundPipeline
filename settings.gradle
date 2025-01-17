@@ -11,3 +11,9 @@ pluginManagement {
         mavenLocal()
     }
 }
+
+rootProject.name = 'IMInboundPipeline'
+include(':api')
+include(':poller')
+include(':queuereader')
+include(':transform')
