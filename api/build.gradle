@@ -58,3 +58,7 @@ task cucumberCli() {
 }
 
 description = 'Inbound Pipeline API'
+
+war {
+  archiveFileName = 'inboundpipeline.war'
+}
