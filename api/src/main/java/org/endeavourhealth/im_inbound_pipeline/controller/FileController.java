@@ -15,8 +15,8 @@ public class FileController {
   }
 
   @GetMapping("/upload")
-  private String  upload(@RequestParam String fileName, @RequestParam String fileOrg) throws Exception {
-    queueSender.sendMessage(fileName);
+  private String  upload(@RequestParam String fileName, @RequestParam String fileOrg, @RequestParam String fileSize) throws Exception {
+    queueSender.sendMessage(fileName, fileOrg, fileSize);
     return "Message sent: " + fileName;
   }
 
