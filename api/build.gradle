@@ -1,3 +1,7 @@
+plugins {
+  id 'war'
+}
+
 group = 'org.endeavourhealth.im_inbound_pipeline'
 version = '1.0-SNAPSHOT'
 
