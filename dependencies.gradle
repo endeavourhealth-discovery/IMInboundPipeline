@@ -12,6 +12,8 @@ ext {
       springContext       : '6.1.1',
       springTestSecurity  : '6.2.0',
       systemStubs         : '2.1.7',
+      rabbitmqAmqpClient  : '5.24.0',
+      springAmpq          : '3.4.1',
     ]
     libs = [
       assertJ           : "org.assertj:assertj-core:$versions.assertJ",
@@ -34,5 +36,7 @@ ext {
       springTomcat      : "org.springframework.boot:spring-boot-starter-tomcat:$versions.spring",
       springWeb         : "org.springframework.boot:spring-boot-starter-web:$versions.spring",
       systemStubs       : "uk.org.webcompere:system-stubs-jupiter:$versions.systemStubs",
+      rabbitmqAmqpClient: "com.rabbitmq:amqp-client:$versions.rabbitmqAmqpClient",
+      springAmpq        : "org.springframework.boot:spring-boot-starter-amqp:$versions.springAmpq"
     ]
 }

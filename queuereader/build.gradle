@@ -4,12 +4,13 @@ version = '1.0-SNAPSHOT'
 dependencies {
   implementation libs.assertJ
   implementation libs.jacksonDatabind
-  implementation libs.springContext
-  implementation libs.springDataJpa
+  implementation libs.springContext  
   implementation libs.springOauthServer
   implementation libs.springSecurity
   implementation libs.springWeb
   implementation libs.springdoc
+  implementation libs.rabbitmqAmqpClient
+  implementation libs.springAmpq
 
   runtimeOnly libs.springDevTools
 

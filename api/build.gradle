@@ -5,11 +5,14 @@ dependencies {
   implementation libs.assertJ
   implementation libs.jacksonDatabind
   implementation libs.springContext
-  implementation libs.springDataJpa
-  implementation libs.springOauthServer
-  implementation libs.springSecurity
+//  TODO: include and implement security config
+//  implementation libs.springDataJpa
+//  implementation libs.springOauthServer
+//  implementation libs.springSecurity
   implementation libs.springWeb
   implementation libs.springdoc
+  implementation libs.rabbitmqAmqpClient
+  implementation libs.springAmpq
 
   runtimeOnly libs.springDevTools
 
