@@ -17,6 +17,7 @@ dependencies {
   implementation libs.springdoc
   implementation libs.rabbitmqAmqpClient
   implementation libs.springAmpq
+  implementation libs.orgJson
 
   runtimeOnly libs.springDevTools
 
