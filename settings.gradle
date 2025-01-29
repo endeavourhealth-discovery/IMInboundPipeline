@@ -16,3 +16,4 @@ rootProject.name = 'IMInboundPipeline'
 include(':api')
 include(':queuereader')
 include(':transform')
+include(':poller')
