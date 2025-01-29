@@ -10,8 +10,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ImInboundPipelineAPIApplication extends SpringBootServletInitializer {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ImInboundPipelineAPIApplication.class, args);
-	}
+  public static void main(String[] args) {
+    SpringApplication.run(ImInboundPipelineAPIApplication.class, args);
+  }
 
 }

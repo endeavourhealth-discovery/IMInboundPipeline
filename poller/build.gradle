@@ -63,3 +63,7 @@ task cucumberCli() {
 }
 
 description = 'Inbound Pipeline Poller'
+
+war {
+  archiveFileName = 'inboundpipelinepoller.war'
+}

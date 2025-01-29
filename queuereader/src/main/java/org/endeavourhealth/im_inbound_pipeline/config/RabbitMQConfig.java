@@ -10,15 +10,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
-  public static final String EXCHANGE_NAME = "my_topic_exchange";
+  public static final String EXCHANGE_NAME = "my_topic_exchange"; // from config
 
-  public static final String EMIS_QUEUE = "emis_queue";
-  public static final String TPP_QUEUE = "tpp_queue";
-  public static final String BULK_QUEUE = "bulk_queue";
+  public static final String ORG_QUEUE = "emis_queue"; // from config
 
-  public static final String EMIS_ROUTING_KEY = "emis.*";
-  public static final String TPP_ROUTING_KEY = "tpp.*";
-  public static final String BULK_ROUTING_KEY = "*.bulk";
+  public static final String ORG_ROUTING_KEY = "emis.*"; // from config
 
   @Bean
   public TopicExchange topicExchange() {
@@ -27,32 +23,12 @@ public class RabbitMQConfig {
 
   @Bean
   public Queue emisQueue() {
-    return new Queue(EMIS_QUEUE);
-  }
-
-  @Bean
-  public Queue tppQueue() {
-    return new Queue(TPP_QUEUE);
-  }
-
-  @Bean
-  public Queue bulkQueue() {
-    return new Queue(BULK_QUEUE);
+    return new Queue(ORG_QUEUE);
   }
 
   @Bean
   public Binding emisBinding(Queue emisQueue, TopicExchange topicExchange) {
-    return BindingBuilder.bind(emisQueue).to(topicExchange).with(EMIS_ROUTING_KEY);
-  }
-
-  @Bean
-  public Binding tppBinding(Queue tppQueue, TopicExchange topicExchange) {
-    return BindingBuilder.bind(tppQueue).to(topicExchange).with(TPP_ROUTING_KEY);
-  }
-
-  @Bean
-  public Binding bulkBinding(Queue bulkQueue, TopicExchange topicExchange) {
-    return BindingBuilder.bind(bulkQueue).to(topicExchange).with(BULK_ROUTING_KEY);
+    return BindingBuilder.bind(emisQueue).to(topicExchange).with(ORG_ROUTING_KEY);
   }
 }
 
