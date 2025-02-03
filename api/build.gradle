@@ -7,12 +7,13 @@ version = '1.0-SNAPSHOT'
 
 dependencies {
   implementation libs.assertJ
+  implementation libs.awsSDKBOM
+  implementation libs.awsSDKCore
   implementation libs.jacksonDatabind
   implementation libs.springContext
-//  TODO: include and implement security config
-//  implementation libs.springDataJpa
-//  implementation libs.springOauthServer
-//  implementation libs.springSecurity
+  implementation libs.springDataJpa
+  implementation libs.springOauthServer
+  implementation libs.springSecurity
   implementation libs.springWeb
   implementation libs.springdoc
   implementation libs.rabbitmqAmqpClient

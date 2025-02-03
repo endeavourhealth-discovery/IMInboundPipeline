@@ -1,12 +1,21 @@
 package org.endeavourhealth.im_inbound_pipeline.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
+@RequestMapping("api/file")
+@Tag(name="File Controller")
+@RequestScope
 public class FileController {
+  private static final Logger LOG = LoggerFactory.getLogger(FileController.class);
 
   @PostMapping(value = "/uploadFile")
   public String submit(@RequestParam("file") MultipartFile file, @RequestParam String fileOrg) {
