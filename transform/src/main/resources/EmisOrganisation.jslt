@@ -1,0 +1,33 @@
+let relationshipIdParent = newUUIDIri("urn:uuid:")
+let relationshipIdLocation = newUUIDIri("urn:uuid:")
+
+{
+  "entities" : [
+    {
+
+      "@id" : uuidToIri(.OrganisationGuid, "urn:uuid:"),
+      "http://endhealth.info/im#name" : .OrganisationName,
+      "http://endhealth.info/im#operationalStartDate" : formatDate(.OpenDate),
+      "http://endhealth.info/im#operationalEndDate" : if (.CloseDate) .CloseDate,
+      "http://endhealth.info/im#odsCode" : if (.ODSCode) .ODSCode,
+      "http://endhealth.info/im#organisationRelationship" :
+      if (.ParentOrganisationGuid)[
+        uuidToIri(.ParentOrganisationGuid, "urn:uuid:"),
+        if (.MainLocationGuid) uuidToIri(.MainLocationGuid, "urn:uuid:")
+      ]
+    },
+    if (.ParentOrganisationGuid)
+      {
+        "@id" : uuidToIri(.ParentOrganisationGuid, "urn:uuid:"),
+        "http://endhealth.info/im#organisation" : $relationshipIdParent,
+        "http://endhealth.info/im#relationshipType" : "https://directory.spineservices.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRelationship-1#ODS_Relationship_6"
+      },
+    if (.MainLocationGuid)
+      {
+        "@id" : if (.MainLocationGuid) uuidToIri(.MainLocationGuid, "urn:uuid:"),
+        "http://endhealth.info/im#organisation" : if (.MainLocationGuid) $relationshipIdParent,
+        "http://endhealth.info/im#relationshipType" : if (.MainLocationGuid) "https://directory.spineservices.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRelationship-1#ODS_Relationship_5"
+
+      }
+  ]
+}
