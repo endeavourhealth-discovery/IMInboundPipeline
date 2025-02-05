@@ -1,0 +1,22 @@
+{
+  "Records": [
+    {
+      "EventSource": "aws:sns",
+      "EventVersion": "1.0",
+      "EventSubscriptionArn": "arn:aws:sns:us-east-1:123456789012:ExampleTopic:01234567-89ab-cdef-0123-456789abcdef",
+      "Sns": {
+        "Type": "Notification",
+        "MessageId": "2f3d4a3f-93df-4cd5-8a6e-2a9f01234567",
+        "TopicArn": "arn:aws:sns:us-east-1:123456789012:ExampleTopic",
+        "Subject": "Amazon S3 Notification",
+        "Message": "{\"Records\":[{\"eventVersion\":\"2.1\",\"eventSource\":\"aws:s3\",\"awsRegion\":\"us-east-1\",\"eventTime\":\"2021-10-10T12:34:56.000Z\",\"eventName\":\"ObjectCreated:Put\",\"userIdentity\":{\"principalId\":\"AWS:ABCDEFGHIJKLMN\"},\"requestParameters\":{\"sourceIPAddress\":\"192.168.1.1\"},\"responseElements\":{\"x-amz-request-id\":\"EXAMPLE123456789\",\"x-amz-id-2\":\"EXAMPLEABCDEFGH/1234567890abcdef\"},\"s3\":{\"s3SchemaVersion\":\"1.0\",\"configurationId\":\"TestConfigRule\",\"bucket\":{\"name\":\"my-bucket\",\"ownerIdentity\":{\"principalId\":\"EXAMPLE\"},\"arn\":\"arn:aws:s3:::my-bucket\"},\"object\":{\"key\":\"uploads/file.txt\",\"size\":1024,\"eTag\":\"abcdef1234567890abcdef1234567890\",\"sequencer\":\"0A1B2C3D4E5F678901\"}}}]}",
+        "Timestamp": "2021-10-10T12:34:57.000Z",
+        "SignatureVersion": "1",
+        "Signature": "EXAMPLE",
+        "SigningCertUrl": "https://sns.us-east-1.amazonaws.com/SimpleNotificationService.pem",
+        "UnsubscribeUrl": "https://sns.us-east-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:us-east-1:123456789012:ExampleTopic:01234567-89ab-cdef-0123-456789abcdef",
+        "MessageAttributes": {}
+      }
+    }
+  ]
+}

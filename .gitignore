@@ -10,3 +10,4 @@ org.eclipse.jdt.core.prefs
 *.backup.json
 gradle.properties
 *.xml
+aws_lambda/node_modules

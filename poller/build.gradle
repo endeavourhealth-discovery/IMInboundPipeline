@@ -9,6 +9,7 @@ dependencies {
   implementation libs.assertJ
   implementation libs.jacksonDatabind
   implementation libs.springContext
+  implementation libs.awsS3
 //  TODO: include and implement security config
 //  implementation libs.springDataJpa
 //  implementation libs.springOauthServer

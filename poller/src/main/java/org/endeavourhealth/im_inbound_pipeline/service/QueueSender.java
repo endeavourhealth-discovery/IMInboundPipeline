@@ -13,9 +13,9 @@ public class QueueSender {
     this.rabbitTemplate = rabbitTemplate;
   }
 
-  public void sendMessage(String message, String fileOrg) {
-    String routingKey = fileOrg;
-    rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, routingKey, message);
+  public void sendMessage(String message, String fileName) {
+    String routingKey = RabbitMQConfig.getRoutingKey() + "." + fileName;
+    rabbitTemplate.convertAndSend(RabbitMQConfig.getExchangeName(), routingKey, message);
     System.out.println("Message sent to exchange with routing key " + routingKey + ": " + message);
   }
 }
