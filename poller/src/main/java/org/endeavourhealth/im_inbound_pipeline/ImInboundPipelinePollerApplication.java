@@ -1,5 +1,6 @@
 package org.endeavourhealth.im_inbound_pipeline;
 
+import org.endeavourhealth.im_inbound_pipeline.listener.FileEventListener;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -12,6 +13,7 @@ public class ImInboundPipelinePollerApplication extends SpringBootServletInitial
 
   public static void main(String[] args) {
     SpringApplication.run(ImInboundPipelinePollerApplication.class, args);
+    new FileEventListener().test();
   }
 
 }

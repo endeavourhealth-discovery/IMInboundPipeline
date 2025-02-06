@@ -6,7 +6,9 @@ import org.json.JSONObject;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -28,6 +30,8 @@ public class FileEventListener {
   private final RabbitTemplate rabbitTemplate = new RabbitTemplate();
   private final QueueSender queueSender = new QueueSender(rabbitTemplate);
 
+  private static final String AWS_ACCESS_KEY_ID = System.getenv("AWS_ACCESS_KEY_ID");
+  private static final String AWS_SECRET_ACCESS_KEY = System.getenv("AWS_SECRET_ACCESS_KEY");
 //  private static final String DIRECTORY_URL = System.getenv("DIRECTORY_URL");
   private static final String REGION = System.getenv("REGION");
   private static final String BUCKET_NAME = System.getenv("BUCKET_NAME");
@@ -71,10 +75,12 @@ public class FileEventListener {
   }
 
   private Set<String> getExistingFilesInBucket() {
+    AwsBasicCredentials awsCreds = AwsBasicCredentials.create(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY);
+
     Set<String> filesInBucket = new HashSet<>();
     S3Client s3 = S3Client.builder()
       .region(Region.of(REGION))
-      .credentialsProvider(ProfileCredentialsProvider.create())
+      .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
       .build();
 
     ListObjectsV2Request request = ListObjectsV2Request.builder().bucket(BUCKET_NAME).prefix(PREFIX).build();
@@ -91,9 +97,11 @@ public class FileEventListener {
   }
 
   private InputStream getFile(String fileName) {
+    AwsBasicCredentials awsCreds = AwsBasicCredentials.create(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY);
+
     S3Client s3 = S3Client.builder()
       .region(Region.of(REGION))
-      .credentialsProvider(ProfileCredentialsProvider.create())
+      .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
       .build();
 
     ResponseInputStream<GetObjectResponse> s3Object = s3.getObject(GetObjectRequest.builder()
@@ -102,5 +110,9 @@ public class FileEventListener {
       .build());
 
     return s3Object;
+  }
+
+  public void test() {
+    System.out.println("Starting test");
   }
 }
