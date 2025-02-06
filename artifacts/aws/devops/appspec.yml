@@ -1,12 +1,12 @@
 version: 0.0
 os: linux
 files:
-  - source: inboundpipeline.war
-    destination: /opt/tomcat/webapps
-  - source: inboundpipelinepoller.war
-    destination: /opt/tomcat/webapps
-  - source: queuereader.jar
-    destination: /opt/queuereader
+  - source: MessageAPI.war
+    destination: /opt/tomcat/webapps/
+  - source: FileReader.jar
+    destination: /opt/pipeline/
+  - source: DataReader.jar
+    destination: /opt/tomcat/webapps/
 hooks:
   BeforeInstall:
     - location: cleanup.sh
