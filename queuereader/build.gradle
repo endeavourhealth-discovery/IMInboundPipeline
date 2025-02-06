@@ -30,6 +30,15 @@ dependencies {
   annotationProcessor libs.lombok
 }
 
+sonar {
+  properties {
+    property 'sonar.gradle.skipCompile', true
+    property 'sonar.projectKey', 'endeavourhelth-discovery_IMInboundPipeline_API::queuereader'
+    property 'sonar.projectName', 'IMInboundPipeline_QueueReader'
+    property 'sonar.coverage.exclusions', '**/config/**, **/controller/**, **/errorhandling/**, **/model,**'
+  }
+}
+
 test {
   useJUnitPlatform()
 }
