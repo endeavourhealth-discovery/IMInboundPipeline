@@ -83,7 +83,7 @@ public class FileEventListener {
       .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
       .build();
 
-    ListObjectsV2Request request = ListObjectsV2Request.builder().bucket(BUCKET_NAME).prefix(PREFIX).build();
+    ListObjectsV2Request request = ListObjectsV2Request.builder().bucket(BUCKET_NAME).build();
     ListObjectsV2Iterable response = s3.listObjectsV2Paginator(request);
 
     for (ListObjectsV2Response page : response) {
@@ -114,5 +114,8 @@ public class FileEventListener {
 
   public void test() {
     System.out.println("Starting test");
+    System.out.println(AWS_ACCESS_KEY_ID);
+    System.out.println(AWS_SECRET_ACCESS_KEY);
+    getExistingFilesInBucket();
   }
 }

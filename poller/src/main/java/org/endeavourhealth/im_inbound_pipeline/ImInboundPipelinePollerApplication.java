@@ -13,7 +13,7 @@ public class ImInboundPipelinePollerApplication extends SpringBootServletInitial
 
   public static void main(String[] args) {
     SpringApplication.run(ImInboundPipelinePollerApplication.class, args);
-    new FileEventListener().test();
+//    new FileEventListener().test();
   }
 
 }
