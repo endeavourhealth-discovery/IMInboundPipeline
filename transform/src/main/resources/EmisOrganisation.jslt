@@ -11,21 +11,21 @@ let relationshipIdLocation = newUUIDIri("urn:uuid:")
       "http://endhealth.info/im#operationalEndDate" : if (.CloseDate) .CloseDate,
       "http://endhealth.info/im#odsCode" : if (.ODSCode) .ODSCode,
       "http://endhealth.info/im#organisationRelationship" :
-      if (.ParentOrganisationGuid)[
-        uuidToIri(.ParentOrganisationGuid, "urn:uuid:"),
-        if (.MainLocationGuid) uuidToIri(.MainLocationGuid, "urn:uuid:")
+      [
+        if (.ParentOrganisationGuid) $relationshipIdParent,
+        if (.MainLocationGuid) $relationshipIdLocation
       ]
     },
     if (.ParentOrganisationGuid)
       {
-        "@id" : uuidToIri(.ParentOrganisationGuid, "urn:uuid:"),
-        "http://endhealth.info/im#organisation" : $relationshipIdParent,
+        "@id" : $relationshipIdParent,
+        "http://endhealth.info/im#organisation" : uuidToIri(.ParentOrganisationGuid, "urn:uuid:"),
         "http://endhealth.info/im#relationshipType" : "https://directory.spineservices.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRelationship-1#ODS_Relationship_6"
       },
     if (.MainLocationGuid)
       {
-        "@id" : if (.MainLocationGuid) uuidToIri(.MainLocationGuid, "urn:uuid:"),
-        "http://endhealth.info/im#organisation" : if (.MainLocationGuid) $relationshipIdParent,
+        "@id" : if (.MainLocationGuid)  $relationshipIdLocation,
+        "http://endhealth.info/im#organisation" : if (.MainLocationGuid) uuidToIri(.MainLocationGuid, "urn:uuid:"),
         "http://endhealth.info/im#relationshipType" : if (.MainLocationGuid) "https://directory.spineservices.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRelationship-1#ODS_Relationship_5"
 
       }
