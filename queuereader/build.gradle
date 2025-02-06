@@ -41,13 +41,13 @@ if (ENV == 'prod') {
 
 sonar {
   properties {
+    property 'sonar.token', SONAR_LOGIN
     property 'sonar.gradle.skipCompile', true
     property 'sonar.organization', 'endeavourhealth-discovery'
-    property 'sonar.token', SONAR_LOGIN
+    property 'sonar.projectKey', 'IMInboundPipeline_Queuereader'
+    property 'sonar.projectName', 'DataReader'
     property 'sonar.host.url', 'https://sonarcloud.io'
     property 'sonar.junit.reportPaths', 'build/test-results/test/binary'
-    property 'sonar.projectKey', 'endeavourhelth-discovery_IMInboundPipeline_Queuereader'
-    property 'sonar.projectName', 'IMInboundPipeline_QueueReader'
     property 'sonar.coverage.exclusions', '**/config/**, **/controller/**, **/errorhandling/**, **/model,**'
   }
 }
