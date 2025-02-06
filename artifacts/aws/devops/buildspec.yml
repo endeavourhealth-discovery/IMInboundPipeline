@@ -13,6 +13,6 @@ artifacts:
   files:
     - artifacts/aws/devops/appspec.yml
     - artifacts/aws/devops/cleanup.sh
-    - api/build/libs/inboundpipeline.war
-    - queuereader/build/libs/queuereader.jar
-    - poller/build/libs/inboundpipelinepoller.war
+    - MessageAPI/build/libs/MessageAPI.war
+    - FileReader/build/libs/FileReader.jar
+    - DataReader/build/libs/DataReader.jar

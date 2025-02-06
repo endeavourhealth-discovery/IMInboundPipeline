@@ -1,5 +1,5 @@
 plugins {
-  id 'war'
+  id 'java'
   id 'org.sonarqube' version '4.4.1.3373'
 }
 
@@ -9,13 +9,17 @@ version = '1.0-SNAPSHOT'
 dependencies {
   implementation libs.assertJ
   implementation libs.jacksonDatabind
-  implementation libs.springContext  
-  implementation libs.springOauthServer
-  implementation libs.springSecurity
+  implementation libs.springContext
+  implementation libs.awsS3
+//  TODO: include and implement security config
+//  implementation libs.springDataJpa
+//  implementation libs.springOauthServer
+//  implementation libs.springSecurity
   implementation libs.springWeb
   implementation libs.springdoc
   implementation libs.rabbitmqAmqpClient
   implementation libs.springAmpq
+  implementation libs.orgJson
 
   runtimeOnly libs.springDevTools
 
@@ -44,8 +48,8 @@ sonar {
     property 'sonar.token', SONAR_LOGIN
     property 'sonar.gradle.skipCompile', true
     property 'sonar.organization', 'endeavourhealth-discovery'
-    property 'sonar.projectKey', 'IMInboundPipeline_Queuereader'
-    property 'sonar.projectName', 'DataReader'
+    property 'sonar.projectKey', 'IMInboundPipeline_Poller'
+    property 'sonar.projectName', 'FileReader'
     property 'sonar.host.url', 'https://sonarcloud.io'
     property 'sonar.junit.reportPaths', 'build/test-results/test/binary'
     property 'sonar.coverage.exclusions', '**/config/**, **/controller/**, **/errorhandling/**, **/model,**'
@@ -77,8 +81,8 @@ task cucumberCli() {
   }
 }
 
-description = 'Inbound Pipeline Queue Reader'
+description = 'File Reader'
 
-war {
-  archiveFileName = 'queuereader.war'
+jar {
+  archiveFileName = 'FileReader.jar'
 }
