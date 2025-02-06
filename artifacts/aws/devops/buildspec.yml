@@ -1,0 +1,18 @@
+version: 0.2
+run-as: root
+
+phases:
+  build:
+    commands:
+      - mkdir aws_scripts
+      - aws s3 cp 's3://endeavour-deployment/InformationModel(v2)/build.sh' aws_scripts
+      - chmod +x aws_scripts/build.sh
+      - aws_scripts/build.sh IMInboundPipeline 1.0.0
+artifacts:
+  discard-paths: yes
+  files:
+    - artifacts/aws/devops/appspec.yml
+    - artifacts/aws/devops/cleanup.sh
+    - api/build/libs/inboundpipeline.war
+    - queuereader/build/libs/queuereader.jar
+    - poller/build/libs/inboundpipelinepoller.war
