@@ -4,9 +4,9 @@ let relationshipIdLocation = newUUIDIri("urn:uuid:")
 {
   "entities" : [
     {
-
       "@id" : uuidToIri(.OrganisationGuid, "urn:uuid:"),
-      "http://endhealth.info/im#name" : .OrganisationName,
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#" : "http://endhealth.info/im#Organisation",
+      "http://www.w3.org/2000/01/rdf-schema#label" : .OrganisationName,
       "http://endhealth.info/im#operationalStartDate" : formatDate(.OpenDate),
       "http://endhealth.info/im#operationalEndDate" : if (.CloseDate) .CloseDate,
       "http://endhealth.info/im#odsCode" : if (.ODSCode) .ODSCode,
