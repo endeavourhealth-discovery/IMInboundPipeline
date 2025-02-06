@@ -1,3 +1,8 @@
+plugins {
+  id 'war'
+  id 'org.sonarqube' version '4.4.1.3373'
+}
+
 group = 'org.endeavourhealth.im_inbound_pipeline'
 version = '1.0-SNAPSHOT'
 
