@@ -22,7 +22,7 @@ sonar {
     property 'sonar.gradle.skipCompile', true
     property 'sonar.projectKey', 'endeavourhelth-discovery_IMInboundPipeline'
     property 'sonar.projectName', 'IMInboundPipeline'
-    property 'sonar.organisation', 'endeavourhealth-discovery'
+    property 'sonar.organization', 'endeavourhealth-discovery'
     property 'sonar.token', SONAR_LOGIN
     property 'sonar.host.url', 'https://sonarcloud.io'
     property 'sonar.junit.reportPaths', 'build/test-results/test/binary'
