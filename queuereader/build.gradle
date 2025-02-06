@@ -79,6 +79,6 @@ task cucumberCli() {
 
 description = 'Inbound Pipeline Queue Reader'
 
-jar {
-  archiveFileName = 'queuereader.jar'
+war {
+  archiveFileName = 'queuereader.war'
 }
