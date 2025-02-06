@@ -1,0 +1,14 @@
+version: 0.0
+os: linux
+files:
+  - source: inboundpipeline.war
+    destination: /opt/tomcat/webapps
+  - source: inboundpipelinepoller.war
+    destination: /opt/tomcat/webapps
+  - source: queuereader.jar
+    destination: /opt/queuereader
+hooks:
+  BeforeInstall:
+    - location: cleanup.sh
+      timeout: 300
+      runas: root
