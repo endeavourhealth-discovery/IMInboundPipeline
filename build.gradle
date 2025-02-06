@@ -13,20 +13,7 @@ sourceCompatibility = '17'
 
 println "Build environment = [$ENV]"
 if (ENV == 'prod') {
-  build.finalizedBy 'sonar'
   build.finalizedBy 'publish'
-}
-
-sonar {
-  properties {
-    property 'sonar.gradle.skipCompile', true
-    property 'sonar.projectKey', 'endeavourhelth-discovery_IMInboundPipeline'
-    property 'sonar.projectName', 'IMInboundPipeline'
-    property 'sonar.organization', 'endeavourhealth-discovery'
-    property 'sonar.token', SONAR_LOGIN
-    property 'sonar.host.url', 'https://sonarcloud.io'
-    property 'sonar.junit.reportPaths', 'build/test-results/test/binary'
-  }
 }
 
 allprojects {
