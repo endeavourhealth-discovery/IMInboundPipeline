@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ImInboundPipelineApplicationTests {
+class FileReaderTests {
 
   @Test
   void contextLoads() {
