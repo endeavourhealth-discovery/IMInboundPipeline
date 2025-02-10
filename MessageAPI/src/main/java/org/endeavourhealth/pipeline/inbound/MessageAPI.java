@@ -1,6 +1,5 @@
 package org.endeavourhealth.pipeline.inbound;
 
-import org.endeavourhealth.im_inbound_pipeline.listener.FileEventListener;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
