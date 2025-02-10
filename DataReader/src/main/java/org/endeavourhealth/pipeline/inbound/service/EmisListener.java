@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmisListener {
 
-  @RabbitListener(queues = RabbitMQConfig.ORG_QUEUE)
+  @RabbitListener(queues = "#{rabbitMQConfig.getQueue()}")
   public void handleEmisMessages(String message) {
     System.out.println("Received EMIS message: " + message);
 //    TODO parse JSON
