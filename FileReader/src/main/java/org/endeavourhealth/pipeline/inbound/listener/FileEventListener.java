@@ -5,7 +5,9 @@ import org.json.JSONObject;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -16,10 +18,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class FileEventListener {
@@ -27,11 +26,10 @@ public class FileEventListener {
   private final RabbitTemplate rabbitTemplate = new RabbitTemplate();
   private final QueueSender queueSender = new QueueSender(rabbitTemplate);
 
-//  private static final String DIRECTORY_URL = System.getenv("DIRECTORY_URL");
-  private static final String REGION = System.getenv("REGION");
-  private static final String BUCKET_NAME = System.getenv("BUCKET_NAME");
-//  private static final String OBJECT_KEY = System.getenv("OBJECT_KEY");
-  private static final String PREFIX = System.getenv("PREFIX");
+  private static final String AWS_ACCESS_KEY_ID = Optional.ofNullable(System.getenv("AWS_ACCESS_KEY_ID")).orElseThrow(() -> new IllegalArgumentException("Env var 'AWS_ACCESS_KEY_ID' is not defined"));
+  private static final String AWS_SECRET_ACCESS_KEY = Optional.ofNullable(System.getenv("AWS_SECRET_ACCESS_KEY")).orElseThrow(() -> new IllegalArgumentException("Env var 'AWS_SECRET_ACCESS_KEY' is not defined"));
+  private static final String REGION = Optional.ofNullable(System.getenv("REGION")).orElseThrow(() -> new IllegalArgumentException("Env var 'REGION' is not defined"));
+  private static final String BUCKET_NAME = Optional.ofNullable(System.getenv("BUCKET_NAME")).orElseThrow(() -> new IllegalArgumentException("Env var 'BUCKET_NAME' is not defined"));
 
   @RabbitListener(queues = "#{rabbitMQConfig.getQueue()}")
   public void handleFileEvent(String message) throws IOException {
@@ -70,13 +68,15 @@ public class FileEventListener {
   }
 
   private Set<String> getExistingFilesInBucket() {
+    AwsBasicCredentials awsCreds = AwsBasicCredentials.create(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY);
+
     Set<String> filesInBucket = new HashSet<>();
     S3Client s3 = S3Client.builder()
       .region(Region.of(REGION))
-      .credentialsProvider(ProfileCredentialsProvider.create())
+      .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
       .build();
 
-    ListObjectsV2Request request = ListObjectsV2Request.builder().bucket(BUCKET_NAME).prefix(PREFIX).build();
+    ListObjectsV2Request request = ListObjectsV2Request.builder().bucket(BUCKET_NAME).build();
     ListObjectsV2Iterable response = s3.listObjectsV2Paginator(request);
 
     for (ListObjectsV2Response page : response) {
@@ -90,9 +90,11 @@ public class FileEventListener {
   }
 
   private InputStream getFile(String fileName) {
+    AwsBasicCredentials awsCreds = AwsBasicCredentials.create(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY);
+
     S3Client s3 = S3Client.builder()
       .region(Region.of(REGION))
-      .credentialsProvider(ProfileCredentialsProvider.create())
+      .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
       .build();
 
     ResponseInputStream<GetObjectResponse> s3Object = s3.getObject(GetObjectRequest.builder()
@@ -101,5 +103,12 @@ public class FileEventListener {
       .build());
 
     return s3Object;
+  }
+
+  public void test() {
+    System.out.println("Starting test");
+    System.out.println(AWS_ACCESS_KEY_ID);
+    System.out.println(AWS_SECRET_ACCESS_KEY);
+    getExistingFilesInBucket();
   }
 }

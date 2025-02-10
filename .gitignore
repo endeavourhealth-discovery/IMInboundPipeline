@@ -11,3 +11,4 @@ org.eclipse.jdt.core.prefs
 gradle.properties
 *.xml
 aws_lambda/node_modules
+.DS_Store
