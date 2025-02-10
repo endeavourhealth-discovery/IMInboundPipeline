@@ -13,7 +13,7 @@ pluginManagement {
 }
 
 rootProject.name = 'IMInboundPipeline'
-include(':api')
-include(':queuereader')
-include(':transform')
-include(':poller')
+include(':Transform')
+include(':MessageAPI')
+include(':DataReader')
+include(':FileReader')
