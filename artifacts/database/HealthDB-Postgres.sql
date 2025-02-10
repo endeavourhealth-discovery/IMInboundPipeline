@@ -2,7 +2,7 @@ DROP SCHEMA IF EXISTS healthDB CASCADE;
 
 CREATE SCHEMA healthDB;
 
-SET SCHEMA 'healthDB';
+SET search_path TO healthDB;
 
 CREATE OR REPLACE FUNCTION json_date(text)
   RETURNS timestamptz AS
@@ -54,24 +54,25 @@ CREATE TABLE tct (
 
 CREATE INDEX idx_tct_iri ON tct(iri);
 
-DROP TABLE IF EXISTS patient;
+DROP TABLE IF EXISTS instance;
 
-CREATE TABLE patient (
+CREATE TABLE instance (
     id UUID PRIMARY KEY,
-    json JSON NOT NULL
+    json JSON NOT NULL,
+    type text generated always as (json ->> '_type') stored
 );
 
-CREATE INDEX idx_pat_dob ON patient ((json_date(json ->> 'dateOfBirth')));
-CREATE INDEX idx_pat_nhs ON patient ((json ->> 'nhsNumber'));
-
+CREATE INDEX idx_inst_pat_dob ON instance ((json_date(json ->> 'dateOfBirth'))) WHERE type = 'Patient';
+CREATE INDEX idx_inst_pat_nhs ON instance ((json ->> 'nhsNumber')) WHERE type = 'Patient';
 
 DROP TABLE IF EXISTS event;
 
 CREATE TABLE event (
     id UUID PRIMARY KEY,
-    json JSON NOT NULL
+    json JSON NOT NULL,
+    type text generated always as (json ->> '_type') stored
 );
 
-CREATE INDEX idx_evt_cpt_typ ON event ((json ->> '_type'), (json ->> 'concept'), (json_date(json -> 'effectiveDate' ->> 'dateTime')));
-CREATE INDEX idx_evt_pat_typ_cpt ON event (((json ->> 'patient')::UUID), (json ->> '_type'), (json ->> 'concept'));
-CREATE INDEX idx_evt_eoc_pat_type ON event (((json ->> 'patientType')::varchar)) WHERE (json ->> '_type') = 'EpisodeOfCare';
+CREATE INDEX idx_evt_cpt_typ ON event (type, (json ->> 'concept'), (json_date(json -> 'effectiveDate' ->> 'dateTime')));
+CREATE INDEX idx_evt_pat_typ_cpt ON event (((json ->> 'patient')::UUID), type, (json ->> 'concept'));
+CREATE INDEX idx_evt_eoc_pat_type ON event (((json ->> 'patientType')::varchar)) WHERE type = 'EpisodeOfCare';
