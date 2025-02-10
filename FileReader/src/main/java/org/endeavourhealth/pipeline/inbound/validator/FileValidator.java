@@ -1,8 +1,8 @@
-package org.endeavourhealth.im_inbound_pipeline.validator;
+package org.endeavourhealth.pipeline.inbound.validator;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.endeavourhealth.im_inbound_pipeline.model.FileValidation;
+import org.endeavourhealth.pipeline.inbound.model.ValidationConfigModel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 
@@ -18,15 +18,15 @@ public class FileValidator {
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   public boolean validateFile(String fileName) throws IOException {
-    List<FileValidation> validationConfigPOJO = getValidationConfig();
+    List<ValidationConfigModel> validationConfigPOJO = getValidationConfig();
     return validationConfigPOJO.stream().anyMatch(file -> file.getFileName().equals(fileName));
   }
 
-  private List<FileValidation> getValidationConfig() throws IOException {
+  private List<ValidationConfigModel> getValidationConfig() throws IOException {
     try {
       return objectMapper.readValue(
         validationConfig.getInputStream(),
-        new TypeReference<List<FileValidation>>() {
+        new TypeReference<List<ValidationConfigModel>>() {
         }
       );
     } catch (IOException e) {

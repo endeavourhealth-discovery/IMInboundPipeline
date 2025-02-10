@@ -31,11 +31,8 @@ public class FileEventListener {
 
   private static final String AWS_ACCESS_KEY_ID = System.getenv("AWS_ACCESS_KEY_ID");
   private static final String AWS_SECRET_ACCESS_KEY = System.getenv("AWS_SECRET_ACCESS_KEY");
-//  private static final String DIRECTORY_URL = System.getenv("DIRECTORY_URL");
   private static final String REGION = System.getenv("REGION");
   private static final String BUCKET_NAME = System.getenv("BUCKET_NAME");
-//  private static final String OBJECT_KEY = System.getenv("OBJECT_KEY");
-  private static final String PREFIX = System.getenv("PREFIX");
 
   @RabbitListener(queues = "#{rabbitMQConfig.getQueue()}")
   public void handleFileEvent(String message) throws IOException {
