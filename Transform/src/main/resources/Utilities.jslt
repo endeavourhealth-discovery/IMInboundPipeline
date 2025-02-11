@@ -1,0 +1,6 @@
+
+def cleanArray(items)
+  [
+    for ($items)
+      . if (.!=null)
+  ]
