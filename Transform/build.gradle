@@ -69,7 +69,7 @@ task cucumberCli() {
       args = [
         '--plugin', 'pretty',
         '--plugin', 'html:build/reports/cucumber/cucumber-report.html',
-        '--glue', 'org.endeavourhealth.im-inbound-pipeline',
+        '--glue', 'org.endeavourhealth.pipeline.inbound',
         'src/test/resources']
     }
   }
