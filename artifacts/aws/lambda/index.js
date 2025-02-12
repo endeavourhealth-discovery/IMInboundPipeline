@@ -2,12 +2,7 @@ require("dotenv").config();
 const amqp = require("amqplib");
 
 exports.handler = async (event) => {
-  // Retrieve RabbitMQ connection details from environment variables
-  // const RABBITMQ_HOST = process.env.RABBITMQ_HOST;
-  // const RABBITMQ_PORT = process.env.RABBITMQ_PORT || 5672;
-  // const RABBITMQ_USER = process.env.RABBITMQ_USER;
-  // const RABBITMQ_PASSWORD = process.env.RABBITMQ_PASSWORD;
-  const connectionUrl = `amqp://localhost`;
+  const connectionUrl = process.env.RABBITMQ_URL || `amqp://localhost`;
 
   let connection;
   let channel;

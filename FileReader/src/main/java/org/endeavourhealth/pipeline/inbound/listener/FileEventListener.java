@@ -4,6 +4,7 @@ import org.endeavourhealth.pipeline.inbound.service.QueueSender;
 import org.json.JSONObject;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
@@ -31,7 +32,7 @@ public class FileEventListener {
   private static final String REGION = Optional.ofNullable(System.getenv("REGION")).orElseThrow(() -> new IllegalArgumentException("Env var 'REGION' is not defined"));
   private static final String BUCKET_NAME = Optional.ofNullable(System.getenv("BUCKET_NAME")).orElseThrow(() -> new IllegalArgumentException("Env var 'BUCKET_NAME' is not defined"));
 
-  @RabbitListener(queues = "#{rabbitMQConfig.getQueue()}")
+  @RabbitListener(queues = "#{rabbitMQConfig.getFileQueue()}")
   public void handleFileEvent(String message) throws IOException {
     System.out.println("Received file event: " + message);
     List<String> orderedList = new ArrayList<>(); // ordered list in config
