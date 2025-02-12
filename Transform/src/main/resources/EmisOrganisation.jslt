@@ -7,13 +7,12 @@ let relationshipIdLocation = newUUIDIri("urn:uuid:")
   "entities" : utils:cleanArray([
     {
       "@id" : uuidToIri(.OrganisationGuid, "urn:uuid:"),
-      "_type": "Organisation",
-      "http://www.w3.org/1999/02/22-rdf-syntax-ns#" : "http://endhealth.info/im#Organisation",
-      "http://www.w3.org/2000/01/rdf-schema#label" : .OrganisationName,
-      "http://endhealth.info/im#operationalStartDate" : formatDate("yyyy-MM-dd", .OpenDate),
-      "http://endhealth.info/im#operationalEndDate" : if (.CloseDate) .CloseDate,
-      "http://endhealth.info/im#odsCode" : if (.ODSCode) .ODSCode,
-      "http://endhealth.info/im#organisationRelationship" :
+      "@type": "Organisation",
+      "label" : .OrganisationName,
+      "operationalStartDate" : formatDate("yyyy-MM-dd", .OpenDate),
+      "operationalEndDate" : if (.CloseDate) .CloseDate,
+      "odsCode" : if (.ODSCode) .ODSCode,
+      "organisationRelationship" :
       utils:cleanArray([
         if (.ParentOrganisationGuid) $relationshipIdParent,
         if (.MainLocationGuid) $relationshipIdLocation
@@ -22,16 +21,16 @@ let relationshipIdLocation = newUUIDIri("urn:uuid:")
     if (.ParentOrganisationGuid)
       {
         "@id" : $relationshipIdParent,
-        "_type": "OrganisationRelationship",
-        "http://endhealth.info/im#organisation" : uuidToIri(.ParentOrganisationGuid, "urn:uuid:"),
-        "http://endhealth.info/im#relationshipType" : "https://directory.spineservices.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRelationship-1#ODS_Relationship_6"
+        "@type": "OrganisationRelationship",
+        "organisation" : uuidToIri(.ParentOrganisationGuid, "urn:uuid:"),
+        "relationshipType" : "ODS_Relationship_6"
       },
     if (.MainLocationGuid)
       {
         "@id" : if (.MainLocationGuid)  $relationshipIdLocation,
-        "_type": "OrganisationRelationship",
-        "http://endhealth.info/im#organisation" : if (.MainLocationGuid) uuidToIri(.MainLocationGuid, "urn:uuid:"),
-        "http://endhealth.info/im#relationshipType" : if (.MainLocationGuid) "https://directory.spineservices.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRelationship-1#ODS_Relationship_5"
+        "@type": "OrganisationRelationship",
+        "organisation" : if (.MainLocationGuid) uuidToIri(.MainLocationGuid, "urn:uuid:"),
+        "relationshipType" : if (.MainLocationGuid) "ODS_Relationship_5"
       }
   ])
 }
