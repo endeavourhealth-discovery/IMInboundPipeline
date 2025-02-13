@@ -20,18 +20,18 @@ public class RabbitMQConfig {
   @Value("${rabbitmq.filequeue}")
   private String fileQueue;
 
-  private static String STATIC_ROUTING_KEY;
+  private static String ROUTING_KEY;
 
   private static String FILE_QUEUE;
 
   @PostConstruct
   public void init() {
-    STATIC_ROUTING_KEY = routingKey;
+    ROUTING_KEY = routingKey;
     FILE_QUEUE = fileQueue;
   }
 
   public static String getRoutingKey() {
-    return STATIC_ROUTING_KEY;
+    return ROUTING_KEY;
   }
 
   public static String getFileQueue() {
