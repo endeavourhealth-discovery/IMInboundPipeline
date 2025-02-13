@@ -106,7 +106,11 @@ sleep 5
 rabbitmqctl add_user admin $INSTANCE_ID
 rabbitmqctl set_user_tags admin administrator
 rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"
-rabbitmqctl add_user monitoring $INSTANCE_ID
+
+rabbitmqctl add_user im_pipeline $INSTANCE_ID
+rabbitmqctl set_permissions -p / im_pipeline ".*" ".*" ".*"
+
+rabbitmqctl add_user monitoring monitoring
 rabbitmqctl set_user_tags monitoring monitoring
 rabbitmqctl set_permissions -p / monitoring "" "" ""
 
@@ -122,12 +126,12 @@ rabbitmqctl set_permissions -p Outbound admin ".*" ".*" ".*"
 /home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare exchange name=File type=topic
 /home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare queue name=File-EMIS
 /home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare queue name=File-TPP
-/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare binding source=File destination=File-EMIS routing_key="EMIS.*"
-/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare binding source=File destination=File-TPP routing_key="TPP.*"
+/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare binding source=File destination=File-EMIS routing_key="endeavour-inbound.EMIS.#"
+/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare binding source=File destination=File-TPP routing_key="endeavour-inbound.TPP.#"
 
 /home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare exchange name=Data type=topic
 /home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare queue name=Data-EMIS
 /home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare queue name=Data-TPP
-/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare binding source=Data destination=Data-EMIS routing_key="EMIS.*"
-/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare binding source=Data destination=Data-TPP routing_key="TPP.*"
+/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare binding source=Data destination=Data-EMIS routing_key="endeavour-inbound.EMIS.#"
+/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare binding source=Data destination=Data-TPP routing_key="endeavour-inbound.TPP.#"
 
