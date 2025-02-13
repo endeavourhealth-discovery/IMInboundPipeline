@@ -21,24 +21,30 @@ docker exec rabbitmq rabbitmqctl set_permissions -p Outbound guest ".*" ".*" ".*
 # Step 3: Declare exchanges
 echo "Declaring exchanges..."
 
-docker exec rabbitmq rabbitmqadmin declare exchange name=File type=topic
-docker exec rabbitmq rabbitmqadmin declare exchange name=Data type=topic
+docker exec rabbitmq rabbitmqadmin -V Inbound declare exchange name=File type=topic
+docker exec rabbitmq rabbitmqadmin -V Inbound declare exchange name=Data type=topic
 
 # Step 4: Declare queues
 echo "Declaring queues..."
 
-docker exec rabbitmq rabbitmqadmin declare queue name=File-EMIS
-docker exec rabbitmq rabbitmqadmin declare queue name=File-TPP
-docker exec rabbitmq rabbitmqadmin declare queue name=Data-EMIS
-docker exec rabbitmq rabbitmqadmin declare queue name=Data-TPP
+docker exec rabbitmq rabbitmqadmin -V Inbound declare queue name=File-EMIS
+docker exec rabbitmq rabbitmqadmin -V Inbound declare queue name=File-TPP
+docker exec rabbitmq rabbitmqadmin -V Inbound declare queue name=Data-EMIS
+docker exec rabbitmq rabbitmqadmin -V Inbound declare queue name=Data-TPP
 
 # Step 5: Declare bindings
 echo "Declaring bindings..."
 
-docker exec rabbitmq rabbitmqadmin declare binding source=File destination=File-EMIS routing_key="EMIS.*"
-docker exec rabbitmq rabbitmqadmin declare binding source=File destination=File-TPP routing_key="TPP.*"
-docker exec rabbitmq rabbitmqadmin declare binding source=Data destination=Data-EMIS routing_key="EMIS.*"
-docker exec rabbitmq rabbitmqadmin declare binding source=Data destination=Data-TPP routing_key="TPP.*"
+docker exec rabbitmq rabbitmqadmin -V Inbound declare binding source=File destination=File-EMIS routing_key="endeavour-inbound.EMIS.#"
+docker exec rabbitmq rabbitmqadmin -V Inbound declare binding source=File destination=File-TPP routing_key="endeavour-inbound.TPP.#"
+docker exec rabbitmq rabbitmqadmin -V Inbound declare binding source=Data destination=Data-EMIS routing_key="endeavour-inbound.EMIS.#"
+docker exec rabbitmq rabbitmqadmin -V Inbound declare binding source=Data destination=Data-TPP routing_key="endeavour-inbound.TPP.#"
+
+#Step 6: Declare dead-letter exchange & queue
+echo "Declaring dead-letter exchange & queue..."
+docker exec rabbitmq rabbitmqadmin -V Inbound declare exchange name=dlx type=direct
+docker exec rabbitmq rabbitmqadmin -V Inbound declare queue name=dead_letter_queue
+docker exec rabbitmq rabbitmqadmin -V Inbound declare binding source=dlx destination=dead_letter_queue routing_key="dead_letter"
 
 # Done
 echo "RabbitMQ setup complete!"
