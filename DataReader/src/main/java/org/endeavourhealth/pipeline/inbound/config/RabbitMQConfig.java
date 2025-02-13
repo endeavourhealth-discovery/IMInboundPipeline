@@ -11,7 +11,7 @@ import java.util.Optional;
 @Configuration
 public class RabbitMQConfig {
 
-  @Value("${rabbitmq.dataQueue}")
+  @Value("${rabbitmq.dataqueue}")
   private String dataQueue;
 
   private static String DATA_QUEUE;
