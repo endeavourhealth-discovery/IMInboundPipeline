@@ -32,7 +32,7 @@ public class FileEventListener {
   private static final String REGION = Optional.ofNullable(System.getenv("REGION")).orElseThrow(() -> new IllegalArgumentException("Env var 'REGION' is not defined"));
   private static final String BUCKET_NAME = Optional.ofNullable(System.getenv("BUCKET_NAME")).orElseThrow(() -> new IllegalArgumentException("Env var 'BUCKET_NAME' is not defined"));
 
-  @RabbitListener(queues = "#{rabbitMQConfig.getFileQueue()}")
+  @RabbitListener(queues = "#{rabbitMQConfig.getSourceQueue()}")
   public void handleFileEvent(String message) throws IOException {
     System.out.println("Received file event: " + message);
     List<String> orderedList = new ArrayList<>(); // ordered list in config

@@ -11,8 +11,8 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 public class DataReader implements ApplicationRunner {
 
-  @Value("${rabbitmq.dataqueue}")
-  private String dataQueue;
+  @Value("${rabbitmq.sourceQueue}")
+  private String sourceQueue;
 
 	public static void main(String[] args) {
 		SpringApplication.run(DataReader.class, args);
@@ -20,6 +20,6 @@ public class DataReader implements ApplicationRunner {
 
   @Override
   public void run(ApplicationArguments args) throws Exception {
-    System.out.println("Running FileReader with dataQueue: " + dataQueue);
+    System.out.println("Running FileReader with sourceQueue: " + sourceQueue);
   }
 }

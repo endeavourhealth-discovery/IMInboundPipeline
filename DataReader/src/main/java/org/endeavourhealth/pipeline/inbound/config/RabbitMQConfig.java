@@ -11,23 +11,23 @@ import java.util.Optional;
 @Configuration
 public class RabbitMQConfig {
 
-  @Value("${rabbitmq.dataqueue}")
-  private String dataQueue;
+  @Value("${rabbitmq.sourceQueue}")
+  private String sourceQueue;
 
-  private static String DATA_QUEUE;
+  private static String SOURCE_QUEUE;
 
   @PostConstruct
   public void init() {
-    DATA_QUEUE = dataQueue;
+    SOURCE_QUEUE = sourceQueue;
   }
 
   public static String getQueue() {
-    return DATA_QUEUE;
+    return SOURCE_QUEUE;
   }
 
   @Bean
   public Queue queue() {
-    return new Queue(DATA_QUEUE);
+    return new Queue(SOURCE_QUEUE);
   }
 
 }

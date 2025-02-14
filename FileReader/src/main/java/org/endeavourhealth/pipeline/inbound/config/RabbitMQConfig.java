@@ -14,28 +14,28 @@ import java.util.Optional;
 @Configuration
 public class RabbitMQConfig {
 
-  @Value("${rabbitmq.routingKey}")
-  private String routingKey;
+  @Value("${rabbitmq.targetBaseRoutingKey}")
+  private String targetBaseRoutingKey;
 
-  @Value("${rabbitmq.filequeue}")
-  private String fileQueue;
+  @Value("${rabbitmq.sourceQueue}")
+  private String sourceQueue;
 
-  private static String ROUTING_KEY;
+  private static String TARGET_BASE_ROUTING_KEY;
 
-  private static String FILE_QUEUE;
+  private static String SOURCE_QUEUE;
 
   @PostConstruct
   public void init() {
-    ROUTING_KEY = routingKey;
-    FILE_QUEUE = fileQueue;
+    TARGET_BASE_ROUTING_KEY = targetBaseRoutingKey;
+    SOURCE_QUEUE = sourceQueue;
   }
 
   public static String getRoutingKey() {
-    return ROUTING_KEY;
+    return TARGET_BASE_ROUTING_KEY;
   }
 
-  public static String getFileQueue() {
-    return FILE_QUEUE;
+  public static String getSourceQueue() {
+    return SOURCE_QUEUE;
   }
 }
 

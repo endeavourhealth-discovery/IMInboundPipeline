@@ -14,11 +14,14 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class FileReader extends SpringBootServletInitializer implements ApplicationRunner {
 
-  @Value("${rabbitmq.routingKey}")
-  private String routingKey;
+  @Value("${rabbitmq.targetBaseRoutingKey}")
+  private String targetBaseRoutingKey;
 
-  @Value("${rabbitmq.filequeue}")
-  private String fileQueue;
+  @Value("${rabbitmq.sourceQueue}")
+  private String sourceQueue;
+
+  @Value("${rabbitmq.targetExchange}")
+  private String targetExchange;
 
   public static void main(String[] args) {
     SpringApplication.run(FileReader.class, args);
@@ -27,7 +30,7 @@ public class FileReader extends SpringBootServletInitializer implements Applicat
 
   @Override
   public void run(ApplicationArguments args) throws Exception {
-    System.out.println("Running FileReader with routingKey: " + routingKey + ", fileQueue: " + fileQueue);
+    System.out.println("Running FileReader with targetBaseRoutingKey: " + targetBaseRoutingKey + ", sourceQueue: " + sourceQueue + ", targetExchange: " + targetExchange);
   }
 }
 
