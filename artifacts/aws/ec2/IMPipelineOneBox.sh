@@ -120,8 +120,7 @@ chmod +x /home/ubuntu/rabbitmqadmin
 rabbitmqctl add_vhost Inbound
 rabbitmqctl set_permissions -p Inbound admin ".*" ".*" ".*"
 
-# Inbound
-
+# Inbound File
 /home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare exchange name=File type=topic
 
 /home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare queue name=File-EMIS
@@ -133,16 +132,20 @@ rabbitmqctl set_permissions -p Inbound admin ".*" ".*" ".*"
 /home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare exchange name=File-Undeliverable type=fanout
 /home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare queue name=File-Undelivered
 /home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare binding source=File-Undeliverable destination=File-Undelivered
-/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound set_policy "Undeliverable Files" "^File$" '{"alternate-exchange":"File-Undeliverable"}' --apply-to exchanges
+/home/ubuntu/rabbitmqctl -p Inbound set_policy "Undeliverable Files" "^File$" '{"alternate-exchange":"File-Undeliverable"}' --apply-to exchanges
 
-## Outbound
-#
-#rabbitmqctl add_vhost Outbound
-#rabbitmqctl set_permissions -p Outbound admin ".*" ".*" ".*"
-#
-#/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare exchange name=Data type=topic
-#/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare queue name=Data-EMIS
-#/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare queue name=Data-TPP
-#/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare binding source=Data destination=Data-EMIS routing_key="endeavour-inbound.EMIS.#"
-#/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare binding source=Data destination=Data-TPP routing_key="endeavour-inbound.TPP.#"
-#
+
+# Inbound Data
+/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare exchange name=Data type=topic
+
+/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare queue name=Data-EMIS
+/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare binding source=Data destination=Data-EMIS routing_key="endeavour-inbound.EMIS.#"
+
+/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare queue name=Data-TPP
+/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare binding source=Data destination=Data-TPP routing_key="endeavour-inbound.TPP.#"
+
+/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare exchange name=Data-Undeliverable type=fanout
+/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare queue name=Data-Undelivered
+/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare binding source=Data-Undeliverable destination=Data-Undelivered
+/home/ubuntu/rabbitmqctl -p Inbound set_policy "Undeliverable Data" "^Data$" '{"alternate-exchange":"Data-Undeliverable"}' --apply-to exchanges
+
