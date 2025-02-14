@@ -41,10 +41,16 @@ docker exec rabbitmq rabbitmqadmin -V Inbound declare binding source=Data destin
 docker exec rabbitmq rabbitmqadmin -V Inbound declare binding source=Data destination=Data-TPP routing_key="endeavour-inbound.TPP.#"
 
 #Step 6: Declare dead-letter exchange & queue
-echo "Declaring dead-letter exchange & queue..."
-docker exec rabbitmq rabbitmqadmin -V Inbound declare exchange name=dlx type=direct
-docker exec rabbitmq rabbitmqadmin -V Inbound declare queue name=dead_letter_queue
-docker exec rabbitmq rabbitmqadmin -V Inbound declare binding source=dlx destination=dead_letter_queue routing_key="dead_letter"
+echo "Declaring File-Undelivered exchange & queue..."
+docker exec rabbitmq rabbitmqadmin -V Inbound declare exchange name=File-Undeliverable type=fanout
+docker exec rabbitmq rabbitmqadmin -V Inbound declare queue name=File-Undelivered
+docker exec rabbitmq rabbitmqadmin -V Inbound declare binding source=File-Undeliverable destination=File-Undelivered
+docker exec rabbitmq rabbitmqadmin -V Inbound set_policy "Undeliverable Files" "^File$" '{"alternate-exchange":"File-Undeliverable"}' --apply-to exchanges
+
+docker exec rabbitmq rabbitmqadmin -V Inbound declare exchange name=Data-Undeliverable type=fanout
+docker exec rabbitmq rabbitmqadmin -V Inbound declare queue name=Data-Undelivered
+docker exec rabbitmq rabbitmqadmin -V Inbound declare binding source=Data-Undeliverable destination=Data-Undelivered
+docker exec rabbitmq rabbitmqadmin -V Inbound set_policy "Undeliverable Data" "^Data$" '{"alternate-exchange":"Data-Undeliverable"}' --apply-to exchanges
 
 # Done
 echo "RabbitMQ setup complete!"
