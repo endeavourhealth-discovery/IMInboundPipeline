@@ -1,10 +1,10 @@
 package org.endeavourhealth.pipeline.inbound.config;
 
 import jakarta.annotation.PostConstruct;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,28 +14,47 @@ import java.util.Optional;
 @Configuration
 public class RabbitMQConfig {
 
-  @Value("${rabbitmq.targetBaseRoutingKey}")
-  private String targetBaseRoutingKey;
+  @Value("${spring.rabbitmq.host}")
+  private String rabbitMqHost;
+
+  @Value("${spring.rabbitmq.port}")
+  private int rabbitMqPort;
+
+  @Value("${spring.rabbitmq.username}")
+  private String rabbitMqUsername;
+
+  @Value("${spring.rabbitmq.password}")
+  private String rabbitMqPassword;
 
   @Value("${rabbitmq.sourceQueue}")
   private String sourceQueue;
 
-  private static String TARGET_BASE_ROUTING_KEY;
+  @Value("${spring.rabbitmq.virtual-host}")
+  private String rabbitMqVHost;
 
   private static String SOURCE_QUEUE;
 
   @PostConstruct
   public void init() {
-    TARGET_BASE_ROUTING_KEY = targetBaseRoutingKey;
     SOURCE_QUEUE = sourceQueue;
-  }
-
-  public static String getRoutingKey() {
-    return TARGET_BASE_ROUTING_KEY;
   }
 
   public static String getSourceQueue() {
     return SOURCE_QUEUE;
+  }
+
+  @Bean
+  public ConnectionFactory connectionFactory() {
+    CachingConnectionFactory connectionFactory = new CachingConnectionFactory(rabbitMqHost, rabbitMqPort);
+    connectionFactory.setUsername(rabbitMqUsername);
+    connectionFactory.setPassword(rabbitMqPassword);
+    connectionFactory.setVirtualHost(rabbitMqVHost);
+    return connectionFactory;
+  }
+
+  @Bean
+  public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+    return new RabbitTemplate(connectionFactory);
   }
 }
 

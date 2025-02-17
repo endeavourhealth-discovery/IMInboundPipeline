@@ -25,7 +25,6 @@ public class FileReader extends SpringBootServletInitializer implements Applicat
 
   public static void main(String[] args) {
     SpringApplication.run(FileReader.class, args);
-    new FileEventListener().test();
   }
 
   @Override
