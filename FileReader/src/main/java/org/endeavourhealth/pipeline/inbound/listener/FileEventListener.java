@@ -24,6 +24,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Paths;
 import java.util.*;
 
 @Service
@@ -52,26 +53,25 @@ public class FileEventListener {
 
   @RabbitListener(queues = "#{rabbitMQConfig.getSourceQueue()}")
   public void handleFileEvent(String message) throws IOException {
+//    resetFiles(); TODO: Delete when finihsed with testing
     System.out.println("Received file event: " + message);
     List<ProcessOrderConfigItem> processOrderConfigPOJO = getProcessOrderConfig();
     Optional<ProcessOrderConfigItem> found = processOrderConfigPOJO.stream().filter(configItem -> configItem.getOrg().equalsIgnoreCase(targetBaseRoutingKey)).findFirst();
     if (found.isPresent()) {
-      List<String> orderedList = found.get().getOrderedList(); // ordered list in config
+      List<String> orderedList = found.get().getOrderedList();
       Set<String> filesInBucket = getExistingFilesInBucket(Optional.of(targetBaseRoutingKey));
-
       int index = 0;
-
       while (index < orderedList.size() && filesInBucket.contains(orderedList.get(index))) {
         System.out.println("Processing file: " + orderedList.get(index));
-        String fileName = orderedList.get(index);
-        InputStream stream = getFile(fileName);
-        populateQueue(stream, fileName);
+        String filePath = orderedList.get(index);
+        InputStream stream = getFile(filePath);
+//        moveFileFromTo(filePath, FileStageFolder.UPLOADED, FileStageFolder.QUEUING); TODO: Uncomment when finished with testing
+        populateQueue(stream, filePath);
         index++;
-        System.out.println("Processed file: " + fileName);
-        System.out.println("\n");
+        System.out.println("Queued all lines successfully");
+//        moveFileFromTo(filePath, FileStageFolder.QUEUING, FileStageFolder.FILING); TODO: Uncomment when finished with testing
       }
     }
-
   }
 
   private void populateQueue(InputStream inputStream, String fileName) throws IOException {
@@ -88,20 +88,15 @@ public class FileEventListener {
             jsonObject.put(headers[i], values[i]);
           }
           System.out.println(line + " -> " + jsonObject.toString());
-          queueSender.sendMessage(targetExchange, targetBaseRoutingKey, line, fileName);
+          queueSender.sendMessage(targetExchange, targetBaseRoutingKey, jsonObject.toString(), fileName);
         }
       }
     }
   }
 
   private Set<String> getExistingFilesInBucket(Optional<String> prefix) {
-    AwsBasicCredentials awsCreds = AwsBasicCredentials.create(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY);
-
     Set<String> filesInBucket = new HashSet<>();
-    S3Client s3 = S3Client.builder()
-      .region(Region.of(REGION))
-      .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
-      .build();
+    S3Client s3 = getS3Client();
 
     ListObjectsV2Request request = ListObjectsV2Request.builder().bucket(BUCKET_NAME).prefix(prefix.orElse("")).build();
     ListObjectsV2Iterable response = s3.listObjectsV2Paginator(request);
@@ -116,12 +111,7 @@ public class FileEventListener {
   }
 
   private InputStream getFile(String fileName) {
-    AwsBasicCredentials awsCreds = AwsBasicCredentials.create(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY);
-
-    S3Client s3 = S3Client.builder()
-      .region(Region.of(REGION))
-      .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
-      .build();
+    S3Client s3 = getS3Client();
 
     ResponseInputStream<GetObjectResponse> s3Object = s3.getObject(GetObjectRequest.builder()
       .bucket(BUCKET_NAME)
@@ -142,5 +132,66 @@ public class FileEventListener {
       e.printStackTrace();
       return List.of();
     }
+  }
+
+  private void moveFileFromTo(String filePath, FileStageFolder from, FileStageFolder to) {
+    String fileName = getFileName(filePath);
+    String source = from == FileStageFolder.UPLOADED ? targetBaseRoutingKey + "/" + fileName : targetBaseRoutingKey + "/" + from + "/" + fileName;
+    String destination = to == FileStageFolder.UPLOADED ? targetBaseRoutingKey + "/" + fileName : targetBaseRoutingKey + "/" + to + "/" + fileName;
+    try {
+      S3Client s3 = getS3Client();
+      CopyObjectRequest copyRequest = CopyObjectRequest.builder()
+        .sourceBucket(BUCKET_NAME)
+        .sourceKey(source)
+        .destinationBucket(BUCKET_NAME)
+        .destinationKey(destination)
+        .build();
+      s3.copyObject(copyRequest);
+
+      DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
+        .bucket(BUCKET_NAME)
+        .key(source)
+        .build();
+
+      s3.deleteObject(deleteRequest);
+      s3.close();
+    } catch (Exception e) {
+      System.out.println("Failed to move file from " + source + " to " + destination);
+      throw new RuntimeException(e);
+    }
+  }
+
+  enum FileStageFolder {
+    UPLOADED,
+    QUEUING,
+    TRANSFORMING,
+    FILING,
+    FILED,
+  }
+
+  private S3Client getS3Client() {
+    AwsBasicCredentials awsCreds = AwsBasicCredentials.create(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY);
+
+    return S3Client.builder()
+      .region(Region.of(REGION))
+      .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
+      .build();
+  }
+
+  void resetFiles() {
+    Set<String> filingFiles = getExistingFilesInBucket(Optional.of(targetBaseRoutingKey + "/" + FileStageFolder.FILING));
+    for (String filingFile : filingFiles) {
+      moveFileFromTo(filingFile, FileStageFolder.FILING, FileStageFolder.UPLOADED);
+    }
+
+    Set<String> queueingFiles = getExistingFilesInBucket(Optional.of(targetBaseRoutingKey + "/" + FileStageFolder.QUEUING));
+    for (String queuingFile : queueingFiles) {
+      moveFileFromTo(queuingFile, FileStageFolder.QUEUING, FileStageFolder.UPLOADED);
+    }
+    System.out.println("Files have been moved to UPLOADED");
+  }
+
+  private String getFileName(String path) {
+    return Paths.get(path).getFileName().toString();
   }
 }
