@@ -6,13 +6,7 @@ plugins {
 dependencies {
   implementation libs.assertJ
   implementation libs.jacksonDatabind
-  implementation 'com.schibsted.spt.data:jslt:0.1.14'
-  implementation libs.springContext
-  implementation libs.springDataJpa
-  implementation libs.springOauthServer
-  implementation libs.springSecurity
-  implementation libs.springWeb
-  implementation libs.springdoc
+  implementation libs.jslt
   implementation libs.orgJson
 
   runtimeOnly libs.springDevTools
