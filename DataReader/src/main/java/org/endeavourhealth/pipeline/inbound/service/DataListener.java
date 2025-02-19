@@ -20,12 +20,9 @@ public class DataListener {
     System.out.println("Received data message: " + message);
     ObjectMapper mapper = new ObjectMapper();
     JsonNode dataNode = mapper.readTree(message.getBody());
-    System.out.println(dataNode);
-    System.out.println(message.getMessageProperties().getHeaders().get("publisher").toString());
-    System.out.println(message.getMessageProperties().getHeaders().get("datatype").toString());
     Transformer transformer = new Transformer(message.getMessageProperties().getHeaders().get("publisher").toString(), message.getMessageProperties().getHeaders().get("datatype").toString());
     JsonNode transformedDataNode = transformer.transform(dataNode);
-    System.out.println(transformedDataNode);
+    System.out.println(transformedDataNode.toPrettyString());
     //    TODO store in db
   }
 }

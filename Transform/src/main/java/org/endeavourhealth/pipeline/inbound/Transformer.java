@@ -7,8 +7,10 @@ import com.schibsted.spt.data.jslt.FunctionUtils;
 import com.schibsted.spt.data.jslt.Parser;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,7 +32,7 @@ public class Transformer {
     functions.add(FunctionUtils.wrapStaticMethod("formatDate", className, "formatDate"));
 
     //LOG.debug("Instantiate JSLT");
-    jslt = Parser.compileString(transformFile, functions);
+    if (transformFile != null) jslt = Parser.compileString(transformFile, functions);
 
 
   }
@@ -45,13 +47,13 @@ public class Transformer {
 
   private String loadTransformation(String organisation, String type) throws NullPointerException {
     String transformName = organisation + type + ".jslt";
-    String fileName = "";
+    String file = "";
     try {
-      fileName = Files.readString(Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource(transformName)).toURI()));
+      file = Files.readString(Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource(transformName)).toURI()));
     } catch (URISyntaxException | IOException | NullPointerException e) {
       //LOG.error("Cannot find transform {} does not exist", transformName);
     }
-    return fileName;
+    return file;
   }
 
   private JsonNode transformJson(JsonNode inputJson) {
@@ -79,7 +81,6 @@ public class Transformer {
       //LOG.error("Date is null");
       return "NULL";
     }
-
     if (date.isEmpty())
       return null;
 
