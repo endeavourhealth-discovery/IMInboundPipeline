@@ -7,6 +7,7 @@ import org.endeavourhealth.pipeline.inbound.model.ProcessOrderConfigItem;
 import org.endeavourhealth.pipeline.inbound.service.QueueSender;
 import org.endeavourhealth.pipeline.inbound.validator.FileValidator;
 import org.json.JSONObject;
+import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,7 +55,7 @@ public class FileEventListener {
   private static final String BUCKET_NAME = Optional.ofNullable(System.getenv("BUCKET_NAME")).orElseThrow(() -> new IllegalArgumentException("Env var 'BUCKET_NAME' is not defined"));
 
   @RabbitListener(queues = "#{rabbitMQConfig.getSourceQueue()}")
-  public void handleFileEvent(String message) throws IOException {
+  public void handleFileEvent(Message message) throws IOException {
 //    resetFiles(); TODO: Delete when finihsed with testing
     System.out.println("Received file event: " + message);
     List<ProcessOrderConfigItem> processOrderConfigPOJO = getProcessOrderConfig();
@@ -71,9 +72,9 @@ public class FileEventListener {
         List<String> headers = getHeaders(stream);
         if (fileValidator.isValidFile(filePath, headers)) {
 //        moveFileFromTo(filePath, FileStageFolder.UPLOADED, FileStageFolder.QUEUING); TODO: Uncomment when finished with testing
-          populateQueue(stream, filePath);
-          index++;
-          System.out.println("Queued all lines successfully");
+        populateQueue(stream, filePath, message);
+        index++;
+        System.out.println("Queued all lines successfully");
 //        moveFileFromTo(filePath, FileStageFolder.QUEUING, FileStageFolder.FILING); TODO: Uncomment when finished with testing
         } else {
           isValidFile = false;
@@ -83,7 +84,7 @@ public class FileEventListener {
     }
   }
 
-  private void populateQueue(InputStream inputStream, String fileName) throws IOException {
+  private void populateQueue(InputStream inputStream, String fileName, Message message) throws IOException {
     try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
       String line;
       String[] headers = null;
@@ -97,7 +98,7 @@ public class FileEventListener {
             jsonObject.put(headers[i], values[i]);
           }
           System.out.println(line + " -> " + jsonObject.toString());
-          queueSender.sendMessage(targetExchange, targetBaseRoutingKey, jsonObject.toString(), fileName);
+          queueSender.sendMessage(targetExchange, targetBaseRoutingKey, jsonObject.toString(), fileName, message);
         }
       }
     }
