@@ -6,13 +6,15 @@ plugins {
 dependencies {
   implementation libs.assertJ
   implementation libs.jacksonDatabind
-  implementation libs.springContext  
+  implementation libs.springContext
   implementation libs.springOauthServer
   implementation libs.springSecurity
   implementation libs.springWeb
   implementation libs.springdoc
   implementation libs.rabbitmqAmqpClient
   implementation libs.springAmpq
+
+  implementation project(":Transform")
 
   runtimeOnly libs.springDevTools
 

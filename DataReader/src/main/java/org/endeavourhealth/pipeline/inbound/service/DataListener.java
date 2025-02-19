@@ -3,7 +3,7 @@ package org.endeavourhealth.pipeline.inbound.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-//import org.endeavourhealth.pipeline.inbound.Transformer;
+//import org.endeavourhealth.pipeline.inbound.transform.Transformer;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
