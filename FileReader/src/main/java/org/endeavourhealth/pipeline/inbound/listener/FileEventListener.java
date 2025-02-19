@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.endeavourhealth.pipeline.inbound.model.FileValidationConfigItem;
 import org.endeavourhealth.pipeline.inbound.model.ProcessOrderConfigItem;
 import org.endeavourhealth.pipeline.inbound.service.QueueSender;
+import org.endeavourhealth.pipeline.inbound.validator.FileValidator;
 import org.json.JSONObject;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -39,13 +40,14 @@ public class FileEventListener {
   @Value("${rabbitmq.targetExchange}")
   private String targetExchange;
 
-  public FileEventListener(RabbitTemplate rabbitTemplate) {
+  public FileEventListener(RabbitTemplate rabbitTemplate, FileValidator fileValidator) {
     this.queueSender = new QueueSender(rabbitTemplate);
+    this.fileValidator = fileValidator;
   }
 
   private final QueueSender queueSender;
   private final ObjectMapper objectMapper = new ObjectMapper();
-
+  private final FileValidator fileValidator;
   private static final String AWS_ACCESS_KEY_ID = Optional.ofNullable(System.getenv("AWS_ACCESS_KEY_ID")).orElseThrow(() -> new IllegalArgumentException("Env var 'AWS_ACCESS_KEY_ID' is not defined"));
   private static final String AWS_SECRET_ACCESS_KEY = Optional.ofNullable(System.getenv("AWS_SECRET_ACCESS_KEY")).orElseThrow(() -> new IllegalArgumentException("Env var 'AWS_SECRET_ACCESS_KEY' is not defined"));
   private static final String REGION = Optional.ofNullable(System.getenv("REGION")).orElseThrow(() -> new IllegalArgumentException("Env var 'REGION' is not defined"));
@@ -61,15 +63,22 @@ public class FileEventListener {
       List<String> orderedList = found.get().getOrderedList();
       Set<String> filesInBucket = getExistingFilesInBucket(Optional.of(targetBaseRoutingKey));
       int index = 0;
-      while (index < orderedList.size() && filesInBucket.contains(orderedList.get(index))) {
-        System.out.println("Processing file: " + orderedList.get(index));
+      boolean isValidFile = true;
+      while (index < orderedList.size() && filesInBucket.contains(orderedList.get(index)) && isValidFile) {
         String filePath = orderedList.get(index);
+        System.out.println("Processing file: " + filePath);
         InputStream stream = getFile(filePath);
+        List<String> headers = getHeaders(stream);
+        if (fileValidator.isValidFile(filePath, headers)) {
 //        moveFileFromTo(filePath, FileStageFolder.UPLOADED, FileStageFolder.QUEUING); TODO: Uncomment when finished with testing
-        populateQueue(stream, filePath);
-        index++;
-        System.out.println("Queued all lines successfully");
+          populateQueue(stream, filePath);
+          index++;
+          System.out.println("Queued all lines successfully");
 //        moveFileFromTo(filePath, FileStageFolder.QUEUING, FileStageFolder.FILING); TODO: Uncomment when finished with testing
+        } else {
+          isValidFile = false;
+          System.out.println("Invalid file: " + filePath);
+        }
       }
     }
   }
@@ -193,5 +202,15 @@ public class FileEventListener {
 
   private String getFileName(String path) {
     return Paths.get(path).getFileName().toString();
+  }
+
+  private List<String> getHeaders(InputStream inputStream) throws IOException {
+    try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
+      String line = br.readLine();
+      if (line != null) {
+        return Arrays.asList(line.split(","));
+      }
+    }
+    return Collections.emptyList();
   }
 }
