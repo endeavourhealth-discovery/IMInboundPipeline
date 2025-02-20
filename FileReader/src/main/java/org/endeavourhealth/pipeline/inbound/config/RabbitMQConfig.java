@@ -1,44 +1,60 @@
 package org.endeavourhealth.pipeline.inbound.config;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
+import jakarta.annotation.PostConstruct;
+import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.Optional;
 
 @Configuration
 public class RabbitMQConfig {
 
-  private static final String EXCHANGE_NAME = System.getenv("EXCHANGE_NAME");
-  private static final String QUEUE = System.getenv("QUEUE");
-  private static final String ROUTING_KEY = System.getenv("ROUTING_KEY");
+  @Value("${spring.rabbitmq.host}")
+  private String rabbitMqHost;
 
-  public static String getQueue() {
-    return QUEUE;
+  @Value("${spring.rabbitmq.port}")
+  private int rabbitMqPort;
+
+  @Value("${spring.rabbitmq.username}")
+  private String rabbitMqUsername;
+
+  @Value("${spring.rabbitmq.password}")
+  private String rabbitMqPassword;
+
+  @Value("${rabbitmq.sourceQueue}")
+  private String sourceQueue;
+
+  @Value("${spring.rabbitmq.virtual-host}")
+  private String rabbitMqVHost;
+
+  private static String SOURCE_QUEUE;
+
+  @PostConstruct
+  public void init() {
+    SOURCE_QUEUE = sourceQueue;
   }
 
-  public static String getExchangeName() {
-    return EXCHANGE_NAME;
-  }
-
-  public static String getRoutingKey() {
-    return ROUTING_KEY;
+  public static String getSourceQueue() {
+    return SOURCE_QUEUE;
   }
 
   @Bean
-  public TopicExchange topicExchange() {
-    return new TopicExchange(EXCHANGE_NAME);
+  public ConnectionFactory connectionFactory() {
+    CachingConnectionFactory connectionFactory = new CachingConnectionFactory(rabbitMqHost, rabbitMqPort);
+    connectionFactory.setUsername(rabbitMqUsername);
+    connectionFactory.setPassword(rabbitMqPassword);
+    connectionFactory.setVirtualHost(rabbitMqVHost);
+    return connectionFactory;
   }
 
   @Bean
-  public Queue queue() {
-    return new Queue(QUEUE);
-  }
-
-  @Bean
-  public Binding binding(Queue emisQueue, TopicExchange topicExchange) {
-    return BindingBuilder.bind(emisQueue).to(topicExchange).with(ROUTING_KEY);
+  public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+    return new RabbitTemplate(connectionFactory);
   }
 }
 

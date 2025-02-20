@@ -1,31 +1,34 @@
 package org.endeavourhealth.pipeline.inbound.config;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.amqp.core.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.Optional;
 
 @Configuration
 public class RabbitMQConfig {
 
-  public static final String EXCHANGE_NAME = "my_topic_exchange"; // from config
+  @Value("${rabbitmq.sourceQueue}")
+  private String sourceQueue;
 
-  public static final String ORG_QUEUE = "emis_queue"; // from config
+  private static String SOURCE_QUEUE;
 
-  public static final String ORG_ROUTING_KEY = "emis.*"; // from config
+  @PostConstruct
+  public void init() {
+    SOURCE_QUEUE = sourceQueue;
+  }
 
-  @Bean
-  public TopicExchange topicExchange() {
-    return new TopicExchange(EXCHANGE_NAME);
+  public static String getQueue() {
+    return SOURCE_QUEUE;
   }
 
   @Bean
-  public Queue emisQueue() {
-    return new Queue(ORG_QUEUE);
+  public Queue queue() {
+    return new Queue(SOURCE_QUEUE);
   }
 
-  @Bean
-  public Binding emisBinding(Queue emisQueue, TopicExchange topicExchange) {
-    return BindingBuilder.bind(emisQueue).to(topicExchange).with(ORG_ROUTING_KEY);
-  }
 }
 

@@ -20,17 +20,26 @@ import java.util.*;
 public class Transformer {
   private static final Logger LOG = LoggerFactory.getLogger(Transformer.class);
   Collection<Function> functions = new ArrayList<>();
-  String className = "org.endeavourhealth.im_inbound_pipeline.Transformer";
+  String className = Transformer.class.getName();
+  Expression jslt;
 
-  protected Transformer() throws ClassNotFoundException {
+  protected Transformer(String org, String type) throws ClassNotFoundException {
+    LOG.debug("Identify transformation file");
+    String transformFile = loadTransformation(org, type);
+
+    LOG.info("Loading functions: {}", className);
     functions.add(FunctionUtils.wrapStaticMethod("uuidToIri", className, "uuidToIri"));
     functions.add(FunctionUtils.wrapStaticMethod("newUUIDIri", className, "newUUIDIri"));
     functions.add(FunctionUtils.wrapStaticMethod("formatDate", className, "formatDate"));
 
+    LOG.debug("Instantiate JSLT");
+    jslt = Parser.compileString(transformFile, functions);
+
+
   }
 
-  public JsonNode transform(JsonNode inputJson, String org, String type) {
-    return transformJson(inputJson, loadTransformation(org, type));
+  public JsonNode transform(JsonNode inputJson) {
+    return transformJson(inputJson);
   }
 
   private void validateJson() {
@@ -48,10 +57,9 @@ public class Transformer {
     return fileName;
   }
 
-  private JsonNode transformJson(JsonNode inputJson, String transformFile) {
+  private JsonNode transformJson(JsonNode inputJson) {
     if (inputJson == null)
       return null;
-    Expression jslt = Parser.compileString(transformFile, functions);
     return jslt.apply(inputJson);
   }
 
@@ -61,11 +69,24 @@ public class Transformer {
   }
 
   public static String uuidToIri(String uuid, String namespace) {
+    if (uuid == null) {
+      LOG.error("UUID is null");
+      return "NULL";
+    }
+
     return namespace + (uuid.replace("{", "").replace("}", ""));
   }
 
-  public static String formatDate(String date) {
-    DateTimeFormatter incomingFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+  public static String formatDate(String format, String date) {
+    if (date == null) {
+      LOG.error("Date is null");
+      return "NULL";
+    }
+
+    if (date.isEmpty())
+      return null;
+
+    DateTimeFormatter incomingFormatter = DateTimeFormatter.ofPattern(format);
     LocalDateTime parsedDate = LocalDate.parse(date, incomingFormatter).atStartOfDay();
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
     return parsedDate.format(formatter) + "Z";

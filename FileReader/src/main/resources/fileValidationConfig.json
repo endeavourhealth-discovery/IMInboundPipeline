@@ -1,0 +1,20 @@
+[
+  {
+    "fileName": "EMIS/bulk_95047_Appointment_Session_20231017043213_F95EE3AF-0B9D-40EB-8B28-8E858EF0091F.csv",
+    "headers": [
+      "AppointmentSessionGuid",
+      "Description",
+      "LocationGuid",
+      "SessionTypeDescription",
+      "SessionCategoryDisplayName",
+      "StartDate",
+      "StartTime",
+      "EndDate",
+      "EndTime",
+      "Private",
+      "OrganisationGuid",
+      "Deleted",
+      "ProcessingId"
+    ]
+  }
+]

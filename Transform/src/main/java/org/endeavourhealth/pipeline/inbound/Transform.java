@@ -8,19 +8,20 @@ import org.json.*;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
-public class ImInboundPipelineTransformApplication {
+public class Transform {
 
   public static void main(String[] args) throws Exception {
-    List<JsonNode> values = csvToJson("file nme here");
-    Transformer transformer = new Transformer();
-    for (JsonNode value : values) {
-      JsonNode node = transformer.transform(value, "Emis", "Organisation");
+    List<JsonNode> values = csvToJson("Z:\\SyntheticEmisData\\v8.0 schema test data\\bulk_95047_Admin_Organisation_20231017043213_F95EE3AF-0B9D-40EB-8B28-8E858EF0091F.csv");
+    Transformer transformer = new Transformer("Emis", "Organisation");
+//    for (JsonNode value : values) {
+      JsonNode value = values.get(0);
+      JsonNode node = transformer.transform(value);
       System.out.println(node.toPrettyString());
-    }
-    //SpringApplication.run(ImInboundPipelineTransformApplication.class, args);
+//    }
   }
 
   static List<JsonNode> csvToJson(String file) {
@@ -29,7 +30,7 @@ public class ImInboundPipelineTransformApplication {
       String line = null;
       String[] headers = null;
       while ((line = br.readLine()) != null) {
-        String[] values = line.split(",");
+        String[] values = Arrays.stream(line.split(",")).map(Transform::cleanCSV).toArray(String[]::new);
         if (headers == null) {
           headers = values;
         } else {
@@ -45,5 +46,14 @@ public class ImInboundPipelineTransformApplication {
       throw new RuntimeException(e);
     }
     return jsonValues;
+  }
+
+  static String cleanCSV(String data) {
+    if (data == null) return null;
+    if (data.isEmpty()) return data;
+
+    if (data.length() > 1 && data.startsWith("\"") && data.endsWith("\"")) data = data.substring(1, data.length()-1);
+
+    return data;
   }
 }
