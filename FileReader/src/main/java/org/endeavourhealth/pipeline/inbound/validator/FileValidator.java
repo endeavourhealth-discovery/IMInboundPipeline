@@ -36,8 +36,6 @@ public class FileValidator {
   }
 
   public boolean areListsEqual(List<String> list1, List<String> list2) {
-    System.out.println("list1: " + list1);
-    System.out.println("list2: " + list2);
     if (list1.size() != list2.size()) return false;
 
     List<String> sortedList1 = new ArrayList<>(list1);
