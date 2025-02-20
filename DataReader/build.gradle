@@ -6,7 +6,8 @@ plugins {
 dependencies {
   implementation libs.assertJ
   implementation libs.jacksonDatabind
-  implementation libs.springContext  
+  implementation libs.springContext
+  implementation libs.springDataJpa
   implementation libs.springOauthServer
   implementation libs.springSecurity
   implementation libs.springWeb
@@ -15,6 +16,7 @@ dependencies {
   implementation libs.springAmpq
 
   runtimeOnly libs.springDevTools
+  runtimeOnly libs.postgresql
 
   testImplementation libs.cucumber
   testImplementation libs.cucumberJunit
