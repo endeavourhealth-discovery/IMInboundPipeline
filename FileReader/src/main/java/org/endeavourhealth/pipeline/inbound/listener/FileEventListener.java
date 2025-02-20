@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.endeavourhealth.pipeline.inbound.model.FileValidationConfigItem;
 import org.endeavourhealth.pipeline.inbound.model.ProcessOrderConfigItem;
 import org.endeavourhealth.pipeline.inbound.service.QueueSender;
+import org.endeavourhealth.pipeline.inbound.validator.FileValidator;
 import org.json.JSONObject;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -21,10 +22,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.paginators.ListObjectsV2Iterable;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -40,13 +38,14 @@ public class FileEventListener {
   @Value("${rabbitmq.targetExchange}")
   private String targetExchange;
 
-  public FileEventListener(RabbitTemplate rabbitTemplate) {
+  public FileEventListener(RabbitTemplate rabbitTemplate, FileValidator fileValidator) {
     this.queueSender = new QueueSender(rabbitTemplate);
+    this.fileValidator = fileValidator;
   }
 
   private final QueueSender queueSender;
   private final ObjectMapper objectMapper = new ObjectMapper();
-
+  private final FileValidator fileValidator;
   private static final String AWS_ACCESS_KEY_ID = Optional.ofNullable(System.getenv("AWS_ACCESS_KEY_ID")).orElseThrow(() -> new IllegalArgumentException("Env var 'AWS_ACCESS_KEY_ID' is not defined"));
   private static final String AWS_SECRET_ACCESS_KEY = Optional.ofNullable(System.getenv("AWS_SECRET_ACCESS_KEY")).orElseThrow(() -> new IllegalArgumentException("Env var 'AWS_SECRET_ACCESS_KEY' is not defined"));
   private static final String REGION = Optional.ofNullable(System.getenv("REGION")).orElseThrow(() -> new IllegalArgumentException("Env var 'REGION' is not defined"));
@@ -54,7 +53,7 @@ public class FileEventListener {
 
   @RabbitListener(queues = "#{rabbitMQConfig.getSourceQueue()}")
   public void handleFileEvent(Message message) throws IOException {
-//    resetFiles(); TODO: Delete when finihsed with testing
+//    resetFiles(); TODO: Delete when finished with testing
     System.out.println("Received file event: " + message);
     List<ProcessOrderConfigItem> processOrderConfigPOJO = getProcessOrderConfig();
     Optional<ProcessOrderConfigItem> found = processOrderConfigPOJO.stream().filter(configItem -> configItem.getOrg().equalsIgnoreCase(targetBaseRoutingKey)).findFirst();
@@ -63,34 +62,36 @@ public class FileEventListener {
       Set<String> filesInBucket = getExistingFilesInBucket(Optional.of(targetBaseRoutingKey));
       int index = 0;
       while (index < orderedList.size() && filesInBucket.contains(orderedList.get(index))) {
-        System.out.println("Processing file: " + orderedList.get(index));
         String filePath = orderedList.get(index);
+        System.out.println("Processing file: " + filePath);
         InputStream stream = getFile(filePath);
 //        moveFileFromTo(filePath, FileStageFolder.UPLOADED, FileStageFolder.QUEUING); TODO: Uncomment when finished with testing
         populateQueue(stream, filePath, message);
-        index++;
         System.out.println("Queued all lines successfully");
 //        moveFileFromTo(filePath, FileStageFolder.QUEUING, FileStageFolder.FILING); TODO: Uncomment when finished with testing
+        index++;
       }
     }
   }
 
-  private void populateQueue(InputStream inputStream, String fileName, Message message) throws IOException {
+  private void populateQueue(InputStream inputStream, String filePath, Message message) throws IOException {
     try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
-      String line;
-      String[] headers = null;
-      while ((line = br.readLine()) != null) {
-        String[] values = line.split(",");
-        if (headers == null) {
-          headers = values;
-        } else {
+      String line = br.readLine();
+      List<String> headers = Arrays.asList(line.split(","));
+
+      if (fileValidator.isValidFile(filePath, headers)) {
+        System.out.println("Validated file: " + filePath);
+        while ((line = br.readLine()) != null) {
+          String[] values = line.split(",");
           JSONObject jsonObject = new JSONObject();
-          for (int i = 0; i < headers.length; i++) {
-            jsonObject.put(headers[i], values[i]);
+          for (int i = 0; i < headers.size(); i++) {
+            jsonObject.put(headers.get(i), values[i]);
           }
           System.out.println(line + " -> " + jsonObject.toString());
-          queueSender.sendMessage(targetExchange, targetBaseRoutingKey, jsonObject.toString(), fileName, message);
+          queueSender.sendMessage(targetExchange, targetBaseRoutingKey, jsonObject.toString(), filePath, message);
         }
+      } else {
+        System.out.println("Invalid file: " + filePath);
       }
     }
   }
@@ -114,21 +115,15 @@ public class FileEventListener {
   private InputStream getFile(String fileName) {
     S3Client s3 = getS3Client();
 
-    ResponseInputStream<GetObjectResponse> s3Object = s3.getObject(GetObjectRequest.builder()
-      .bucket(BUCKET_NAME)
-      .key(fileName)
-      .build());
+    ResponseInputStream<GetObjectResponse> s3Object = s3.getObject(GetObjectRequest.builder().bucket(BUCKET_NAME).key(fileName).build());
 
     return s3Object;
   }
 
   private List<ProcessOrderConfigItem> getProcessOrderConfig() throws IOException {
     try {
-      return objectMapper.readValue(
-        processOrderConfig.getInputStream(),
-        new TypeReference<List<ProcessOrderConfigItem>>() {
-        }
-      );
+      return objectMapper.readValue(processOrderConfig.getInputStream(), new TypeReference<List<ProcessOrderConfigItem>>() {
+      });
     } catch (IOException e) {
       e.printStackTrace();
       return List.of();
@@ -141,18 +136,10 @@ public class FileEventListener {
     String destination = to == FileStageFolder.UPLOADED ? targetBaseRoutingKey + "/" + fileName : targetBaseRoutingKey + "/" + to + "/" + fileName;
     try {
       S3Client s3 = getS3Client();
-      CopyObjectRequest copyRequest = CopyObjectRequest.builder()
-        .sourceBucket(BUCKET_NAME)
-        .sourceKey(source)
-        .destinationBucket(BUCKET_NAME)
-        .destinationKey(destination)
-        .build();
+      CopyObjectRequest copyRequest = CopyObjectRequest.builder().sourceBucket(BUCKET_NAME).sourceKey(source).destinationBucket(BUCKET_NAME).destinationKey(destination).build();
       s3.copyObject(copyRequest);
 
-      DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
-        .bucket(BUCKET_NAME)
-        .key(source)
-        .build();
+      DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder().bucket(BUCKET_NAME).key(source).build();
 
       s3.deleteObject(deleteRequest);
       s3.close();
@@ -163,20 +150,13 @@ public class FileEventListener {
   }
 
   enum FileStageFolder {
-    UPLOADED,
-    QUEUING,
-    TRANSFORMING,
-    FILING,
-    FILED,
+    UPLOADED, QUEUING, TRANSFORMING, FILING, FILED,
   }
 
   private S3Client getS3Client() {
     AwsBasicCredentials awsCreds = AwsBasicCredentials.create(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY);
 
-    return S3Client.builder()
-      .region(Region.of(REGION))
-      .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
-      .build();
+    return S3Client.builder().region(Region.of(REGION)).credentialsProvider(StaticCredentialsProvider.create(awsCreds)).build();
   }
 
   void resetFiles() {
