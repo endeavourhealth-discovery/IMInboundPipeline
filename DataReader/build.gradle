@@ -15,6 +15,8 @@ dependencies {
   implementation libs.rabbitmqAmqpClient
   implementation libs.springAmpq
 
+  implementation project(":Transform")
+
   runtimeOnly libs.springDevTools
   runtimeOnly libs.postgresql
 

@@ -7,10 +7,10 @@ let relationshipIdLocation = newUUIDIri("urn:uuid:")
   "entities" : utils:cleanArray([
     {
       "@id" : uuidToIri(.OrganisationGuid, "urn:uuid:"),
-      "@type": "Organisation",
+      "@type" : "Organisation",
       "label" : .OrganisationName,
-      "operationalStartDate" : formatDate("yyyy-MM-dd", .OpenDate),
-      "operationalEndDate" : if (.CloseDate) .CloseDate,
+      "operationalStartDate" : formatDate("dd/MM/yyyy", .OpenDate),
+      "operationalEndDate" : if (.CloseDate) formatDate("dd/MM/yyyy", .CloseDate),
       "odsCode" : if (.ODSCode) .ODSCode,
       "organisationRelationship" :
       utils:cleanArray([
@@ -21,14 +21,14 @@ let relationshipIdLocation = newUUIDIri("urn:uuid:")
     if (.ParentOrganisationGuid)
       {
         "@id" : $relationshipIdParent,
-        "@type": "OrganisationRelationship",
+        "@type" : "OrganisationRelationship",
         "organisation" : uuidToIri(.ParentOrganisationGuid, "urn:uuid:"),
         "relationshipType" : "ODS_Relationship_6"
       },
     if (.MainLocationGuid)
       {
         "@id" : if (.MainLocationGuid)  $relationshipIdLocation,
-        "@type": "OrganisationRelationship",
+        "@type" : "OrganisationRelationship",
         "organisation" : if (.MainLocationGuid) uuidToIri(.MainLocationGuid, "urn:uuid:"),
         "relationshipType" : if (.MainLocationGuid) "ODS_Relationship_5"
       }

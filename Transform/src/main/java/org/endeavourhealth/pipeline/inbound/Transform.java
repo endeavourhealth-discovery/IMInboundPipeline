@@ -2,8 +2,6 @@ package org.endeavourhealth.pipeline.inbound;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.json.*;
 
 import java.io.*;
@@ -11,16 +9,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 public class Transform {
 
   public static void main(String[] args) throws Exception {
     List<JsonNode> values = csvToJson("Z:\\SyntheticEmisData\\v8.0 schema test data\\bulk_95047_Admin_Organisation_20231017043213_F95EE3AF-0B9D-40EB-8B28-8E858EF0091F.csv");
-    Transformer transformer = new Transformer("Emis", "Organisation");
+    Transformer transformer = new Transformer("emis", "Organisation");
 //    for (JsonNode value : values) {
-      JsonNode value = values.get(0);
-      JsonNode node = transformer.transform(value);
-      System.out.println(node.toPrettyString());
+    JsonNode value = values.get(0);
+    JsonNode node = transformer.transform(value);
+    System.out.println(node.toPrettyString());
 //    }
   }
 
@@ -52,7 +49,7 @@ public class Transform {
     if (data == null) return null;
     if (data.isEmpty()) return data;
 
-    if (data.length() > 1 && data.startsWith("\"") && data.endsWith("\"")) data = data.substring(1, data.length()-1);
+    if (data.length() > 1 && data.startsWith("\"") && data.endsWith("\"")) data = data.substring(1, data.length() - 1);
 
     return data;
   }
