@@ -56,7 +56,7 @@ public class FileEventListener {
 
   @RabbitListener(queues = "#{rabbitMQConfig.getSourceQueue()}")
   public void handleFileEvent(Message message) throws IOException {
-//    resetFiles(); TODO: Delete when finihsed with testing
+//    resetFiles(); TODO: Delete when finished with testing
     System.out.println("Received file event: " + message);
     List<ProcessOrderConfigItem> processOrderConfigPOJO = getProcessOrderConfig();
     Optional<ProcessOrderConfigItem> found = processOrderConfigPOJO.stream().filter(configItem -> configItem.getOrg().equalsIgnoreCase(targetBaseRoutingKey)).findFirst();
@@ -64,22 +64,20 @@ public class FileEventListener {
       List<String> orderedList = found.get().getOrderedList();
       Set<String> filesInBucket = getExistingFilesInBucket(Optional.of(targetBaseRoutingKey));
       int index = 0;
-      boolean isValidFile = true;
-      while (index < orderedList.size() && filesInBucket.contains(orderedList.get(index)) && isValidFile) {
+      while (index < orderedList.size() && filesInBucket.contains(orderedList.get(index))) {
         String filePath = orderedList.get(index);
         System.out.println("Processing file: " + filePath);
         InputStream stream = getFile(filePath);
         List<String> headers = getHeaders(stream);
         if (fileValidator.isValidFile(filePath, headers)) {
 //        moveFileFromTo(filePath, FileStageFolder.UPLOADED, FileStageFolder.QUEUING); TODO: Uncomment when finished with testing
-        populateQueue(stream, filePath, message);
-        index++;
-        System.out.println("Queued all lines successfully");
+          populateQueue(stream, filePath, message);
+          System.out.println("Queued all lines successfully");
 //        moveFileFromTo(filePath, FileStageFolder.QUEUING, FileStageFolder.FILING); TODO: Uncomment when finished with testing
         } else {
-          isValidFile = false;
           System.out.println("Invalid file: " + filePath);
         }
+        index++;
       }
     }
   }
@@ -123,21 +121,15 @@ public class FileEventListener {
   private InputStream getFile(String fileName) {
     S3Client s3 = getS3Client();
 
-    ResponseInputStream<GetObjectResponse> s3Object = s3.getObject(GetObjectRequest.builder()
-      .bucket(BUCKET_NAME)
-      .key(fileName)
-      .build());
+    ResponseInputStream<GetObjectResponse> s3Object = s3.getObject(GetObjectRequest.builder().bucket(BUCKET_NAME).key(fileName).build());
 
     return s3Object;
   }
 
   private List<ProcessOrderConfigItem> getProcessOrderConfig() throws IOException {
     try {
-      return objectMapper.readValue(
-        processOrderConfig.getInputStream(),
-        new TypeReference<List<ProcessOrderConfigItem>>() {
-        }
-      );
+      return objectMapper.readValue(processOrderConfig.getInputStream(), new TypeReference<List<ProcessOrderConfigItem>>() {
+      });
     } catch (IOException e) {
       e.printStackTrace();
       return List.of();
@@ -150,18 +142,10 @@ public class FileEventListener {
     String destination = to == FileStageFolder.UPLOADED ? targetBaseRoutingKey + "/" + fileName : targetBaseRoutingKey + "/" + to + "/" + fileName;
     try {
       S3Client s3 = getS3Client();
-      CopyObjectRequest copyRequest = CopyObjectRequest.builder()
-        .sourceBucket(BUCKET_NAME)
-        .sourceKey(source)
-        .destinationBucket(BUCKET_NAME)
-        .destinationKey(destination)
-        .build();
+      CopyObjectRequest copyRequest = CopyObjectRequest.builder().sourceBucket(BUCKET_NAME).sourceKey(source).destinationBucket(BUCKET_NAME).destinationKey(destination).build();
       s3.copyObject(copyRequest);
 
-      DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
-        .bucket(BUCKET_NAME)
-        .key(source)
-        .build();
+      DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder().bucket(BUCKET_NAME).key(source).build();
 
       s3.deleteObject(deleteRequest);
       s3.close();
@@ -172,20 +156,13 @@ public class FileEventListener {
   }
 
   enum FileStageFolder {
-    UPLOADED,
-    QUEUING,
-    TRANSFORMING,
-    FILING,
-    FILED,
+    UPLOADED, QUEUING, TRANSFORMING, FILING, FILED,
   }
 
   private S3Client getS3Client() {
     AwsBasicCredentials awsCreds = AwsBasicCredentials.create(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY);
 
-    return S3Client.builder()
-      .region(Region.of(REGION))
-      .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
-      .build();
+    return S3Client.builder().region(Region.of(REGION)).credentialsProvider(StaticCredentialsProvider.create(awsCreds)).build();
   }
 
   void resetFiles() {
