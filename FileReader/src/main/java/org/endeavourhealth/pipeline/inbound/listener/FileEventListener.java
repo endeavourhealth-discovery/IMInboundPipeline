@@ -22,10 +22,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.paginators.ListObjectsV2Iterable;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -68,36 +65,33 @@ public class FileEventListener {
         String filePath = orderedList.get(index);
         System.out.println("Processing file: " + filePath);
         InputStream stream = getFile(filePath);
-        List<String> headers = getHeaders(stream);
-        if (fileValidator.isValidFile(filePath, headers)) {
 //        moveFileFromTo(filePath, FileStageFolder.UPLOADED, FileStageFolder.QUEUING); TODO: Uncomment when finished with testing
-          populateQueue(stream, filePath, message);
-          System.out.println("Queued all lines successfully");
+        populateQueue(stream, filePath, message);
+        System.out.println("Queued all lines successfully");
 //        moveFileFromTo(filePath, FileStageFolder.QUEUING, FileStageFolder.FILING); TODO: Uncomment when finished with testing
-        } else {
-          System.out.println("Invalid file: " + filePath);
-        }
         index++;
       }
     }
   }
 
-  private void populateQueue(InputStream inputStream, String fileName, Message message) throws IOException {
+  private void populateQueue(InputStream inputStream, String filePath, Message message) throws IOException {
     try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
-      String line;
-      String[] headers = null;
-      while ((line = br.readLine()) != null) {
-        String[] values = line.split(",");
-        if (headers == null) {
-          headers = values;
-        } else {
+      String line = br.readLine();
+      List<String> headers = Arrays.asList(line.split(","));
+
+      if (fileValidator.isValidFile(filePath, headers)) {
+        System.out.println("Validated file: " + filePath);
+        while ((line = br.readLine()) != null) {
+          String[] values = line.split(",");
           JSONObject jsonObject = new JSONObject();
-          for (int i = 0; i < headers.length; i++) {
-            jsonObject.put(headers[i], values[i]);
+          for (int i = 0; i < headers.size(); i++) {
+            jsonObject.put(headers.get(i), values[i]);
           }
           System.out.println(line + " -> " + jsonObject.toString());
-          queueSender.sendMessage(targetExchange, targetBaseRoutingKey, jsonObject.toString(), fileName, message);
+          queueSender.sendMessage(targetExchange, targetBaseRoutingKey, jsonObject.toString(), filePath, message);
         }
+      } else {
+        System.out.println("Invalid file: " + filePath);
       }
     }
   }
@@ -180,15 +174,5 @@ public class FileEventListener {
 
   private String getFileName(String path) {
     return Paths.get(path).getFileName().toString();
-  }
-
-  private List<String> getHeaders(InputStream inputStream) throws IOException {
-    try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
-      String line = br.readLine();
-      if (line != null) {
-        return Arrays.asList(line.split(","));
-      }
-    }
-    return Collections.emptyList();
   }
 }

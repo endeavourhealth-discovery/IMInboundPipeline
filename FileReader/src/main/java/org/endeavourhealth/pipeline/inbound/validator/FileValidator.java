@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class FileValidator {
@@ -26,10 +27,11 @@ public class FileValidator {
     Optional<FileValidationConfigItem> found = validationConfigPOJO.stream().filter(file -> file.getFileName().equals(fileName)).findFirst();
     if (found.isPresent()) {
       FileValidationConfigItem fileValidationConfigItem = found.get();
-      List<String> validationHeaders = fileValidationConfigItem.getHeaders();
+      List<String> validationHeaders = fileValidationConfigItem.getHeaders().stream()
+        .map(header -> "\"" + header + "\"")
+        .collect(Collectors.toList());
       return areListsEqual(fileHeaders, validationHeaders);
     }
-    System.out.println("No validation config found for file: " + fileName);
     return false;
   }
 
