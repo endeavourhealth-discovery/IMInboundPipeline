@@ -67,7 +67,6 @@ public class FileEventListener {
         InputStream stream = getFile(filePath);
 //        moveFileFromTo(filePath, FileStageFolder.UPLOADED, FileStageFolder.QUEUING); TODO: Uncomment when finished with testing
         populateQueue(stream, filePath, message);
-        System.out.println("Queued all lines successfully");
 //        moveFileFromTo(filePath, FileStageFolder.QUEUING, FileStageFolder.FILING); TODO: Uncomment when finished with testing
         index++;
       }
@@ -81,7 +80,8 @@ public class FileEventListener {
 
       if (fileValidator.isValidFile(filePath, headers)) {
         System.out.println("Validated file: " + filePath);
-        while ((line = br.readLine()) != null) {
+        int lineCount = 0; // TODO: Remove when finished with testing
+        while ((line = br.readLine()) != null && lineCount < 100) {
           String[] values = line.split(",");
           JSONObject jsonObject = new JSONObject();
           for (int i = 0; i < headers.size(); i++) {
@@ -89,7 +89,9 @@ public class FileEventListener {
           }
           System.out.println(line + " -> " + jsonObject.toString());
           queueSender.sendMessage(targetExchange, targetBaseRoutingKey, jsonObject.toString(), filePath, message);
+          lineCount++;
         }
+        System.out.println("Queued all lines successfully");
       } else {
         System.out.println("Invalid file: " + filePath);
       }

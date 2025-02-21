@@ -16,5 +16,38 @@
       "Deleted",
       "ProcessingId"
     ]
+  },
+  {
+    "fileName": "EMIS/bulk_95047_CareRecord_Observation_20231017043213_F95EE3AF-0B9D-40EB-8B28-8E858EF0091F.csv",
+    "headers": [
+      "ObservationGuid",
+      "PatientGuid",
+      "OrganisationGuid",
+      "EffectiveDate",
+      "EffectiveDatePrecision",
+      "EnteredDate",
+      "EnteredTime",
+      "ClinicianUserInRoleGuid",
+      "EnteredByUserInRoleGuid",
+      "ParentObservationGuid",
+      "CodeId",
+      "ProblemGuid",
+      "ConsultationGuid",
+      "AssociatedText",
+      "Value",
+      "NumericUnit",
+      "ObservationType",
+      "NumericRangeLow",
+      "NumericRangeHigh",
+      "DocumentGuid",
+      "Qualifiers",
+      "Abnormal",
+      "AbnormalReason",
+      "Episode",
+      "Deleted",
+      "IsConfidential",
+      "NumericOperator",
+      "ProcessingId"
+    ]
   }
 ]

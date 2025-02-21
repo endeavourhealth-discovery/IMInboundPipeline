@@ -1,6 +1,7 @@
 docker run -d --name postgresDB \
     -e POSTGRES_USER=postgres \
     -e POSTGRES_PASSWORD=123456 \
+    -e POSTGRES_DB=discovery \
     -p 5432:5432 \
     postgres
 
