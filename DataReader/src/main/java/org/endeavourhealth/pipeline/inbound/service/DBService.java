@@ -1,15 +1,14 @@
-package org.endeavourhealth.pipeline.inbound.database;
+package org.endeavourhealth.pipeline.inbound.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.endeavourhealth.pipeline.inbound.database.helpers.ConnectionManager;
+import org.endeavourhealth.pipeline.inbound.helpers.DBConnectionManager;
 import org.endeavourhealth.pipeline.inbound.model.DBEntry;
+import org.endeavourhealth.pipeline.inbound.repository.InboundDataRepository;
 import org.springframework.stereotype.Service;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +50,7 @@ public class DBService {
   }
 
   private List<DBEntry> customSelectStatement(String sql, List<String> bindings) throws Exception {
-    try (PreparedStatement statement = ConnectionManager.getConnection().prepareStatement(sql)) {
+    try (PreparedStatement statement = DBConnectionManager.getConnection().prepareStatement(sql)) {
       for (int i = 0; i < bindings.size(); i++) {
         statement.setString(i + 1, bindings.get(i));
       }

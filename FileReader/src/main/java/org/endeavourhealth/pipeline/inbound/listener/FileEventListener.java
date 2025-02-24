@@ -65,9 +65,9 @@ public class FileEventListener {
         String filePath = orderedList.get(index);
         System.out.println("Processing file: " + filePath);
         InputStream stream = getFile(filePath);
-//        moveFileFromTo(filePath, FileStageFolder.UPLOADED, FileStageFolder.QUEUING); TODO: Uncomment when finished with testing
+        moveFileFromTo(filePath, FileStageFolder.UPLOADED, FileStageFolder.QUEUING);
         populateQueue(stream, filePath, message);
-//        moveFileFromTo(filePath, FileStageFolder.QUEUING, FileStageFolder.FILING); TODO: Uncomment when finished with testing
+        moveFileFromTo(filePath, FileStageFolder.QUEUING, FileStageFolder.FILING);
         index++;
       }
     }

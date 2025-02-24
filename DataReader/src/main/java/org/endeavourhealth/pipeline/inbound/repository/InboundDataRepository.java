@@ -1,4 +1,4 @@
-package org.endeavourhealth.pipeline.inbound.database;
+package org.endeavourhealth.pipeline.inbound.repository;
 
 import org.endeavourhealth.pipeline.inbound.model.DBEntry;
 import org.springframework.data.jpa.repository.JpaRepository;
