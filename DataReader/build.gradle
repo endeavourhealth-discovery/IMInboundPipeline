@@ -82,4 +82,13 @@ description = 'Data Reader'
 
 jar {
   archiveFileName = 'DataReader.jar'
+  duplicatesStrategy "exclude"
+  manifest {
+    attributes(
+      'Main-Class': 'org.endeavourhealth.pipeline.inbound.DataReader'
+    )
+  }
+  from {
+    configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+  }
 }

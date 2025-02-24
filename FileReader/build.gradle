@@ -82,4 +82,13 @@ description = 'File Reader'
 
 jar {
   archiveFileName = 'FileReader.jar'
+  duplicatesStrategy "exclude"
+  manifest {
+    attributes(
+      'Main-Class': 'org.endeavourhealth.pipeline.inbound.FileReader'
+    )
+  }
+  from {
+    configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+  }
 }
