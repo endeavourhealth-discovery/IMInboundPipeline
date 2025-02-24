@@ -4,9 +4,9 @@ files:
   - source: MessageAPI.war
     destination: /opt/tomcat/webapps/
   - source: FileReader.jar
-    destination: /opt/pipeline/
+    destination: /opt/pipeline/FileReader
   - source: DataReader.jar
-    destination: /opt/tomcat/webapps/
+    destination: /opt/pipeline/DataReader
 hooks:
   BeforeInstall:
     - location: cleanup.sh
