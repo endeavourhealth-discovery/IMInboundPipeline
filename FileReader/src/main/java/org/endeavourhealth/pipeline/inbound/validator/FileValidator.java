@@ -3,6 +3,7 @@ package org.endeavourhealth.pipeline.inbound.validator;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.endeavourhealth.pipeline.inbound.model.FileValidationConfigItem;
+import org.endeavourhealth.pipeline.inbound.model.HeaderItem;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -27,10 +28,11 @@ public class FileValidator {
     Optional<FileValidationConfigItem> found = validationConfigPOJO.stream().filter(file -> file.getFileName().equals(fileName)).findFirst();
     if (found.isPresent()) {
       FileValidationConfigItem fileValidationConfigItem = found.get();
-      List<String> validationHeaders = fileValidationConfigItem.getHeaders().stream()
+      List<HeaderItem> headers = fileValidationConfigItem.getHeaders();
+      Optional<HeaderItem> result = headers.stream().filter(headerList -> areListsEqual(fileHeaders, headerList.getHeaders().stream()
         .map(header -> "\"" + header + "\"")
-        .collect(Collectors.toList());
-      return areListsEqual(fileHeaders, validationHeaders);
+        .collect(Collectors.toList()))).findFirst();
+      return result.isPresent();
     }
     return false;
   }
