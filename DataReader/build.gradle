@@ -1,19 +1,22 @@
 plugins {
   id 'java'
   id 'org.sonarqube' version '4.4.1.3373'
+  id 'org.springframework.boot'
 }
 
 dependencies {
+  implementation platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+
   implementation libs.assertJ
   implementation libs.jacksonDatabind
+  implementation libs.rabbitmqAmqpClient
+  implementation libs.springAmpq
   implementation libs.springContext
   implementation libs.springDataJpa
   implementation libs.springOauthServer
   implementation libs.springSecurity
   implementation libs.springWeb
-  implementation libs.springdoc
-  implementation libs.rabbitmqAmqpClient
-  implementation libs.springAmpq
+  implementation libs.springDoc
 
   implementation project(":Transform")
 
@@ -80,16 +83,6 @@ task cucumberCli() {
 
 description = 'Data Reader'
 
-jar {
+bootJar {
   archiveFileName = 'DataReader.jar'
-  duplicatesStrategy "exclude"
-  dependsOn(configurations.runtimeClasspath)
-  manifest {
-    attributes(
-      'Main-Class': 'org.endeavourhealth.pipeline.inbound.DataReader'
-    )
-  }
-  from {
-    configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-  }
 }

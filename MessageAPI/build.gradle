@@ -4,19 +4,21 @@ plugins {
 }
 
 dependencies {
+  implementation platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+
   implementation libs.assertJ
   implementation libs.awsSDKBOM
   implementation libs.awsSDKCore
   implementation libs.jacksonDatabind
+  implementation libs.orgJson
+  implementation libs.rabbitmqAmqpClient
   implementation libs.springContext
   implementation libs.springDataJpa
   implementation libs.springOauthServer
   implementation libs.springSecurity
   implementation libs.springWeb
-  implementation libs.springdoc
-  implementation libs.rabbitmqAmqpClient
+  implementation libs.springDoc
   implementation libs.springAmpq
-  implementation libs.orgJson
 
   runtimeOnly libs.springDevTools
 

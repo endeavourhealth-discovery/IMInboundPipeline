@@ -1,22 +1,22 @@
 plugins {
   id 'java'
   id 'org.sonarqube' version '4.4.1.3373'
+  id 'org.springframework.boot'
 }
 
 dependencies {
+  implementation platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+
   implementation libs.assertJ
-  implementation libs.jacksonDatabind
-  implementation libs.springContext
   implementation libs.awsS3
-//  TODO: include and implement security config
-//  implementation libs.springDataJpa
-//  implementation libs.springOauthServer
-//  implementation libs.springSecurity
-  implementation libs.springWeb
-  implementation libs.springdoc
+  implementation libs.jacksonDatabind
+  implementation libs.orgJson
   implementation libs.rabbitmqAmqpClient
   implementation libs.springAmpq
-  implementation libs.orgJson
+  implementation libs.springContext
+  implementation libs.springLoader
+  implementation libs.springWeb
+  implementation libs.springDoc
 
   runtimeOnly libs.springDevTools
 
@@ -80,15 +80,6 @@ task cucumberCli() {
 
 description = 'File Reader'
 
-jar {
+bootJar {
   archiveFileName = 'FileReader.jar'
-  duplicatesStrategy "exclude"
-  manifest {
-    attributes(
-      'Main-Class': 'org.endeavourhealth.pipeline.inbound.FileReader'
-    )
-  }
-  from {
-    configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-  }
 }
