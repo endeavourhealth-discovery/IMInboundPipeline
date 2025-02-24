@@ -4,6 +4,8 @@ plugins {
 }
 
 dependencies {
+  implementation platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+
   implementation libs.assertJ
   implementation libs.jacksonDatabind
   implementation libs.jslt
