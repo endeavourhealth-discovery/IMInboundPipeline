@@ -2,19 +2,19 @@ package org.endeavourhealth.pipeline.inbound.listener;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.endeavourhealth.pipeline.inbound.model.FileValidationConfigItem;
 import org.endeavourhealth.pipeline.inbound.model.ProcessOrderConfigItem;
 import org.endeavourhealth.pipeline.inbound.service.QueueSender;
 import org.endeavourhealth.pipeline.inbound.validator.FileValidator;
 import org.json.JSONObject;
 import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessagePostProcessor;
+import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.regions.Region;
@@ -53,43 +53,43 @@ public class FileEventListener {
 
   @RabbitListener(queues = "#{rabbitMQConfig.getSourceQueue()}")
   public void handleFileEvent(Message message) throws IOException {
-//    resetFiles(); TODO: Delete when finished with testing
     System.out.println("Received file event: " + message);
-    List<ProcessOrderConfigItem> processOrderConfigPOJO = getProcessOrderConfig();
-    Optional<ProcessOrderConfigItem> found = processOrderConfigPOJO.stream().filter(configItem -> configItem.getOrg().equalsIgnoreCase(targetBaseRoutingKey)).findFirst();
-    if (found.isPresent()) {
-      List<String> orderedList = found.get().getOrderedList();
-      Set<String> filesInBucket = getExistingFilesInBucket(Optional.of(targetBaseRoutingKey));
-      int index = 0;
-      while (index < orderedList.size() && filesInBucket.contains(orderedList.get(index))) {
-        String filePath = orderedList.get(index);
-        System.out.println("Processing file: " + filePath);
-        InputStream stream = getFile(filePath);
-        moveFileFromTo(filePath, FileStageFolder.UPLOADED, FileStageFolder.QUEUING);
-        populateQueue(stream, filePath, message);
-        moveFileFromTo(filePath, FileStageFolder.QUEUING, FileStageFolder.FILING);
-        index++;
+    List<String> filesInBucket = getExistingFilesInBucket(Optional.of(targetBaseRoutingKey));
+    boolean areAllFilesInBucket = fileValidator.areAllFilesInBucket(targetBaseRoutingKey, filesInBucket);
+
+    if (areAllFilesInBucket) {
+      List<ProcessOrderConfigItem> processOrderConfigPOJO = getProcessOrderConfig();
+      Optional<ProcessOrderConfigItem> found = processOrderConfigPOJO.stream().filter(configItem -> configItem.getOrg().equalsIgnoreCase(targetBaseRoutingKey)).findFirst();
+      if (found.isPresent()) for (String pattern : found.get().getOrderedList()) {
+        Optional<String> filePath = filesInBucket.stream().filter(file -> file.matches(pattern)).findFirst();
+        if (filePath.isPresent()) {
+          System.out.println("Processing file: " + filePath.get());
+          InputStream stream = getFile(filePath.get());
+          moveFileFromTo(filePath.get(), FileStageFolder.UPLOADED, FileStageFolder.QUEUING);
+          populateQueue(stream, filePath.get());
+          moveFileFromTo(filePath.get(), FileStageFolder.QUEUING, FileStageFolder.FILING);
+        }
       }
     }
   }
 
-  private void populateQueue(InputStream inputStream, String filePath, Message message) throws IOException {
+  private void populateQueue(InputStream inputStream, String filePath) throws IOException {
     try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
       String line = br.readLine();
       List<String> headers = Arrays.asList(line.split(","));
 
       if (fileValidator.isValidFile(filePath, headers)) {
         System.out.println("Validated file: " + filePath);
-        int lineCount = 0; // TODO: Remove when finished with testing
-        while ((line = br.readLine()) != null && lineCount < 100) {
+        String routingKey = "endeavour-inbound." + targetBaseRoutingKey + "." + filePath.substring(targetBaseRoutingKey.length() + 1);
+        MessagePostProcessor messageHeaders = getHeaders(targetBaseRoutingKey, filePath);
+
+        while ((line = br.readLine()) != null) {
           String[] values = line.split(",");
           JSONObject jsonObject = new JSONObject();
           for (int i = 0; i < headers.size(); i++) {
             jsonObject.put(headers.get(i), values[i]);
           }
-          System.out.println(line + " -> " + jsonObject.toString());
-          queueSender.sendMessage(targetExchange, targetBaseRoutingKey, jsonObject.toString(), filePath, message);
-          lineCount++;
+          queueSender.sendMessage(targetExchange, routingKey, jsonObject.toString(), messageHeaders);
         }
         System.out.println("Queued all lines successfully");
       } else {
@@ -98,8 +98,8 @@ public class FileEventListener {
     }
   }
 
-  private Set<String> getExistingFilesInBucket(Optional<String> prefix) {
-    Set<String> filesInBucket = new HashSet<>();
+  private List<String> getExistingFilesInBucket(Optional<String> prefix) {
+    List<String> filesInBucket = new ArrayList<>();
     S3Client s3 = getS3Client();
 
     ListObjectsV2Request request = ListObjectsV2Request.builder().bucket(BUCKET_NAME).prefix(prefix.orElse("")).build();
@@ -162,12 +162,12 @@ public class FileEventListener {
   }
 
   void resetFiles() {
-    Set<String> filingFiles = getExistingFilesInBucket(Optional.of(targetBaseRoutingKey + "/" + FileStageFolder.FILING));
+    List<String> filingFiles = getExistingFilesInBucket(Optional.of(targetBaseRoutingKey + "/" + FileStageFolder.FILING));
     for (String filingFile : filingFiles) {
       moveFileFromTo(filingFile, FileStageFolder.FILING, FileStageFolder.UPLOADED);
     }
 
-    Set<String> queueingFiles = getExistingFilesInBucket(Optional.of(targetBaseRoutingKey + "/" + FileStageFolder.QUEUING));
+    List<String> queueingFiles = getExistingFilesInBucket(Optional.of(targetBaseRoutingKey + "/" + FileStageFolder.QUEUING));
     for (String queuingFile : queueingFiles) {
       moveFileFromTo(queuingFile, FileStageFolder.QUEUING, FileStageFolder.UPLOADED);
     }
@@ -176,5 +176,24 @@ public class FileEventListener {
 
   private String getFileName(String path) {
     return Paths.get(path).getFileName().toString();
+  }
+
+  public MessagePostProcessor getHeaders(String targetBaseRoutingKey, String fileName) {
+    String[] parts = fileName.split("_");
+    if (parts.length >= 4) {
+      String domain = parts[2];
+      String datatype = parts[3];
+
+      return msg -> {
+        MessageProperties props = msg.getMessageProperties();
+        props.setHeader("datatype", datatype);
+        props.setHeader("domain", domain);
+        props.setHeader("publisher", targetBaseRoutingKey);
+        props.setHeader("location", "S3");
+        props.setHeader("source", fileName);
+        return msg;
+      };
+    }
+    return null;
   }
 }

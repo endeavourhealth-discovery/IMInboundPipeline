@@ -2,16 +2,9 @@
   {
     "org": "EMIS",
     "orderedList": [
-      "EMIS/bulk_95047_Admin_Patient_20231017043213_F95EE3AF-0B9D-40EB-8B28-8E858EF0091F.csv",
-      "STOP",
-      "EMIS/bulk_95047_CareRecord_Observation_20231017043213_F95EE3AF-0B9D-40EB-8B28-8E858EF0091F.csv",
-      "STOP",
-      "EMIS/bulk_95047_Appointment_Session_20231017043213_F95EE3AF-0B9D-40EB-8B28-8E858EF0091F.csv",
-      "EMIS/bulk_95047_Admin_Location_20231017043213_F95EE3AF-0B9D-40EB-8B28-8E858EF0091F.csv",
-      "EMIS/bulk_95047_Agreements_SharingOrganisation_20231017043213_F95EE3AF-0B9D-40EB-8B28-8E858EF0091F.csv",
-      "bulk_95047_CareRecord_Consultation_20231017043213_F95EE3AF-0B9D-40EB-8B28-8E858EF0091F.csv",
-      "bulk_95047_CareRecord_ObservationReferral_20231017043213_F95EE3AF-0B9D-40EB-8B28-8E858EF0091F.csv",
-      "EMIS/bulk_95047_Coding_ClinicalCode_20231017043213_F95EE3AF-0B9D-40EB-8B28-8E858EF0091F.csv"
+      "^EMIS/bulk.*Admin_Organisation.*\\.csv",
+      "^EMIS/bulk.*Admin_Patient.*\\.csv",
+      "^EMIS/bulk.*CareRecord_Observation.*\\.csv"
     ]
   }
 ]
