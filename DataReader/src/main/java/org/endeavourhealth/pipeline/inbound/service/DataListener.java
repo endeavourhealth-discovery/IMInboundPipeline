@@ -11,7 +11,8 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -24,22 +25,26 @@ public class DataListener {
   private DBService dbService;
 
   @RabbitListener(queues = "#{rabbitMQConfig.getQueue()}")
-  public void handleDataMessages(Message message) throws IOException {
-    System.out.println("Received data message: " + message);
+  public void handleDataMessages(Message message) throws Exception {
+    LOG.debug("Received data message: {}", message);
     JsonNode dataNode = objectMapper.readTree(message.getBody());
     try {
-      String publisher = message.getMessageProperties().getHeaders().get("publisher").toString();
-      String datatype = message.getMessageProperties().getHeaders().get("datatype").toString();
+      Map<String, Object> headers = message.getMessageProperties().getHeaders();
+      String publisher = headers.get("publisher").toString();
+      String datatype = headers.get("datatype").toString();
+      //String category = headers.get("category").toString();
       Transformer transformer = new Transformer(publisher, datatype);
       JsonNode transformedDataNode = transformer.transform(dataNode);
       System.out.println(transformedDataNode.toPrettyString());
       DBEntry dbEntry = new DBEntry();
-      dbEntry.setId(ThreadLocalRandom.current().nextInt(1, 1000000));      dbEntry.setOrganisation(publisher);
+      dbEntry.setId(ThreadLocalRandom.current().nextInt(1, 1000000));
+      dbEntry.setOrganisation(publisher);
       dbEntry.setData(transformedDataNode.toPrettyString());
       dbService.create(dbEntry);
-      System.out.println("Filed to DB");
+      LOG.debug("Filed to DB");
     } catch (Exception e) {
-      System.out.println("Error parsing data message: " + e.getMessage());
+      LOG.error("{}", e.toString());
+      System.exit(1);
     }
   }
 }

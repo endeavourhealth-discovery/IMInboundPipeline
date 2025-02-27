@@ -7,34 +7,34 @@ import com.schibsted.spt.data.jslt.FunctionUtils;
 import com.schibsted.spt.data.jslt.Parser;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Transformer {
+  private static final Logger LOG = LoggerFactory.getLogger(Transformer.class);
   Collection<Function> functions = new ArrayList<>();
   String className = Transformer.class.getName();
   Expression jslt;
 
-  public Transformer(String org, String type) throws ClassNotFoundException {
-    //LOG.debug("Identify transformation file");
+  public Transformer(String org, String type) throws ClassNotFoundException, URISyntaxException, IOException {
+    LOG.debug("Identify transformation file");
     String transformFile = loadTransformation(org, type);
 
-    //LOG.info("Loading functions: {}", className);
+    LOG.info("Loading functions: {}", className);
     functions.add(FunctionUtils.wrapStaticMethod("uuidToIri", className, "uuidToIri"));
     functions.add(FunctionUtils.wrapStaticMethod("newUUIDIri", className, "newUUIDIri"));
     functions.add(FunctionUtils.wrapStaticMethod("formatDate", className, "formatDate"));
 
-    //LOG.debug("Instantiate JSLT");
+    LOG.debug("Instantiate JSLT");
     if (transformFile != null) jslt = Parser.compileString(transformFile, functions);
-
-
   }
 
   public JsonNode transform(JsonNode inputJson) {
@@ -45,13 +45,14 @@ public class Transformer {
     //TODO maybe?
   }
 
-  private String loadTransformation(String organisation, String type) throws NullPointerException {
+  private String loadTransformation(String organisation, String type) throws URISyntaxException, IOException, NullPointerException {
     String transformName = organisation + type + ".jslt";
     String file = "";
     try {
       file = Files.readString(Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource(transformName)).toURI()));
     } catch (URISyntaxException | IOException | NullPointerException e) {
-      //LOG.error("Cannot find transform {} does not exist", transformName);
+      LOG.error("Cannot find transform {} does not exist", transformName);
+      System.exit(1);
     }
     return file;
   }
@@ -69,7 +70,7 @@ public class Transformer {
 
   public static String uuidToIri(String uuid, String namespace) {
     if (uuid == null) {
-      //LOG.error("UUID is null");
+      LOG.error("UUID is null");
       return "NULL";
     }
 
@@ -78,7 +79,7 @@ public class Transformer {
 
   public static String formatDate(String format, String date) {
     if (date == null) {
-      //LOG.error("Date is null");
+      LOG.error("Date is null");
       return "NULL";
     }
     if (date.isEmpty())

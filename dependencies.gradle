@@ -12,8 +12,9 @@ ext {
     lombok            : '1.18.30',
     mockito           : '5.14.2',
     orgJson           : "20250107",
-    postgresql          : '42.7.5',
+    postgresql        : '42.7.5',
     rabbitmqAmqpClient: '5.24.0',
+    slf4j             : '1.7.25',
     spring            : '3.4.1',
     springDoc         : '2.3.0',
     systemStubs       : '2.1.7'
@@ -35,6 +36,7 @@ ext {
     orgJson           : "org.json:json:$versions.orgJson",
     postgresql        : "org.postgresql:postgresql:$versions.postgresql",
     rabbitmqAmqpClient: "com.rabbitmq:amqp-client:$versions.rabbitmqAmqpClient",
+    slf4j             : "org.slf4j:slf4j-api:$versions.slf4j",
     spring            : "org.springframework.boot:spring-boot-dependencies:$versions.spring",
     springAmpq        : "org.springframework.boot:spring-boot-starter-amqp",
     springContext     : "org.springframework:spring-context",
