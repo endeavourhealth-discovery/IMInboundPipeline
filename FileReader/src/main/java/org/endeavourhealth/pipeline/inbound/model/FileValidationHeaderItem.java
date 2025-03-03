@@ -7,10 +7,10 @@ import java.util.List;
 
 @Setter
 @Getter
-public class HeaderItem {
+public class FileValidationHeaderItem {
   private String version;
   private List<String> headers;
 
-  public HeaderItem() {
+  public FileValidationHeaderItem() {
   }
 }

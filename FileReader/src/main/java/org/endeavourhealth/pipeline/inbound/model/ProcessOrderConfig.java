@@ -7,10 +7,10 @@ import java.util.List;
 
 @Getter
 @Setter
-public class ProcessOrderConfigItem {
+public class ProcessOrderConfig {
   private String org;
-  private List<String> orderedList;
+  private List<ProcessOrderFileItem> orderedList;
 
-  public ProcessOrderConfigItem() {
+  public ProcessOrderConfig() {
   }
 }

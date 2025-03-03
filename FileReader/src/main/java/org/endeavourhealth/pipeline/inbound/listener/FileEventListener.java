@@ -2,7 +2,8 @@ package org.endeavourhealth.pipeline.inbound.listener;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.endeavourhealth.pipeline.inbound.model.ProcessOrderConfigItem;
+import org.endeavourhealth.pipeline.inbound.model.ProcessOrderConfig;
+import org.endeavourhealth.pipeline.inbound.model.ProcessOrderFileItem;
 import org.endeavourhealth.pipeline.inbound.service.QueueSender;
 import org.endeavourhealth.pipeline.inbound.validator.FileValidator;
 import org.json.JSONObject;
@@ -58,10 +59,10 @@ public class FileEventListener {
     boolean areAllFilesInBucket = fileValidator.areAllFilesInBucket(targetBaseRoutingKey, filesInBucket);
 
     if (areAllFilesInBucket) {
-      List<ProcessOrderConfigItem> processOrderConfigPOJO = getProcessOrderConfig();
-      Optional<ProcessOrderConfigItem> found = processOrderConfigPOJO.stream().filter(configItem -> configItem.getOrg().equalsIgnoreCase(targetBaseRoutingKey)).findFirst();
-      if (found.isPresent()) for (String pattern : found.get().getOrderedList()) {
-        Optional<String> filePath = filesInBucket.stream().filter(file -> file.matches(pattern)).findFirst();
+      List<ProcessOrderConfig> processOrderConfigPOJO = getProcessOrderConfig();
+      Optional<ProcessOrderConfig> found = processOrderConfigPOJO.stream().filter(configItem -> configItem.getOrg().equalsIgnoreCase(targetBaseRoutingKey)).findFirst();
+      if (found.isPresent()) for (ProcessOrderFileItem fileItem : found.get().getOrderedList()) {
+        Optional<String> filePath = filesInBucket.stream().filter(file -> file.matches(fileItem.getNamePattern())).findFirst();
         if (filePath.isPresent()) {
           System.out.println("Processing file: " + filePath.get());
           InputStream stream = getFile(filePath.get());
@@ -122,9 +123,9 @@ public class FileEventListener {
     return s3Object;
   }
 
-  private List<ProcessOrderConfigItem> getProcessOrderConfig() throws IOException {
+  private List<ProcessOrderConfig> getProcessOrderConfig() throws IOException {
     try {
-      return objectMapper.readValue(processOrderConfig.getInputStream(), new TypeReference<List<ProcessOrderConfigItem>>() {
+      return objectMapper.readValue(processOrderConfig.getInputStream(), new TypeReference<List<ProcessOrderConfig>>() {
       });
     } catch (IOException e) {
       e.printStackTrace();
