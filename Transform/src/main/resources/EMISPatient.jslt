@@ -1,11 +1,11 @@
 import "Utilities.jslt" as utils
 
-let addressId = newUUIDIri("urn:uuid:")
+let addressId = newUuid()
 
 {
   "entities": utils:cleanArray([
     {
-      "@id": uuidToIri(.PatientGuid, "urn:uuid"),
+      "@id": .PatientGuid,
       "@type": "Patient",
       //"Provenance": .Provenance,
       //"Component": .Component,

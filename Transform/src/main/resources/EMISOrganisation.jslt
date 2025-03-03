@@ -1,12 +1,12 @@
 import "Utilities.jslt" as utils
 
-let relationshipIdParent = newUUIDIri("urn:uuid:")
-let relationshipIdLocation = newUUIDIri("urn:uuid:")
+let relationshipIdParent = newUuid()
+let relationshipIdLocation = newUuid()
 
 {
   "entities" : utils:cleanArray([
     {
-      "@id" : uuidToIri(.OrganisationGuid, "urn:uuid:"),
+      "@id" : .OrganisationGuid,
       "@type" : "Organisation",
       "label" : .OrganisationName,
       "operationalStartDate" : formatDate("dd/MM/yyyy", .OpenDate),

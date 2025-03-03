@@ -2,6 +2,6 @@ import "Utilities.jslt" as utils
 
 
 {
-    "@id": uuidToIri(.ObservationGuid, "urn:uuid"),
-    "@type": "Observation",
+    "@id": .ObservationGuid,
+    "@type": "Observation"
 }
