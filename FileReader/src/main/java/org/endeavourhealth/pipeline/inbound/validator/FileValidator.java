@@ -91,7 +91,7 @@ public class FileValidator {
       if (result.isEmpty()) {
         System.out.println(fileItem.getNamePattern() + ": match NOT found");
         allFilesInBucket = false;
-      } else System.out.println(fileItem.getNamePattern() + ": match found");
+      }
     }
     return allFilesInBucket;
   }
