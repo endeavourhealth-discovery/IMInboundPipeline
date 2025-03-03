@@ -29,7 +29,7 @@ public class Transformer {
     String transformFile = loadTransformation(org, type);
 
     LOG.info("Loading functions: {}", className);
-    functions.add(FunctionUtils.wrapStaticMethod("uuidToIri", className, "uuidToIri"));
+    functions.add(FunctionUtils.wrapStaticMethod("formatUuid", className, "formatUuid"));
     functions.add(FunctionUtils.wrapStaticMethod("newUuid", className, "newUuid"));
     functions.add(FunctionUtils.wrapStaticMethod("formatDate", className, "formatDate"));
 
@@ -45,7 +45,7 @@ public class Transformer {
     //TODO maybe?
   }
 
-  private String loadTransformation(String organisation, String type) throws NullPointerException {
+  private String loadTransformation(String organisation, String type) throws URISyntaxException, IOException, NullPointerException {
     String transformName = organisation + type + ".jslt";
     String file = "";
     try {
@@ -64,7 +64,15 @@ public class Transformer {
   }
 
   public static String newUuid() {
-    return UUID.randomUUID().toString();
+    return formatUuid(UUID.randomUUID().toString());
+  }
+
+  public static String formatUuid(String uuid) {
+    if (uuid == null) {
+      LOG.error("UUID is null");
+      return "NULL";
+    }
+    return uuid.replace("{", "").replace("}", "").toLowerCase();
   }
 
   public static String formatDate(String format, String date) {

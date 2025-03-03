@@ -5,7 +5,7 @@ let addressId = newUuid()
 {
   "entities": utils:cleanArray([
     {
-      "@id": .PatientGuid,
+      "@id": formatUuid(.PatientGuid),
       "@type": "Patient",
       //"Provenance": .Provenance,
       //"Component": .Component,
