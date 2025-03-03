@@ -7,10 +7,10 @@ import java.util.List;
 
 @Setter
 @Getter
-public class FileValidationConfigItem {
+public class FileValidationConfig {
   private String fileName;
-  private List<HeaderItem> headers;
+  private List<FileValidationHeaderItem> headers;
 
-  public FileValidationConfigItem() {
+  public FileValidationConfig() {
   }
 }
