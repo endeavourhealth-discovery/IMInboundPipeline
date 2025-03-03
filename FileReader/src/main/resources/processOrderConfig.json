@@ -2,9 +2,18 @@
   {
     "org": "EMIS",
     "orderedList": [
-      "^EMIS/bulk.*Admin_Organisation.*\\.csv",
-      "^EMIS/bulk.*Admin_Patient.*\\.csv",
-      "^EMIS/bulk.*CareRecord_Observation.*\\.csv"
+      {
+        "namePattern": "^EMIS/bulk.*Admin_Organisation.*\\.csv",
+        "category": "INSTANCE"
+      },
+      {
+        "namePattern": "^EMIS/bulk.*Admin_Patient.*\\.csv",
+        "category": "INSTANCE"
+      },
+      {
+        "namePattern": "^EMIS/bulk.*CareRecord_Observation.*\\.csv",
+        "category": "EVENT"
+      }
     ]
   }
 ]
