@@ -3,7 +3,8 @@ package org.endeavourhealth.pipeline.inbound.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.endeavourhealth.pipeline.inbound.Transformer;
-import org.endeavourhealth.pipeline.inbound.model.DBEntry;
+import org.endeavourhealth.pipeline.inbound.model.Event;
+import org.endeavourhealth.pipeline.inbound.model.Instance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
@@ -11,9 +12,8 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.UUID;
 
 @Service
 public class DataListener {
@@ -22,7 +22,9 @@ public class DataListener {
   private static final ObjectMapper objectMapper = new ObjectMapper();
 
   @Autowired
-  private DBService dbService;
+  private EventService eventService;
+  @Autowired
+  private InstanceService instanceService;
 
   @RabbitListener(queues = "#{rabbitMQConfig.getQueue()}")
   public void handleDataMessages(Message message) throws Exception {
@@ -30,17 +32,29 @@ public class DataListener {
     JsonNode dataNode = objectMapper.readTree(message.getBody());
     try {
       Map<String, Object> headers = message.getMessageProperties().getHeaders();
-      String publisher = headers.get("publisher").toString();
-      String datatype = headers.get("datatype").toString();
-      //String category = headers.get("category").toString();
-      Transformer transformer = new Transformer(publisher, datatype);
+      Transformer transformer = new Transformer(headers.get("publisher").toString(), headers.get("datatype").toString());
       JsonNode transformedDataNode = transformer.transform(dataNode);
-      System.out.println(transformedDataNode.toPrettyString());
-      DBEntry dbEntry = new DBEntry();
-      dbEntry.setId(ThreadLocalRandom.current().nextInt(1, 1000000));
-      dbEntry.setOrganisation(publisher);
-      dbEntry.setData(transformedDataNode.toPrettyString());
-      dbService.create(dbEntry);
+      JsonNode entities = transformedDataNode.get("entities");
+      if (entities.isArray()) {
+        String category = headers.get("category").toString();
+        for (JsonNode jsonNode : entities) {
+          if ("event".equals(category)) {
+            Event event = new Event();
+            event.setId(UUID.fromString(jsonNode.get("@id").asText()
+              .replace("{", "")
+              .replace("}", "")));
+            event.setJson(jsonNode.toString());
+            eventService.create(event);
+          } else if ("instance".equals(category)) {
+            Instance instance = new Instance();
+            instance.setId(UUID.fromString(jsonNode.get("@id").toString()));
+            instance.setJson(jsonNode.toString());
+            instanceService.create(instance);
+          } else {
+            throw new IllegalArgumentException("Provided category header is invalid");
+          }
+        }
+      }
       LOG.debug("Filed to DB");
     } catch (Exception e) {
       LOG.error("{}", e.toString());

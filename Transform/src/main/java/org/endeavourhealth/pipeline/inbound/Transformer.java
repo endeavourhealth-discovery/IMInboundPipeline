@@ -30,7 +30,7 @@ public class Transformer {
 
     LOG.info("Loading functions: {}", className);
     functions.add(FunctionUtils.wrapStaticMethod("uuidToIri", className, "uuidToIri"));
-    functions.add(FunctionUtils.wrapStaticMethod("newUUIDIri", className, "newUUIDIri"));
+    functions.add(FunctionUtils.wrapStaticMethod("newUuid", className, "newUuid"));
     functions.add(FunctionUtils.wrapStaticMethod("formatDate", className, "formatDate"));
 
     LOG.debug("Instantiate JSLT");
@@ -45,7 +45,7 @@ public class Transformer {
     //TODO maybe?
   }
 
-  private String loadTransformation(String organisation, String type) throws URISyntaxException, IOException, NullPointerException {
+  private String loadTransformation(String organisation, String type) throws NullPointerException {
     String transformName = organisation + type + ".jslt";
     String file = "";
     try {
@@ -63,18 +63,8 @@ public class Transformer {
     return jslt.apply(inputJson);
   }
 
-  public static String newUUIDIri(String namespace) {
-    String uuid = UUID.randomUUID().toString();
-    return uuidToIri(uuid, namespace);
-  }
-
-  public static String uuidToIri(String uuid, String namespace) {
-    if (uuid == null) {
-      LOG.error("UUID is null");
-      return "NULL";
-    }
-
-    return namespace + (uuid.replace("{", "").replace("}", ""));
+  public static String newUuid() {
+    return UUID.randomUUID().toString();
   }
 
   public static String formatDate(String format, String date) {
