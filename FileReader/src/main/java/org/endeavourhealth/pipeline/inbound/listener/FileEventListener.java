@@ -8,6 +8,8 @@ import org.endeavourhealth.pipeline.inbound.model.ProcessOrderFileItem;
 import org.endeavourhealth.pipeline.inbound.service.QueueSender;
 import org.endeavourhealth.pipeline.inbound.service.S3Service;
 import org.endeavourhealth.pipeline.inbound.validator.FileValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -40,10 +42,11 @@ public class FileEventListener {
   private final S3Service s3Service;
   private final ObjectMapper objectMapper = new ObjectMapper();
   private final FileValidator fileValidator;
+  private static final Logger LOG = LoggerFactory.getLogger(FileEventListener.class);
 
   @RabbitListener(queues = "#{rabbitMQConfig.getSourceQueue()}")
   public void handleFileEvent(Message message) throws Exception {
-    System.out.println("Received file event: " + message);
+    LOG.info("Received file event: {}", message);
     List<String> filesInBucket = s3Service.getExistingFilesInBucket(Optional.of(targetBaseRoutingKey));
     if (fileValidator.areAllFilesInBucket(targetBaseRoutingKey, filesInBucket)) {
       for (ProcessOrderFileItem fileItem : getOrderedList()) {
@@ -51,16 +54,16 @@ public class FileEventListener {
         if (filePath.isPresent()) {
           processFile(filePath.get());
         } else {
-          System.out.println("No matching file in bucket");
+          LOG.warn("No matching file in bucket: {}", fileItem.getNamePattern());
         }
       }
     } else {
-      System.out.println("Files are missing in bucket");
+      LOG.warn("Files are missing in bucket");
     }
   }
 
   private void processFile(String filePath) {
-    System.out.println("Processing file: " + filePath);
+    LOG.info("Processing file: {}", filePath);
     InputStream stream = s3Service.getFile(filePath);
     s3Service.moveFileFromTo(filePath, FileStatus.UPLOADED, FileStatus.QUEUING, targetBaseRoutingKey);
     try {

@@ -1,28 +1,26 @@
 package org.endeavourhealth.pipeline.inbound.service;
 
-import org.endeavourhealth.pipeline.inbound.config.RabbitMQConfig;
-import org.endeavourhealth.pipeline.inbound.model.FileStatus;
 import org.endeavourhealth.pipeline.inbound.validator.FileValidator;
 import org.json.JSONObject;
-import org.springframework.amqp.core.Message;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class QueueSender {
 
   private final RabbitTemplate rabbitTemplate;
   private final FileValidator fileValidator;
+  private static final Logger LOG = LoggerFactory.getLogger(QueueSender.class);
 
   public QueueSender(RabbitTemplate rabbitTemplate, FileValidator fileValidator) {
     this.rabbitTemplate = rabbitTemplate;
@@ -31,7 +29,7 @@ public class QueueSender {
 
   public void sendMessage(String exchange, String routingKey, String message, MessagePostProcessor headers) {
     rabbitTemplate.convertAndSend(exchange, routingKey, message, headers);
-    System.out.println("Message sent to exchange with routing key " + routingKey + ": " + message + " and headers: " + headers);
+    LOG.info("Message sent to exchange with routing key {}: {} and headers: {}", routingKey, message, headers);
   }
 
   public void populateQueue(InputStream inputStream, String filePath, String targetBaseRoutingKey, String targetExchange) throws Exception {
@@ -40,7 +38,7 @@ public class QueueSender {
       List<String> headers = Arrays.asList(line.split(","));
 
       if (fileValidator.isValidFile(filePath, headers)) {
-        System.out.println("Validated file: " + filePath);
+        LOG.info("Validated file: {}", filePath);
         String routingKey = "endeavour-inbound." + targetBaseRoutingKey + "." + filePath.substring(targetBaseRoutingKey.length() + 1);
         MessagePostProcessor messageHeaders = getHeaders(targetBaseRoutingKey, filePath);
 
@@ -52,7 +50,7 @@ public class QueueSender {
           }
           sendMessage(targetExchange, routingKey, jsonObject.toString(), messageHeaders);
         }
-        System.out.println("Queued all lines successfully");
+        LOG.info("Queued all lines successfully");
       } else {
         throw new Exception("Invalid file: " + filePath);
       }

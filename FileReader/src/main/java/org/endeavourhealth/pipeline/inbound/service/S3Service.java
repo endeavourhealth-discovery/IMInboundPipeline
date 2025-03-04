@@ -1,10 +1,11 @@
 package org.endeavourhealth.pipeline.inbound.service;
 
 import org.endeavourhealth.pipeline.inbound.model.FileStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
@@ -18,6 +19,8 @@ import java.util.Optional;
 
 @Service
 public class S3Service {
+
+  private static final Logger LOG = LoggerFactory.getLogger(S3Service.class);
   private static final String AWS_ACCESS_KEY_ID = Optional.ofNullable(System.getenv("AWS_ACCESS_KEY_ID")).orElseThrow(() -> new IllegalArgumentException("Env var 'AWS_ACCESS_KEY_ID' is not defined"));
   private static final String AWS_SECRET_ACCESS_KEY = Optional.ofNullable(System.getenv("AWS_SECRET_ACCESS_KEY")).orElseThrow(() -> new IllegalArgumentException("Env var 'AWS_SECRET_ACCESS_KEY' is not defined"));
   private static final String REGION = Optional.ofNullable(System.getenv("REGION")).orElseThrow(() -> new IllegalArgumentException("Env var 'REGION' is not defined"));
@@ -25,8 +28,7 @@ public class S3Service {
 
   public InputStream getFile(String fileName) {
     S3Client s3 = getS3Client();
-    ResponseInputStream<GetObjectResponse> s3Object = s3.getObject(GetObjectRequest.builder().bucket(BUCKET_NAME).key(fileName).build());
-    return s3Object;
+    return s3.getObject(GetObjectRequest.builder().bucket(BUCKET_NAME).key(fileName).build());
   }
 
   public void moveFileFromTo(String filePath, FileStatus from, FileStatus to, String targetBaseRoutingKey) {
@@ -43,7 +45,8 @@ public class S3Service {
       s3.deleteObject(deleteRequest);
       s3.close();
     } catch (Exception e) {
-      System.out.println("Failed to move file from " + source + " to " + destination);
+      LOG.error("Failed to move file from {} to {}", source, destination);
+      LOG.error(e.getMessage());
       throw new RuntimeException(e);
     }
   }
