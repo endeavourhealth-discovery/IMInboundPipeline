@@ -31,8 +31,7 @@ public class FileValidatorSteps extends CucumberSpringConfiguration {
 
   @When("I validate the file")
   public void i_validate_the_file() {
-//    this.validationResult = validator.isValidFile(fileName, fileHeaders);
-    this.validationResult = true;
+    this.validationResult = validator.isValidFile(fileName, fileHeaders);
   }
 
   @Then("the validation should return {word}")
