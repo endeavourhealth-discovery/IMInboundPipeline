@@ -2,10 +2,13 @@ package org.endeavourhealth.pipeline.inbound.validator;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.endeavourhealth.pipeline.inbound.listener.FileEventListener;
 import org.endeavourhealth.pipeline.inbound.model.FileValidationConfig;
 import org.endeavourhealth.pipeline.inbound.model.FileValidationHeaderItem;
 import org.endeavourhealth.pipeline.inbound.model.ProcessOrderConfig;
 import org.endeavourhealth.pipeline.inbound.model.ProcessOrderFileItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -26,6 +29,7 @@ public class FileValidator {
   @Value("classpath:processOrderConfig.json")
   private Resource processOrderConfig;
 
+  private static final Logger LOG = LoggerFactory.getLogger(FileValidator.class);
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   public boolean isValidFile(String fileName, List<String> fileHeaders) throws IOException {
@@ -54,28 +58,28 @@ public class FileValidator {
     return sortedList1.equals(sortedList2);
   }
 
-  private List<FileValidationConfig> getFileValidationConfig() throws IOException {
+  private List<FileValidationConfig> getFileValidationConfig() {
     try {
       return objectMapper.readValue(
         fileValidationConfig.getInputStream(),
-        new TypeReference<List<FileValidationConfig>>() {
+        new TypeReference<>() {
         }
       );
     } catch (IOException e) {
-      e.printStackTrace();
+      LOG.error(e.getMessage());
       return List.of();
     }
   }
 
-  private List<ProcessOrderConfig> getProcessOrderConfig() throws IOException {
+  private List<ProcessOrderConfig> getProcessOrderConfig() {
     try {
       return objectMapper.readValue(
         processOrderConfig.getInputStream(),
-        new TypeReference<List<ProcessOrderConfig>>() {
+        new TypeReference<>() {
         }
       );
     } catch (IOException e) {
-      e.printStackTrace();
+      LOG.error(e.getMessage());
       return List.of();
     }
   }
@@ -89,9 +93,9 @@ public class FileValidator {
     for (ProcessOrderFileItem fileItem : found.get().getOrderedList()) {
       Optional<String> result = filesInBucket.stream().filter(file -> file.matches(fileItem.getNamePattern())).findFirst();
       if (result.isEmpty()) {
-        System.out.println(fileItem.getNamePattern() + ": match NOT found");
+        LOG.warn("Match NOT found for: {}", fileItem.getNamePattern());
         allFilesInBucket = false;
-      } else System.out.println(fileItem.getNamePattern() + ": match found");
+      }
     }
     return allFilesInBucket;
   }
