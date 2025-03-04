@@ -1,5 +1,6 @@
 package org.endeavourhealth.pipeline.inbound.service;
 
+import org.endeavourhealth.pipeline.inbound.model.Category;
 import org.endeavourhealth.pipeline.inbound.validator.FileValidator;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -32,7 +33,7 @@ public class QueueSender {
     LOG.info("Message sent to exchange with routing key {}: {} and headers: {}", routingKey, message, headers);
   }
 
-  public void populateQueue(InputStream inputStream, String filePath, String targetBaseRoutingKey, String targetExchange) throws Exception {
+  public void populateQueue(InputStream inputStream, String filePath, String targetBaseRoutingKey, String targetExchange, Category category) throws Exception {
     try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
       String line = br.readLine();
       List<String> headers = Arrays.asList(line.split(","));
@@ -40,7 +41,7 @@ public class QueueSender {
       if (fileValidator.isValidFile(filePath, headers)) {
         LOG.info("Validated file: {}", filePath);
         String routingKey = "endeavour-inbound." + targetBaseRoutingKey + "." + filePath.substring(targetBaseRoutingKey.length() + 1);
-        MessagePostProcessor messageHeaders = getHeaders(targetBaseRoutingKey, filePath);
+        MessagePostProcessor messageHeaders = getHeaders(targetBaseRoutingKey, filePath, category);
 
         while ((line = br.readLine()) != null) {
           String[] values = line.split(",");
@@ -57,7 +58,7 @@ public class QueueSender {
     }
   }
 
-  public MessagePostProcessor getHeaders(String targetBaseRoutingKey, String fileName) {
+  public MessagePostProcessor getHeaders(String targetBaseRoutingKey, String fileName, Category category) {
     String[] parts = fileName.split("_");
     if (parts.length >= 4) {
       String domain = parts[2];
@@ -70,6 +71,7 @@ public class QueueSender {
         props.setHeader("publisher", targetBaseRoutingKey);
         props.setHeader("location", "S3");
         props.setHeader("source", fileName);
+        props.setHeader("category", category.toString());
         return msg;
       };
     }

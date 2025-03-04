@@ -2,6 +2,7 @@ package org.endeavourhealth.pipeline.inbound.listener;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.endeavourhealth.pipeline.inbound.model.Category;
 import org.endeavourhealth.pipeline.inbound.model.FileStatus;
 import org.endeavourhealth.pipeline.inbound.model.ProcessOrderConfig;
 import org.endeavourhealth.pipeline.inbound.model.ProcessOrderFileItem;
@@ -52,7 +53,7 @@ public class FileEventListener {
       for (ProcessOrderFileItem fileItem : getOrderedList()) {
         Optional<String> filePath = filesInBucket.stream().filter(file -> file.matches(fileItem.getNamePattern())).findFirst();
         if (filePath.isPresent()) {
-          processFile(filePath.get());
+          processFile(filePath.get(), fileItem.getCategory());
         } else {
           LOG.warn("No matching file in bucket: {}", fileItem.getNamePattern());
         }
@@ -62,12 +63,12 @@ public class FileEventListener {
     }
   }
 
-  private void processFile(String filePath) {
+  private void processFile(String filePath, Category category) throws Exception {
     LOG.info("Processing file: {}", filePath);
     InputStream stream = s3Service.getFile(filePath);
     s3Service.moveFileFromTo(filePath, FileStatus.UPLOADED, FileStatus.QUEUING, targetBaseRoutingKey);
     try {
-      queueSender.populateQueue(stream, filePath, targetBaseRoutingKey, targetExchange);
+      queueSender.populateQueue(stream, filePath, targetBaseRoutingKey, targetExchange, category);
       s3Service.moveFileFromTo(filePath, FileStatus.QUEUING, FileStatus.FILING, targetBaseRoutingKey);
     } catch (Exception e) {
       s3Service.moveFileFromTo(filePath, FileStatus.QUEUING, FileStatus.FAILED, targetBaseRoutingKey);
