@@ -15,8 +15,4 @@ public class EventService {
   public Event create(Event event) throws Exception {
     return eventRepository.save(event);
   }
-
-  public void delete(Integer id) throws Exception {
-    eventRepository.deleteById(id);
-  }
 }

@@ -16,8 +16,4 @@ public class InstanceService {
   public Instance create(Instance instance) throws Exception {
     return instanceRepository.save(instance);
   }
-
-  public void delete(Integer id) throws Exception {
-    instanceRepository.deleteById(id);
-  }
 }
