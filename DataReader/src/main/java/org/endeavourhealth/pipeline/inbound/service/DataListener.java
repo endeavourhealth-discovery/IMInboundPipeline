@@ -35,30 +35,32 @@ public class DataListener {
       Transformer transformer = new Transformer(headers.get("publisher").toString(), headers.get("datatype").toString());
       JsonNode transformedDataNode = transformer.transform(dataNode);
       JsonNode entities = transformedDataNode.get("entities");
-      if (entities.isArray()) {
-        String category = headers.get("category").toString();
-        for (JsonNode jsonNode : entities) {
-          if ("event".equals(category)) {
-            Event event = new Event();
-            event.setId(UUID.fromString(jsonNode.get("@id").asText()
-              .replace("{", "")
-              .replace("}", "")));
-            event.setJson(jsonNode.toString());
-            eventService.create(event);
-          } else if ("instance".equals(category)) {
-            Instance instance = new Instance();
-            instance.setId(UUID.fromString(jsonNode.get("@id").toString()));
-            instance.setJson(jsonNode.toString());
-            instanceService.create(instance);
-          } else {
-            throw new IllegalArgumentException("Provided category header is invalid");
-          }
-        }
-      }
+      String category = headers.get("category").toString();
+      saveToDB(entities, category);
       LOG.debug("Filed to DB");
     } catch (Exception e) {
       LOG.error("{}", e.toString());
       System.exit(1);
+    }
+  }
+
+  private void saveToDB(JsonNode entities, String category) throws Exception {
+    if (entities.isArray()) {
+      for (JsonNode jsonNode : entities) {
+        if ("EVENT".equals(category)) {
+          Event event = new Event();
+          event.setId(UUID.fromString(jsonNode.get("@id").asText()));
+          event.setJson(jsonNode.toString());
+          eventService.create(event);
+        } else if ("INSTANCE".equals(category)) {
+          Instance instance = new Instance();
+          instance.setId(UUID.fromString(jsonNode.get("@id").asText()));
+          instance.setJson(jsonNode.toString());
+          instanceService.create(instance);
+        } else {
+          throw new IllegalArgumentException("Provided category header '" + category + "' is invalid");
+        }
+      }
     }
   }
 }
