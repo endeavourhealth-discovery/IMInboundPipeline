@@ -1,6 +1,5 @@
 package org.endeavourhealth.pipeline.inbound.model;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Data
 @Entity(name = "Event")
-@Table (name = "event")
+@Table(name = "event")
 public class Event {
   @Id
   private UUID id;
