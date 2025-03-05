@@ -2,7 +2,7 @@ Feature: File Validation
 
   Scenario: Valid CSV file with correct headers
     Given a file named "EMIS/bulk_95047_Admin_Organisation_20231017043213_F95EE3AF-0B9D-40EB-8B28-8E858EF0091F.csv"
-    And it contains headers "OrganisationGuid, CDB, OrganisationName, ODSCode, ParentOrganisationGuid, CCGOrganisationGuid, OrganisationType, OpenDate, CloseDate, MainLocationGuid, ProcessingId"
+    And it contains headers '"OrganisationGuid","CDB","OrganisationName","ODSCode","ParentOrganisationGuid","CCGOrganisationGuid","OrganisationType","OpenDate","CloseDate","MainLocationGuid","ProcessingId"'
     When I validate the file
     Then the validation should return true
 
@@ -12,19 +12,7 @@ Feature: File Validation
     When I validate the file
     Then the validation should return false
 
-  Scenario: Invalid file 
+  Scenario: Invalid file
     Given a file named "EMIS/invalid_name.csv"
     When I validate the file
-    Then the validation should return false
-
-Feature: File list validation
-
-  Scenario: Valid list with all files included
-    Given a list of "EMIS\invalid_name.csv, EMIS\invalid_name.csv, EMIS\invalid_name.csv, EMIS\invalid_name.csv"
-    When I validate the list
-    Then the validation should return true
-
-  Scenario: Invalid list with missing files
-    Given a list of "EMIS\invalid_name.csv, EMIS\invalid_name.csv"
-    When I validate the list
     Then the validation should return false
