@@ -14,22 +14,22 @@ import java.util.Optional;
 @Configuration
 public class RabbitMQConfig {
 
-  @Value("${spring.rabbitmq.host}")
+  @Value("${spring.rabbitmq.host:test}")
   private String rabbitMqHost;
 
-  @Value("${spring.rabbitmq.port}")
+  @Value("${spring.rabbitmq.port:1111}")
   private int rabbitMqPort;
 
-  @Value("${spring.rabbitmq.username}")
+  @Value("${spring.rabbitmq.username:test}")
   private String rabbitMqUsername;
 
-  @Value("${spring.rabbitmq.password}")
+  @Value("${spring.rabbitmq.password:test}")
   private String rabbitMqPassword;
 
-  @Value("${rabbitmq.sourceQueue}")
+  @Value("${rabbitmq.sourceQueue:test}")
   private String sourceQueue;
 
-  @Value("${spring.rabbitmq.virtual-host}")
+  @Value("${spring.rabbitmq.virtual-host:test}")
   private String rabbitMqVHost;
 
   private static String SOURCE_QUEUE;
