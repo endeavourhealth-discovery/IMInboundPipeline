@@ -29,8 +29,8 @@ public class Transformer {
     String transformFile = loadTransformation(org, type);
 
     LOG.info("Loading functions: {}", className);
-    functions.add(FunctionUtils.wrapStaticMethod("uuidToIri", className, "uuidToIri"));
-    functions.add(FunctionUtils.wrapStaticMethod("newUUIDIri", className, "newUUIDIri"));
+    functions.add(FunctionUtils.wrapStaticMethod("formatUuid", className, "formatUuid"));
+    functions.add(FunctionUtils.wrapStaticMethod("newUuid", className, "newUuid"));
     functions.add(FunctionUtils.wrapStaticMethod("formatDate", className, "formatDate"));
 
     LOG.debug("Instantiate JSLT");
@@ -63,18 +63,16 @@ public class Transformer {
     return jslt.apply(inputJson);
   }
 
-  public static String newUUIDIri(String namespace) {
-    String uuid = UUID.randomUUID().toString();
-    return uuidToIri(uuid, namespace);
+  public static String newUuid() {
+    return formatUuid(UUID.randomUUID().toString());
   }
 
-  public static String uuidToIri(String uuid, String namespace) {
+  public static String formatUuid(String uuid) {
     if (uuid == null) {
       LOG.error("UUID is null");
       return "NULL";
     }
-
-    return namespace + (uuid.replace("{", "").replace("}", ""));
+    return uuid.replace("{", "").replace("}", "").toLowerCase();
   }
 
   public static String formatDate(String format, String date) {
