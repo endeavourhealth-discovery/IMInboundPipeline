@@ -68,7 +68,9 @@ public class FileEventListener {
     InputStream stream = s3Service.getFile(filePath);
     s3Service.moveFileFromTo(filePath, FileStatus.UPLOADED, FileStatus.QUEUING, targetBaseRoutingKey);
     try {
-      queueSender.populateQueue(stream, filePath, targetBaseRoutingKey, targetExchange, category);
+      int messageCount = queueSender.populateQueue(stream, filePath, targetBaseRoutingKey, targetExchange, category);
+//      TODO: check if messageCount == fileLines
+      LOG.info("Queued all {} lines successfully", messageCount);
       s3Service.moveFileFromTo(filePath, FileStatus.QUEUING, FileStatus.FILING, targetBaseRoutingKey);
     } catch (Exception e) {
       s3Service.moveFileFromTo(filePath, FileStatus.QUEUING, FileStatus.FAILED, targetBaseRoutingKey);

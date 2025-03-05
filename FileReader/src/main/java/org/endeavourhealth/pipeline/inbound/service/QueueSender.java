@@ -28,12 +28,19 @@ public class QueueSender {
     this.fileValidator = fileValidator;
   }
 
-  public void sendMessage(String exchange, String routingKey, String message, MessagePostProcessor headers) {
-    rabbitTemplate.convertAndSend(exchange, routingKey, message, headers);
-    LOG.info("Message sent to exchange with routing key {}: {} and headers: {}", routingKey, message, headers);
+  public boolean sendMessage(String exchange, String routingKey, String message, MessagePostProcessor headers) {
+    try {
+      rabbitTemplate.convertAndSend(exchange, routingKey, message, headers);
+      LOG.info("Message sent to exchange with routing key {}: {} and headers: {}", routingKey, message, headers);
+      return true;
+    } catch (Exception e) {
+      LOG.error("Message not sent: {}", e.getMessage());
+      return false;
+    }
   }
 
-  public void populateQueue(InputStream inputStream, String filePath, String targetBaseRoutingKey, String targetExchange, Category category) throws Exception {
+  public int populateQueue(InputStream inputStream, String filePath, String targetBaseRoutingKey, String targetExchange, Category category) throws Exception {
+    int messageCount = 0;
     try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
       String line = br.readLine();
       List<String> headers = Arrays.asList(line.split(","));
@@ -49,13 +56,15 @@ public class QueueSender {
           for (int i = 0; i < headers.size(); i++) {
             jsonObject.put(headers.get(i), values[i]);
           }
-          sendMessage(targetExchange, routingKey, jsonObject.toString(), messageHeaders);
+          boolean messageSent = sendMessage(targetExchange, routingKey, jsonObject.toString(), messageHeaders);
+          if (!messageSent) throw new Exception("Message not sent");
+          messageCount++;
         }
-        LOG.info("Queued all lines successfully");
       } else {
         throw new Exception("Invalid file: " + filePath);
       }
     }
+    return messageCount;
   }
 
   public MessagePostProcessor getHeaders(String targetBaseRoutingKey, String fileName, Category category) {

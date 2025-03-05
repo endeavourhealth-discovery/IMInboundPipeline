@@ -32,7 +32,7 @@ public class FileValidator {
   private static final Logger LOG = LoggerFactory.getLogger(FileValidator.class);
   private final ObjectMapper objectMapper = new ObjectMapper();
 
-  public boolean isValidFile(String fileName, List<String> fileHeaders) throws IOException {
+  public boolean isValidFile(String fileName, List<String> fileHeaders) {
     List<FileValidationConfig> validationConfigPOJO = getFileValidationConfig();
     Optional<FileValidationConfig> found = validationConfigPOJO.stream().filter(file -> fileName.matches(file.getFileName())).findFirst();
     if (found.isPresent()) {
