@@ -11,7 +11,10 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.paginators.ListObjectsV2Iterable;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +32,20 @@ public class S3Service {
   public InputStream getFile(String fileName) {
     S3Client s3 = getS3Client();
     return s3.getObject(GetObjectRequest.builder().bucket(BUCKET_NAME).key(fileName).build());
+  }
+
+  public int getFileLineCount(String path) throws IOException {
+    InputStream fileStream = getFile(path);
+    int lines = 0;
+    try (BufferedReader br = new BufferedReader(new InputStreamReader(fileStream))) {
+      while (br.readLine() != null) {
+        lines++;
+      }
+    } catch (IOException e) {
+      LOG.error(e.getMessage());
+      throw e;
+    }
+    return lines - 1;
   }
 
   public void moveFileFromTo(String filePath, FileStatus from, FileStatus to, String targetBaseRoutingKey) {
@@ -67,13 +84,12 @@ public class S3Service {
     return filesInBucket;
   }
 
-  private S3Client getS3Client() {
-    AwsBasicCredentials awsCreds = AwsBasicCredentials.create(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY);
-    return S3Client.builder().region(Region.of(REGION)).credentialsProvider(StaticCredentialsProvider.create(awsCreds)).build();
-  }
-
   private String getFileName(String path) {
     return Paths.get(path).getFileName().toString();
   }
 
+  private S3Client getS3Client() {
+    AwsBasicCredentials awsCreds = AwsBasicCredentials.create(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY);
+    return S3Client.builder().region(Region.of(REGION)).credentialsProvider(StaticCredentialsProvider.create(awsCreds)).build();
+  }
 }

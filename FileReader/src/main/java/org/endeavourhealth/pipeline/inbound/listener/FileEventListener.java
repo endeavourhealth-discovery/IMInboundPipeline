@@ -63,19 +63,24 @@ public class FileEventListener {
     }
   }
 
-  private void processFile(String filePath, Category category) throws Exception {
+  private boolean processFile(String filePath, Category category) throws Exception {
     LOG.info("Processing file: {}", filePath);
+    int lineCount = s3Service.getFileLineCount(filePath);
     InputStream stream = s3Service.getFile(filePath);
     s3Service.moveFileFromTo(filePath, FileStatus.UPLOADED, FileStatus.QUEUING, targetBaseRoutingKey);
     try {
       int messageCount = queueSender.populateQueue(stream, filePath, targetBaseRoutingKey, targetExchange, category);
-//      TODO: check if messageCount == fileLines
-      LOG.info("Queued all {} lines successfully", messageCount);
+      if (lineCount != messageCount) {
+        throw new Exception("Line count mismatch");
+      }
+      LOG.info("Queued {} out of {} lines", messageCount, lineCount);
       s3Service.moveFileFromTo(filePath, FileStatus.QUEUING, FileStatus.FILING, targetBaseRoutingKey);
     } catch (Exception e) {
       s3Service.moveFileFromTo(filePath, FileStatus.QUEUING, FileStatus.FAILED, targetBaseRoutingKey);
       System.exit(1);
     }
+
+    return true;
   }
 
   public List<ProcessOrderFileItem> getOrderedList() throws IOException {
