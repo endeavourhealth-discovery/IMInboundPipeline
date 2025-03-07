@@ -1,5 +1,6 @@
 package org.endeavourhealth.pipeline.inbound.service;
 
+import org.endeavourhealth.pipeline.inbound.utils.Utils;
 import org.endeavourhealth.pipeline.inbound.model.Category;
 import org.endeavourhealth.pipeline.inbound.validator.FileValidator;
 import org.json.JSONObject;
@@ -22,6 +23,7 @@ public class QueueSender {
   private final RabbitTemplate rabbitTemplate;
   private final FileValidator fileValidator;
   private static final Logger LOG = LoggerFactory.getLogger(QueueSender.class);
+  private final Utils utils = new Utils();
 
   public QueueSender(RabbitTemplate rabbitTemplate, FileValidator fileValidator) {
     this.rabbitTemplate = rabbitTemplate;
@@ -35,11 +37,11 @@ public class QueueSender {
       return true;
     } catch (Exception e) {
       LOG.error("Message not sent: {}", e.getMessage());
-      return false;
+      throw e;
     }
   }
 
-  public int populateQueue(InputStream inputStream, String filePath, String targetBaseRoutingKey, String targetExchange, Category category) throws Exception {
+  public int populateQueue(InputStream inputStream, String filePath, String targetBaseRoutingKey, String targetExchange, Category category, int maxRetries, int retryWait) throws Exception {
     int messageCount = 0;
     try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
       String line = br.readLine();
@@ -56,7 +58,7 @@ public class QueueSender {
           for (int i = 0; i < headers.size(); i++) {
             jsonObject.put(headers.get(i), values[i]);
           }
-          boolean messageSent = sendMessage(targetExchange, routingKey, jsonObject.toString(), messageHeaders);
+          boolean messageSent = Boolean.TRUE.equals(utils.executeWithRetry(() -> sendMessage(targetExchange, routingKey, jsonObject.toString(), messageHeaders), maxRetries, retryWait));
           if (!messageSent) throw new Exception("Message not sent");
           messageCount++;
         }

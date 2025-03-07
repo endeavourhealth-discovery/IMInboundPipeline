@@ -33,6 +33,12 @@ public class FileEventListener {
   @Value("${rabbitmq.targetExchange}")
   private String targetExchange;
 
+  @Value("${queueSender.maxRetries}")
+  private int maxRetries;
+
+  @Value("${queueSender.retryWait}")
+  private int retryWait;
+
   public FileEventListener(RabbitTemplate rabbitTemplate, FileValidator fileValidator, S3Service s3Service) {
     this.queueSender = new QueueSender(rabbitTemplate, fileValidator);
     this.fileValidator = fileValidator;
@@ -69,7 +75,7 @@ public class FileEventListener {
     InputStream stream = s3Service.getFile(filePath);
     s3Service.moveFileFromTo(filePath, FileStatus.UPLOADED, FileStatus.QUEUING, targetBaseRoutingKey);
     try {
-      int messageCount = queueSender.populateQueue(stream, filePath, targetBaseRoutingKey, targetExchange, category);
+      int messageCount = queueSender.populateQueue(stream, filePath, targetBaseRoutingKey, targetExchange, category, maxRetries, retryWait);
       if (lineCount != messageCount) {
         throw new Exception("Line count mismatch");
       }
