@@ -33,10 +33,10 @@ public class FileEventListener {
   @Value("${rabbitmq.targetExchange}")
   private String targetExchange;
 
-  @Value("${queueSender.maxRetries}")
+  @Value("${queueSender.maxRetries:3}")
   private int maxRetries;
 
-  @Value("${queueSender.retryWait}")
+  @Value("${queueSender.retryWait:3}")
   private int retryWait;
 
   public FileEventListener(RabbitTemplate rabbitTemplate, FileValidator fileValidator, S3Service s3Service) {
