@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 
 @SpringBootApplication()
-@ComponentScan(excludeFilters={@ComponentScan.Filter(type= FilterType.ASSIGNABLE_TYPE, value=DataSourceAutoConfiguration.class)})
+@ComponentScan(excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = DataSourceAutoConfiguration.class)})
 @Configuration
 public class FileReader extends SpringBootServletInitializer implements ApplicationRunner {
 
@@ -25,13 +25,19 @@ public class FileReader extends SpringBootServletInitializer implements Applicat
   @Value("${rabbitmq.targetExchange}")
   private String targetExchange;
 
+  @Value("${queueSender.maxRetries:3}")
+  private int maxRetries;
+
+  @Value("${queueSender.retryWait:3}")
+  private int retryWait;
+
   public static void main(String[] args) {
     SpringApplication.run(FileReader.class, args);
   }
 
   @Override
-  public void run(ApplicationArguments args) throws Exception {
-    System.out.println("Running FileReader with targetBaseRoutingKey: " + targetBaseRoutingKey + ", sourceQueue: " + sourceQueue + ", targetExchange: " + targetExchange);
+  public void run(ApplicationArguments args) {
+    System.out.println("Running FileReader with targetBaseRoutingKey: " + targetBaseRoutingKey + ", sourceQueue: " + sourceQueue + ", targetExchange: " + targetExchange + ", maxRetries: " + maxRetries + ", retryWait: " + retryWait);
   }
 }
 
