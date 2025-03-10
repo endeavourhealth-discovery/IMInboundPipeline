@@ -10,7 +10,6 @@ dependencies {
   implementation libs.assertJ
   implementation libs.awsS3
   implementation libs.jacksonDatabind
-  implementation libs.orgJson
   implementation libs.rabbitmqAmqpClient
   implementation libs.springAmpq
   implementation libs.springContext
