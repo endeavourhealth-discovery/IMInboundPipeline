@@ -67,6 +67,10 @@ public class QueueSender {
       } else {
         throw new Exception("Invalid file: " + filePath);
       }
+    } catch (Exception e) {
+      LOG.error("Failed to populate queue: {}", e.getMessage());
+      e.printStackTrace();
+      throw e;
     }
     return messageCount;
   }
