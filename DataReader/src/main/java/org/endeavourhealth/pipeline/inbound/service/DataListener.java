@@ -29,8 +29,9 @@ public class DataListener {
   @RabbitListener(queues = "#{rabbitMQConfig.getQueue()}")
   public void handleDataMessages(Message message) throws Exception {
     LOG.debug("Received data message: {}", message);
-    LOG.debug("Received data body: {}", message.getBody());
-    JsonNode dataNode = objectMapper.readTree(message.getBody());
+    String messageBody = new String(message.getBody());
+    LOG.debug("Received data body: {}", messageBody);
+    JsonNode dataNode = objectMapper.readTree(messageBody);
     try {
       Map<String, Object> headers = message.getMessageProperties().getHeaders();
       Transformer transformer = new Transformer(headers.get("publisher").toString(), headers.get("datatype").toString());
