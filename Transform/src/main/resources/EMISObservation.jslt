@@ -1,7 +1,14 @@
 import "Utilities.jslt" as utils
 
-
 {
-  "@id" : formatUuid(.ObservationGuid, "@id"),
-  "@type" : "Observation"
+  "entities" : utils:cleanArray([
+    {
+      "@id" : formatUuid(.ObservationGuid, "@id"),
+      "@type" : "Observation",
+      "patient": formatUuid(.PatientGuid, "Patient Guid"),
+      "concept": .CodeId,
+      "effectiveDate": formatDate("yyyy-MM-dd", .EffectiveDate),
+      "numericValue": .Value
+    }
+  ])
 }
