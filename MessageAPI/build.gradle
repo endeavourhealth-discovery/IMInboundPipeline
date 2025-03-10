@@ -10,7 +10,6 @@ dependencies {
   implementation libs.awsSDKBOM
   implementation libs.awsSDKCore
   implementation libs.jacksonDatabind
-  implementation libs.orgJson
   implementation libs.rabbitmqAmqpClient
   implementation libs.springContext
   implementation libs.springDataJpa

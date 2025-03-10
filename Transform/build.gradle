@@ -9,7 +9,6 @@ dependencies {
   implementation libs.assertJ
   implementation libs.jacksonDatabind
   implementation libs.jslt
-  implementation libs.orgJson
   implementation libs.slf4j
 
   runtimeOnly libs.springDevTools

@@ -2,7 +2,7 @@ package org.endeavourhealth.pipeline.inbound;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.*;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Transform {
+  private static final ObjectMapper objectMapper = new ObjectMapper();
 
   public static void main(String[] args) throws Exception {
     List<JsonNode> values = csvToJson("Z:\\SyntheticEmisData\\v8.0 schema test data\\bulk_95047_Admin_Organisation_20231017043213_F95EE3AF-0B9D-40EB-8B28-8E858EF0091F.csv");
@@ -31,7 +32,7 @@ public class Transform {
         if (headers == null) {
           headers = values;
         } else {
-          JSONObject jsonObject = new JSONObject();
+          ObjectNode jsonObject = objectMapper.createObjectNode();
           for (int i = 0; i < headers.length; i++) {
             jsonObject.put(headers[i], values[i]);
           }
