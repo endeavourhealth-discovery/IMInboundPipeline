@@ -83,6 +83,7 @@ public class QueueSender {
         props.setHeader("location", "S3");
         props.setHeader("source", fileName);
         props.setHeader("category", category.toString());
+        props.setContentType("application/json");
         return msg;
       };
     }
