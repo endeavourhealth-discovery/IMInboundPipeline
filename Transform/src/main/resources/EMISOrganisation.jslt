@@ -6,11 +6,11 @@ let relationshipIdLocation = newUuid()
 {
   "entities" : utils:cleanArray([
     {
-      "@id" : formatUuid(.OrganisationGuid),
+      "@id" : formatUuid(.OrganisationGuid, "@id"),
       "@type" : "Organisation",
       "label" : .OrganisationName,
-      "operationalStartDate" : formatDate("dd/MM/yyyy", .OpenDate),
-      "operationalEndDate" : if (.CloseDate) formatDate("dd/MM/yyyy", .CloseDate),
+      "operationalStartDate" : if (.OpenDate) formatDate("yyyy-MM-dd", .OpenDate),
+      "operationalEndDate" : if (.CloseDate) formatDate("yyyy-MM-dd", .CloseDate),
       "odsCode" : if (.ODSCode) .ODSCode,
       "organisationRelationship" :
       utils:cleanArray([
@@ -20,16 +20,16 @@ let relationshipIdLocation = newUuid()
     },
     if (.ParentOrganisationGuid)
       {
-        "@id" : $relationshipIdParent,
+        "@id" : if (.ParentOrganisationGuid) $relationshipIdParent,
         "@type" : "OrganisationRelationship",
-        "organisation" : formatUuid(.ParentOrganisationGuid),
+        "organisation" : if (.ParentOrganisationGuid) formatUuid(.ParentOrganisationGuid, "organisation (ParentOrganisationGuid)"),
         "relationshipType" : "ODS_Relationship_6"
       },
     if (.MainLocationGuid)
       {
         "@id" : if (.MainLocationGuid)  $relationshipIdLocation,
         "@type" : "OrganisationRelationship",
-        "organisation" : if (.MainLocationGuid) formatUuid(.MainLocationGuid),
+        "organisation" : if (.MainLocationGuid) formatUuid(.MainLocationGuid, "organisation (MainLocationGuid)"),
         "relationshipType" : if (.MainLocationGuid) "ODS_Relationship_5"
       }
   ])

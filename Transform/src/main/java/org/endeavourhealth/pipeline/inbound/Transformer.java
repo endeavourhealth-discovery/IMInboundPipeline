@@ -64,12 +64,12 @@ public class Transformer {
   }
 
   public static String newUuid() {
-    return formatUuid(UUID.randomUUID().toString());
+    return formatUuid(UUID.randomUUID().toString(), "new UUID");
   }
 
-  public static String formatUuid(String uuid) {
+  public static String formatUuid(String uuid, String keyInfo) {
     if (uuid == null) {
-      LOG.error("UUID is null");
+      LOG.error("UUID for {} is null", keyInfo);
       return "NULL";
     }
     return uuid.replace("{", "").replace("}", "").toLowerCase();
