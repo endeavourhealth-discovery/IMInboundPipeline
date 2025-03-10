@@ -27,4 +27,13 @@ public class Utils {
     }
     return null;
   }
+
+  public static String stripQuotes(String s) {
+    if (s == null) return null;
+
+    if (s.length() > 1 && s.startsWith("\"") && s.endsWith("\"")) {
+      return s.substring(1, s.length() - 1);
+    }
+    return s;
+  }
 }

@@ -47,7 +47,7 @@ public class QueueSender {
     int messageCount = 0;
     try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
       String line = br.readLine();
-      List<String> headers = Arrays.stream(line.split(",")).map(h -> h.replaceAll("(^\")|(\"$)", "")).toList();
+      List<String> headers = Arrays.stream(line.split(",")).map(Utils::stripQuotes).toList();
 
       if (fileValidator.isValidFile(filePath, headers)) {
         LOG.info("Validated file: {}", filePath);
@@ -58,7 +58,7 @@ public class QueueSender {
           String[] values = line.split(",");
           ObjectNode jsonObject = objectMapper.createObjectNode();
           for (int i = 0; i < headers.size(); i++) {
-            jsonObject.put(headers.get(i), values[i].replaceAll("(^\")|(\"$)", ""));
+            jsonObject.put(headers.get(i), Utils.stripQuotes(values[i]));
           }
           boolean messageSent = Boolean.TRUE.equals(utils.executeWithRetry(() -> sendMessage(targetExchange, routingKey, jsonObject.toString(), messageHeaders), maxRetries, retryWait));
           if (!messageSent) throw new Exception("Message not sent");
