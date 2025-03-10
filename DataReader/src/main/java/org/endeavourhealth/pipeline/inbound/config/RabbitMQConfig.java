@@ -2,6 +2,8 @@ package org.endeavourhealth.pipeline.inbound.config;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.amqp.core.*;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,5 +32,9 @@ public class RabbitMQConfig {
     return new Queue(SOURCE_QUEUE);
   }
 
+  @Bean
+  public MessageConverter jsonMessageConverter() {
+    return new Jackson2JsonMessageConverter();
+  }
 }
 
