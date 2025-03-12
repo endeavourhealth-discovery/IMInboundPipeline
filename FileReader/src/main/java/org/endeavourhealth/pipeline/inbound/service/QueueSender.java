@@ -52,10 +52,9 @@ public class QueueSender {
       if (fileValidator.isValidFile(filePath, headers)) {
         LOG.info("Validated file: {}", filePath);
         String routingKey = "endeavour-inbound." + targetBaseRoutingKey + "." + filePath.substring(targetBaseRoutingKey.length() + 1);
-        MessagePostProcessor messageHeaders = getHeaders(targetBaseRoutingKey, filePath, category);
-
         while ((line = br.readLine()) != null) {
-          String[] values = line.split(",");
+          MessagePostProcessor messageHeaders = getHeaders(targetBaseRoutingKey, filePath, category, messageCount + 1);
+          String[] values = line.split(",", -1);
           ObjectNode jsonObject = objectMapper.createObjectNode();
           for (int i = 0; i < headers.size(); i++) {
             jsonObject.put(Utils.stripQuotes(headers.get(i)), Utils.stripQuotes(values[i]));
@@ -74,7 +73,7 @@ public class QueueSender {
     return messageCount;
   }
 
-  public MessagePostProcessor getHeaders(String targetBaseRoutingKey, String fileName, Category category) {
+  public MessagePostProcessor getHeaders(String targetBaseRoutingKey, String fileName, Category category, int lineCount) {
     String[] parts = fileName.split("_");
     if (parts.length >= 4) {
       String domain = parts[2];
@@ -85,7 +84,7 @@ public class QueueSender {
         props.setHeader("datatype", datatype);
         props.setHeader("domain", domain);
         props.setHeader("publisher", targetBaseRoutingKey);
-        props.setHeader("location", "S3");
+        props.setHeader("location", lineCount);
         props.setHeader("source", fileName);
         props.setHeader("category", category.toString());
         props.setContentType("application/json");
