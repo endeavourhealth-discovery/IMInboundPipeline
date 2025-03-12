@@ -39,7 +39,10 @@ public class FileValidator {
       FileValidationConfig fileValidationConfigItem = found.get();
       List<FileValidationHeaderItem> headers = fileValidationConfigItem.getHeaders();
       Optional<FileValidationHeaderItem> result = headers.stream().filter(headerList -> areListsEqual(fileHeaders, headerList.getHeaders().stream()
-        .map(header -> "\"" + header + "\"")
+        .map(header ->
+          header.contains("\"") ? header :
+            "\"" + header + "\""
+        )
         .collect(Collectors.toList()))).findFirst();
       return result.isPresent();
     }
