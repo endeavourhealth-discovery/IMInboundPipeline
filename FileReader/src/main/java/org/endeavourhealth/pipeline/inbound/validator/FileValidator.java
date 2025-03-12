@@ -38,12 +38,7 @@ public class FileValidator {
     if (found.isPresent()) {
       FileValidationConfig fileValidationConfigItem = found.get();
       List<FileValidationHeaderItem> headers = fileValidationConfigItem.getHeaders();
-      Optional<FileValidationHeaderItem> result = headers.stream().filter(headerList -> areListsEqual(fileHeaders, headerList.getHeaders().stream()
-        .map(header ->
-          header.contains("\"") ? header :
-            "\"" + header + "\""
-        )
-        .collect(Collectors.toList()))).findFirst();
+      Optional<FileValidationHeaderItem> result = headers.stream().filter(headerList -> areListsEqual(fileHeaders, headerList.getHeaders())).findFirst();
       return result.isPresent();
     }
     return false;
@@ -52,13 +47,21 @@ public class FileValidator {
   public boolean areListsEqual(List<String> list1, List<String> list2) {
     if (list1.size() != list2.size()) return false;
 
-    List<String> sortedList1 = new ArrayList<>(list1);
-    List<String> sortedList2 = new ArrayList<>(list2);
+    List<String> sortedList1 = removeQuotes(new ArrayList<>(list1));
+    List<String> sortedList2 = removeQuotes(new ArrayList<>(list2));
 
     Collections.sort(sortedList1);
     Collections.sort(sortedList2);
 
     return sortedList1.equals(sortedList2);
+  }
+
+  public static List<String> removeQuotes(List<String> list) {
+    List<String> result = new ArrayList<>();
+    for (String item : list) {
+      result.add(item.replaceAll("\"", ""));
+    }
+    return result;
   }
 
   private List<FileValidationConfig> getFileValidationConfig() {
