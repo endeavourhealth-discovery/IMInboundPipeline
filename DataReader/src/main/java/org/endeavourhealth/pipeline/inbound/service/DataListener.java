@@ -15,9 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
 
@@ -62,13 +59,13 @@ public class DataListener {
           Event event = new Event();
           event.setId(UUID.fromString(jsonNode.get("@id").asText()));
           event.setJson(jsonNode.toString());
-          DBConnectionManager.fileEvent(connection, event);
+          DBConnectionManager.fileEvent(event);
           //eventService.create(event);
         } else if ("INSTANCE".equals(category)) {
           Instance instance = new Instance();
           instance.setId(UUID.fromString(jsonNode.get("@id").asText()));
           instance.setJson(jsonNode.toString());
-          DBConnectionManager.fileInstance(connection, instance);
+          DBConnectionManager.fileInstance(instance);
           ///instanceService.create(instance);
         } else {
           throw new IllegalArgumentException("Provided category header '" + category + "' is invalid");
