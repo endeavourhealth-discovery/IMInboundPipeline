@@ -5,10 +5,10 @@ import "Utilities.jslt" as utils
     {
       "@id" : formatUuid(.ObservationGuid, "@id"),
       "@type" : "Observation",
-      "patient": formatUuid(.PatientGuid, "Patient Guid"),
-      "concept": .CodeId,
-      "effectiveDate": formatDate("yyyy-MM-dd", .EffectiveDate),
-      "numericValue": .Value
+      "patient" : if (.PatientGuid) formatUuid(.PatientGuid, "Patient Guid"),
+      "concept" : "emis_" + .CodeId,
+      "effectiveDate" : if (.EffectiveDate) formatDate("yyyy-MM-dd", .EffectiveDate),
+      "numericValue" : .Value
     }
   ])
 }
