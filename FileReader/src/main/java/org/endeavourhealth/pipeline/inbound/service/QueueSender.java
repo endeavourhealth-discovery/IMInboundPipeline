@@ -47,14 +47,15 @@ public class QueueSender {
     int messageCount = 0;
     try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
       String line = br.readLine();
-      List<String> headers = List.of(line.split(","));
+      String separator = Utils.getSeparatorFromFileName(filePath);
+      List<String> headers = List.of(line.split(separator));
 
       if (fileValidator.isValidFile(filePath, headers)) {
         LOG.info("Validated file: {}", filePath);
         String routingKey = "endeavour-inbound." + targetBaseRoutingKey + "." + filePath.substring(targetBaseRoutingKey.length() + 1);
         while ((line = br.readLine()) != null) {
           MessagePostProcessor messageHeaders = getHeaders(targetBaseRoutingKey, filePath, category, messageCount + 1);
-          String[] values = line.split(",", -1);
+          String[] values = line.split(separator, -1);
           ObjectNode jsonObject = objectMapper.createObjectNode();
           for (int i = 0; i < headers.size(); i++) {
             jsonObject.put(Utils.stripQuotes(headers.get(i)), Utils.stripQuotes(values[i]));
