@@ -23,12 +23,6 @@ public class DataListener {
 
   private static final Logger LOG = LoggerFactory.getLogger(DataListener.class);
   private static final ObjectMapper objectMapper = new ObjectMapper();
-
-  @Autowired
-  private EventService eventService;
-  @Autowired
-  private InstanceService instanceService;
-
   private Connection connection;
 
   @RabbitListener(queues = "#{rabbitMQConfig.getQueue()}")
