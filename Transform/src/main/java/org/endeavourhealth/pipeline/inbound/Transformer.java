@@ -20,44 +20,45 @@ import org.slf4j.LoggerFactory;
 
 public class Transformer {
   private static final Logger LOG = LoggerFactory.getLogger(Transformer.class);
+  HashMap<String, Expression> fileCache = new HashMap<>();
   Collection<Function> functions = new ArrayList<>();
-  String className = Transformer.class.getName();
+  String className = this.getClass().getName();
   Expression jslt;
 
-  public Transformer(String org, String type) throws ClassNotFoundException, URISyntaxException, IOException {
-    LOG.debug("Identify transformation file");
-    String transformFile = loadTransformation(org, type);
+  public void setFunctions() {
+    if (functions.isEmpty()) {
+      try {
+        functions.add(FunctionUtils.wrapStaticMethod("formatUuid", className, "formatUuid"));
+        functions.add(FunctionUtils.wrapStaticMethod("newUuid", className, "newUuid"));
+        functions.add(FunctionUtils.wrapStaticMethod("formatDate", className, "formatDate"));
+      } catch (ClassNotFoundException e) {
+        LOG.error(e.getMessage());
+      }
+    }
+  }
 
-    LOG.info("Loading functions: {}", className);
-    functions.add(FunctionUtils.wrapStaticMethod("formatUuid", className, "formatUuid"));
-    functions.add(FunctionUtils.wrapStaticMethod("newUuid", className, "newUuid"));
-    functions.add(FunctionUtils.wrapStaticMethod("formatDate", className, "formatDate"));
-
-    LOG.debug("Instantiate JSLT");
-    if (transformFile != null) jslt = Parser.compileString(transformFile, functions);
+  public void loadTransformation(String organisation, String type) throws NullPointerException {
+    String transformName = organisation + type;
+    String file = "";
+    if (fileCache.containsKey(transformName)) {
+      jslt = fileCache.get(transformName);
+    } else {
+      String transformFileName = transformName + ".jslt";
+      try {
+        file = Files.readString(Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource(transformFileName)).toURI()));
+      } catch (URISyntaxException | IOException | NullPointerException e) {
+        LOG.error("Cannot find transform {} does not exist", transformFileName);
+        System.exit(1);
+      }
+      LOG.debug("Loading functions: {}", className);
+      setFunctions();
+      LOG.debug("Instantiate JSLT");
+      if (file != null) jslt = Parser.compileString(file, functions);
+      fileCache.put(transformName, jslt);
+    }
   }
 
   public JsonNode transform(JsonNode inputJson) {
-    return transformJson(inputJson);
-  }
-
-  private void validateJson() {
-    //TODO maybe?
-  }
-
-  private String loadTransformation(String organisation, String type) throws URISyntaxException, IOException, NullPointerException {
-    String transformName = organisation + type + ".jslt";
-    String file = "";
-    try {
-      file = Files.readString(Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource(transformName)).toURI()));
-    } catch (URISyntaxException | IOException | NullPointerException e) {
-      LOG.error("Cannot find transform {} does not exist", transformName);
-      System.exit(1);
-    }
-    return file;
-  }
-
-  private JsonNode transformJson(JsonNode inputJson) {
     if (inputJson == null)
       return null;
     return jslt.apply(inputJson);
