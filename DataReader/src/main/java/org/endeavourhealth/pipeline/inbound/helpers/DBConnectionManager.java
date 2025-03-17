@@ -14,6 +14,7 @@ public class DBConnectionManager {
   private static final Logger LOG = LoggerFactory.getLogger(DBConnectionManager.class);
   private static PreparedStatement upsertEvent = null;
   private static PreparedStatement upsertInstance = null;
+  private static Connection connection = null;
 
   static {
     try {
@@ -30,10 +31,13 @@ public class DBConnectionManager {
   }
 
   private static Connection getConnection() throws SQLException {
-    Properties props = new Properties();
-    props.setProperty("user", DBConfig.getSpringDatasourceUsername());
-    props.setProperty("password", DBConfig.getSpringDatasourcePassword());
-    return DriverManager.getConnection(DBConfig.getSpringDatasourceUrl(), props);
+    if (connection == null) {
+      Properties props = new Properties();
+      props.setProperty("user", DBConfig.getSpringDatasourceUsername());
+      props.setProperty("password", DBConfig.getSpringDatasourcePassword());
+      return DriverManager.getConnection(DBConfig.getSpringDatasourceUrl(), props);
+    }
+    return connection;
   }
 
   private static PreparedStatement prepareUpsertEvent() throws SQLException {
@@ -44,7 +48,7 @@ public class DBConnectionManager {
     return getConnection().prepareStatement("INSERT INTO healthdb.instance (id, json) VALUES (?,(?::json)) ON CONFLICT (id) DO UPDATE SET json=?::json");
   }
 
-  private static PreparedStatement getUpsert(String category) {
+  private static PreparedStatement getUpsert(String category) throws SQLException {
     if ("EVENT".equals(category)) {
       return upsertEvent;
     } else if ("INSTANCE".equals(category)) {
