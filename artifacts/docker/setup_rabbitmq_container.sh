@@ -55,5 +55,10 @@ docker exec rabbitmq rabbitmqadmin -V Inbound declare queue name=Data-Undelivere
 docker exec rabbitmq rabbitmqadmin -V Inbound declare binding source=Data-Undeliverable destination=Data-Undelivered
 docker exec rabbitmq rabbitmqctl -p Inbound set_policy "Undeliverable Data" "^Data$" '{"alternate-exchange":"Data-Undeliverable"}' --apply-to exchanges
 
+docker exec rabbitmq rabbitmqadmin -V Inbound declare exchange name=FilingOutcome-Undeliverable type=fanout
+docker exec rabbitmq rabbitmqadmin -V Inbound declare queue name=FilingOutcome-Undelivered
+docker exec rabbitmq rabbitmqadmin -V Inbound declare binding source=FilingOutcome-Undeliverable destination=FilingOutcome-Undelivered
+docker exec rabbitmq rabbitmqctl -p Inbound set_policy "Undeliverable FilingOutcome" "^FilingOutcome$" '{"alternate-exchange":"FilingOutcome-Undeliverable"}' --apply-to exchanges
+
 # Done
 echo "RabbitMQ setup complete!"

@@ -134,7 +134,6 @@ rabbitmqctl set_permissions -p Inbound admin ".*" ".*" ".*"
 /home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare binding source=File-Undeliverable destination=File-Undelivered
 /home/ubuntu/rabbitmqctl -p Inbound set_policy "Undeliverable Files" "^File$" '{"alternate-exchange":"File-Undeliverable"}' --apply-to exchanges
 
-
 # Inbound Data
 /home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare exchange name=Data type=topic
 
@@ -149,3 +148,16 @@ rabbitmqctl set_permissions -p Inbound admin ".*" ".*" ".*"
 /home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare binding source=Data-Undeliverable destination=Data-Undelivered
 /home/ubuntu/rabbitmqctl -p Inbound set_policy "Undeliverable Data" "^Data$" '{"alternate-exchange":"Data-Undeliverable"}' --apply-to exchanges
 
+# Inbound FilingOutcome
+/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare exchange name=FilingOutcome type=topic
+
+/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare queue name=FilingOutcome-EMIS
+/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare binding source=Data destination=FilingOutcome-EMIS routing_key="endeavour-inbound.EMIS.#"
+
+/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare queue name=FilingOutcome-TPP
+/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare binding source=Data destination=FilingOutcome-TPP routing_key="endeavour-inbound.TPP.#"
+
+/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare exchange name=FilingOutcome-Undeliverable type=fanout
+/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare queue name=FilingOutcome-Undelivered
+/home/ubuntu/rabbitmqadmin -u admin -p $INSTANCE_ID -V Inbound declare binding source=FilingOutcome-Undeliverable destination=FilingOutcome-Undelivered
+/home/ubuntu/rabbitmqctl -p Inbound set_policy "Undeliverable FilingOutcome" "^FilingOutcome" '{"alternate-exchange":"FilingOutcome-Undeliverable"}' --apply-to exchanges
