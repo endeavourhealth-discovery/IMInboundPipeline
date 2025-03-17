@@ -20,7 +20,6 @@ public class DataListener {
   private static final Logger LOG = LoggerFactory.getLogger(DataListener.class);
   private static final ObjectMapper objectMapper = new ObjectMapper();
   Transformer transformer = new Transformer();
-  private Connection connection;
   private FilingOutcomeSender filingOutcomeSender;
 
   public DataListener(FilingOutcomeSender filingOutcomeSender) {
