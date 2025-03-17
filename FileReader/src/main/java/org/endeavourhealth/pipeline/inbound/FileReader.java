@@ -1,5 +1,8 @@
 package org.endeavourhealth.pipeline.inbound;
 
+import org.endeavourhealth.pipeline.inbound.service.QueueSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -10,6 +13,8 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+
+import java.util.Arrays;
 
 @SpringBootApplication()
 @ComponentScan(excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = DataSourceAutoConfiguration.class)})
@@ -22,6 +27,9 @@ public class FileReader extends SpringBootServletInitializer implements Applicat
   @Value("${rabbitmq.sourceQueue}")
   private String sourceQueue;
 
+  @Value("${rabbitmq.filingOutcomeQueue}")
+  private String filingOutcomeQueue;
+
   @Value("${rabbitmq.targetExchange}")
   private String targetExchange;
 
@@ -31,13 +39,15 @@ public class FileReader extends SpringBootServletInitializer implements Applicat
   @Value("${queueSender.retryWait:3}")
   private int retryWait;
 
+  private static final Logger LOG = LoggerFactory.getLogger(FileReader.class);
+
   public static void main(String[] args) {
     SpringApplication.run(FileReader.class, args);
   }
 
   @Override
   public void run(ApplicationArguments args) {
-    System.out.println("Running FileReader with targetBaseRoutingKey: " + targetBaseRoutingKey + ", sourceQueue: " + sourceQueue + ", targetExchange: " + targetExchange + ", maxRetries: " + maxRetries + ", retryWait: " + retryWait);
+    LOG.info("Running FileReader with targetBaseRoutingKey: {}, sourceQueue: {}, filingOutcomeQueue: {}, targetExchange: {}, maxRetries: {}, retryWait: {}", targetBaseRoutingKey, sourceQueue, filingOutcomeQueue, targetExchange, maxRetries, retryWait);
   }
 }
 

@@ -32,16 +32,26 @@ public class RabbitMQConfig {
   @Value("${spring.rabbitmq.virtual-host:test}")
   private String rabbitMqVHost;
 
+  @Value("${rabbitmq.filingOutcomeQueue:test22}")
+  private String filingOutcomeQueue;
+
   private static String SOURCE_QUEUE;
+  private static String FILING_OUTCOME_QUEUE;
 
   @PostConstruct
   public void init() {
     SOURCE_QUEUE = sourceQueue;
+    FILING_OUTCOME_QUEUE = filingOutcomeQueue;
   }
 
   public static String getSourceQueue() {
     return SOURCE_QUEUE;
   }
+
+  public static String getFilingOutcomeQueue() {
+    return FILING_OUTCOME_QUEUE;
+  }
+
 
   @Bean
   public ConnectionFactory connectionFactory() {

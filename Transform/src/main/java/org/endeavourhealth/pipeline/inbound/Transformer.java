@@ -28,7 +28,7 @@ public class Transformer {
     LOG.debug("Identify transformation file");
     String transformFile = loadTransformation(org, type);
 
-    LOG.info("Loading functions: {}", className);
+    LOG.debug("Loading functions: {}", className);
     functions.add(FunctionUtils.wrapStaticMethod("formatUuid", className, "formatUuid"));
     functions.add(FunctionUtils.wrapStaticMethod("newUuid", className, "newUuid"));
     functions.add(FunctionUtils.wrapStaticMethod("formatDate", className, "formatDate"));

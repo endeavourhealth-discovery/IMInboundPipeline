@@ -53,7 +53,7 @@ public class FileEventListener {
 
   @RabbitListener(queues = "#{rabbitMQConfig.getSourceQueue()}")
   public void handleFileEvent(Message message) throws Exception {
-    LOG.info("Received file event: {}", message);
+    LOG.debug("Received file event: {}", message);
     List<String> filesInBucket = s3Service.getExistingFilesInBucket(Optional.of(targetBaseRoutingKey));
     if (fileValidator.areAllFilesInBucket(targetBaseRoutingKey, filesInBucket)) {
       for (ProcessOrderFileItem fileItem : getOrderedList()) {
@@ -70,7 +70,7 @@ public class FileEventListener {
   }
 
   private boolean processFile(String filePath, Category category) throws Exception {
-    LOG.info("Processing file: {}", filePath);
+    LOG.debug("Processing file: {}", filePath);
     int lineCount = s3Service.getFileLineCount(filePath);
     InputStream stream = s3Service.getFile(filePath);
     s3Service.moveFileFromTo(filePath, FileStatus.UPLOADED, FileStatus.QUEUING, targetBaseRoutingKey);
@@ -79,7 +79,8 @@ public class FileEventListener {
       if (lineCount != messageCount) {
         throw new Exception("Line count mismatch");
       }
-      LOG.info("Queued {} out of {} lines", messageCount, lineCount);
+      queueSender.sendEOFMessage(filePath, targetBaseRoutingKey, targetExchange, category);
+      LOG.debug("Queued {} out of {} lines", messageCount, lineCount);
       s3Service.moveFileFromTo(filePath, FileStatus.QUEUING, FileStatus.FILING, targetBaseRoutingKey);
     } catch (Exception e) {
       s3Service.moveFileFromTo(filePath, FileStatus.QUEUING, FileStatus.FAILED, targetBaseRoutingKey);

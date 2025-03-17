@@ -35,7 +35,7 @@ public class QueueSender {
   public boolean sendMessage(String exchange, String routingKey, String message, MessagePostProcessor headers) {
     try {
       rabbitTemplate.convertAndSend(exchange, routingKey, message, headers);
-      LOG.info("Message sent to exchange with routing key {}: {} and headers: {}", routingKey, message, headers);
+      LOG.debug("Message sent to exchange with routing key {}: {} and headers: {}", routingKey, message, headers);
       return true;
     } catch (Exception e) {
       LOG.error("Message not sent: {}", e.getMessage());
@@ -51,10 +51,10 @@ public class QueueSender {
       List<String> headers = List.of(line.split(separator));
 
       if (fileValidator.isValidFile(filePath, headers)) {
-        LOG.info("Validated file: {}", filePath);
+        LOG.debug("Validated file: {}", filePath);
         String routingKey = "endeavour-inbound." + targetBaseRoutingKey + "." + filePath.substring(targetBaseRoutingKey.length() + 1);
         while ((line = br.readLine()) != null) {
-          MessagePostProcessor messageHeaders = getHeaders(targetBaseRoutingKey, filePath, category, messageCount + 1);
+          MessagePostProcessor messageHeaders = getHeaders(targetBaseRoutingKey, filePath, category, messageCount + 1, true);
           String[] values = line.split(separator, -1);
           ObjectNode jsonObject = objectMapper.createObjectNode();
           for (int i = 0; i < headers.size(); i++) {
@@ -74,7 +74,7 @@ public class QueueSender {
     return messageCount;
   }
 
-  public MessagePostProcessor getHeaders(String targetBaseRoutingKey, String fileName, Category category, int lineCount) {
+  public MessagePostProcessor getHeaders(String targetBaseRoutingKey, String fileName, Category category, int lineCount, boolean isNotEOF) {
     String[] parts = fileName.split("_");
     if (parts.length >= 4) {
       String domain = parts[2];
@@ -88,10 +88,17 @@ public class QueueSender {
         props.setHeader("location", lineCount);
         props.setHeader("source", fileName);
         props.setHeader("category", category.toString());
-        props.setContentType("application/json");
+        if (isNotEOF)
+          props.setContentType("application/json");
         return msg;
       };
     }
     return null;
+  }
+
+  public void sendEOFMessage(String filePath, String targetBaseRoutingKey, String targetExchange, Category category) {
+    String routingKey = "endeavour-inbound." + targetBaseRoutingKey + "." + filePath.substring(targetBaseRoutingKey.length() + 1);
+    MessagePostProcessor messageHeaders = getHeaders(targetBaseRoutingKey, filePath, category, -1, false);
+    sendMessage(targetExchange, routingKey, "EOF", messageHeaders);
   }
 }
