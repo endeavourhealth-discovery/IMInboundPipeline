@@ -35,7 +35,7 @@ public class QueueSender {
   public boolean sendMessage(String exchange, String routingKey, String message, MessagePostProcessor headers) {
     try {
       rabbitTemplate.convertAndSend(exchange, routingKey, message, headers);
-      LOG.info("Message sent to exchange with routing key {}: {} and headers: {}", routingKey, message, headers);
+      LOG.debug("Message sent to exchange with routing key {}: {} and headers: {}", routingKey, message, headers);
       return true;
     } catch (Exception e) {
       LOG.error("Message not sent: {}", e.getMessage());
