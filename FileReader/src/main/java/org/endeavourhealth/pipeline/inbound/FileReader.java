@@ -21,16 +21,16 @@ import java.util.Arrays;
 @Configuration
 public class FileReader extends SpringBootServletInitializer implements ApplicationRunner {
 
-  @Value("${rabbitmq.targetBaseRoutingKey}")
+  @Value("${rabbitmq.targetBaseRoutingKey:test}")
   private String targetBaseRoutingKey;
 
-  @Value("${rabbitmq.sourceQueue}")
+  @Value("${rabbitmq.sourceQueue:test}")
   private String sourceQueue;
 
-  @Value("${rabbitmq.filingOutcomeQueue}")
+  @Value("${rabbitmq.filingOutcomeQueue:test}")
   private String filingOutcomeQueue;
 
-  @Value("${rabbitmq.targetExchange}")
+  @Value("${rabbitmq.targetExchange:test}")
   private String targetExchange;
 
   @Value("${queueSender.maxRetries:3}")
