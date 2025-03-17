@@ -8,7 +8,7 @@ import "Utilities.jslt" as utils
       "patient" : if (.PatientGuid) formatUuid(.PatientGuid, "Patient Guid"),
       "concept" : "emis_" + .CodeId,
       "effectiveDate" : if (.EffectiveDate) formatDate("yyyy-MM-dd", .EffectiveDate),
-      "numericValue" : .Value
+      "numericValue" : if (.Value) number(.Value)
     }
   ])
 }
