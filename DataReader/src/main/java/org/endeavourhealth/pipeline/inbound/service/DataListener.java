@@ -20,23 +20,32 @@ public class DataListener {
   private static final Logger LOG = LoggerFactory.getLogger(DataListener.class);
   private static final ObjectMapper objectMapper = new ObjectMapper();
   Transformer transformer = new Transformer();
+  private FilingOutcomeSender filingOutcomeSender;
+
+  public DataListener(FilingOutcomeSender filingOutcomeSender) {
+    this.filingOutcomeSender = filingOutcomeSender;
+  }
 
   @RabbitListener(queues = "#{rabbitMQConfig.getQueue()}")
   public void handleDataMessages(Message message) throws JsonProcessingException {
     LOG.debug("Received data message: {}", message);
     String messageBody = new String(message.getBody());
     LOG.debug("Received data body: {}", messageBody);
-    JsonNode dataNode = objectMapper.readTree(messageBody);
-    try {
-      Map<String, Object> headers = message.getMessageProperties().getHeaders();
-      transformer.loadTransformation(headers.get("publisher").toString(), headers.get("datatype").toString());
-      JsonNode entities = transformer.transform(dataNode).get("entities");
-      String category = headers.get("category").toString();
-      saveToDB(entities, category);
-      LOG.debug("Filed to DB");
-    } catch (Exception e) {
-      LOG.error("{}", e.toString());
-      System.exit(1);
+    if ("EOF".equals(messageBody)) {
+      filingOutcomeSender.sendMessage(message);
+    } else {
+      JsonNode dataNode = objectMapper.readTree(messageBody);
+      try {
+        Map<String, Object> headers = message.getMessageProperties().getHeaders();
+        transformer.loadTransformation(headers.get("publisher").toString(), headers.get("datatype").toString());
+        JsonNode entities = transformer.transform(dataNode).get("entities");
+        String category = headers.get("category").toString();
+        saveToDB(entities, category);
+        LOG.debug("Filed to DB");
+      } catch (Exception e) {
+        LOG.error("{}", e.toString());
+        System.exit(1);
+      }
     }
   }
 

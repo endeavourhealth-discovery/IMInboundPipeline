@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # Step 1: Run RabbitMQ container in the background
 docker run -d --name rabbitmq \
   -p 5672:5672 -p 15672:15672 \
@@ -23,6 +21,7 @@ echo "Declaring exchanges..."
 
 docker exec rabbitmq rabbitmqadmin -V Inbound declare exchange name=File type=topic
 docker exec rabbitmq rabbitmqadmin -V Inbound declare exchange name=Data type=topic
+docker exec rabbitmq rabbitmqadmin -V Inbound declare exchange name=FilingOutcome type=topic
 
 # Step 4: Declare queues
 echo "Declaring queues..."
@@ -31,6 +30,8 @@ docker exec rabbitmq rabbitmqadmin -V Inbound declare queue name=File-EMIS
 docker exec rabbitmq rabbitmqadmin -V Inbound declare queue name=File-TPP
 docker exec rabbitmq rabbitmqadmin -V Inbound declare queue name=Data-EMIS
 docker exec rabbitmq rabbitmqadmin -V Inbound declare queue name=Data-TPP
+docker exec rabbitmq rabbitmqadmin -V Inbound declare queue name=FilingOutcome-EMIS
+docker exec rabbitmq rabbitmqadmin -V Inbound declare queue name=FilingOutcome-TPP
 
 # Step 5: Declare bindings
 echo "Declaring bindings..."
@@ -39,6 +40,8 @@ docker exec rabbitmq rabbitmqadmin -V Inbound declare binding source=File destin
 docker exec rabbitmq rabbitmqadmin -V Inbound declare binding source=File destination=File-TPP routing_key="endeavour-inbound.TPP.#"
 docker exec rabbitmq rabbitmqadmin -V Inbound declare binding source=Data destination=Data-EMIS routing_key="endeavour-inbound.EMIS.#"
 docker exec rabbitmq rabbitmqadmin -V Inbound declare binding source=Data destination=Data-TPP routing_key="endeavour-inbound.TPP.#"
+docker exec rabbitmq rabbitmqadmin -V Inbound declare binding source=FilingOutcome destination=FilingOutcome-EMIS routing_key="endeavour-inbound.EMIS.#"
+docker exec rabbitmq rabbitmqadmin -V Inbound declare binding source=FilingOutcome destination=FilingOutcome-TPP routing_key="endeavour-inbound.TPP.#"
 
 #Step 6: Declare File-Undelivered exchange & queue
 echo "Declaring File-Undelivered exchange & queue..."
@@ -51,6 +54,11 @@ docker exec rabbitmq rabbitmqadmin -V Inbound declare exchange name=Data-Undeliv
 docker exec rabbitmq rabbitmqadmin -V Inbound declare queue name=Data-Undelivered
 docker exec rabbitmq rabbitmqadmin -V Inbound declare binding source=Data-Undeliverable destination=Data-Undelivered
 docker exec rabbitmq rabbitmqctl -p Inbound set_policy "Undeliverable Data" "^Data$" '{"alternate-exchange":"Data-Undeliverable"}' --apply-to exchanges
+
+docker exec rabbitmq rabbitmqadmin -V Inbound declare exchange name=FilingOutcome-Undeliverable type=fanout
+docker exec rabbitmq rabbitmqadmin -V Inbound declare queue name=FilingOutcome-Undelivered
+docker exec rabbitmq rabbitmqadmin -V Inbound declare binding source=FilingOutcome-Undeliverable destination=FilingOutcome-Undelivered
+docker exec rabbitmq rabbitmqctl -p Inbound set_policy "Undeliverable FilingOutcome" "^FilingOutcome$" '{"alternate-exchange":"FilingOutcome-Undeliverable"}' --apply-to exchanges
 
 # Done
 echo "RabbitMQ setup complete!"
