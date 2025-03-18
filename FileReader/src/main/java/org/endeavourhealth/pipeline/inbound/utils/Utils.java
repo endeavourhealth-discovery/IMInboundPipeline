@@ -37,9 +37,9 @@ public class Utils {
     return s;
   }
 
-  public static String getSeparatorFromFileName(String fileName) {
-    if (fileName.endsWith(".csv")) return ",";
-    else if (fileName.endsWith(".tsv")) return "\t";
+  public static char getSeparatorFromFileName(String fileName) {
+    if (fileName.endsWith(".csv")) return ',';
+    else if (fileName.endsWith(".tsv")) return '\t';
     else throw new IllegalArgumentException("File type not supported: " + fileName);
   }
 }

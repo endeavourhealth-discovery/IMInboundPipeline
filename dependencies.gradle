@@ -16,7 +16,9 @@ ext {
     slf4j             : '1.7.25',
     spring            : '3.4.1',
     springDoc         : '2.3.0',
-    systemStubs       : '2.1.7'
+    systemStubs       : '2.1.7',
+    commonsCsv        : '1.11.0'
+
   ]
   libs = [
     assertJ           : "org.assertj:assertj-core:$versions.assertJ",
@@ -49,6 +51,7 @@ ext {
     springTestSecurity: "org.springframework.security:spring-security-test",
     springTomcat      : "org.springframework.boot:spring-boot-starter-tomcat",
     springWeb         : "org.springframework.boot:spring-boot-starter-web",
-    systemStubs       : "uk.org.webcompere:system-stubs-jupiter:$versions.systemStubs"
+    systemStubs       : "uk.org.webcompere:system-stubs-jupiter:$versions.systemStubs",
+    commonsCsv        : "org.apache.commons:commons-csv:$versions.commonsCsv"
   ]
 }
