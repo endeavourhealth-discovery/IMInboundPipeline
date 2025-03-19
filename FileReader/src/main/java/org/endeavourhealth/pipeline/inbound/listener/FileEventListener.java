@@ -54,6 +54,8 @@ public class FileEventListener {
   @RabbitListener(queues = "#{rabbitMQConfig.getSourceQueue()}")
   public void handleFileEvent(Message message) throws Exception {
     LOG.debug("Received file event: {}", message);
+    boolean hasFilesInFailed = s3Service.hasFilesInFailed(Optional.of(targetBaseRoutingKey + "/FAILED"));
+    System.out.println("Failed files: " + hasFilesInFailed);
     List<String> filesInBucket = s3Service.getExistingFilesInBucket(Optional.of(targetBaseRoutingKey));
     if (fileValidator.areAllFilesInBucket(targetBaseRoutingKey, filesInBucket)) {
       for (ProcessOrderFileItem fileItem : getOrderedList()) {
