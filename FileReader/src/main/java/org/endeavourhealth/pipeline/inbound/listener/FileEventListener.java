@@ -54,6 +54,11 @@ public class FileEventListener {
   @RabbitListener(queues = "#{rabbitMQConfig.getSourceQueue()}")
   public void handleFileEvent(Message message) throws Exception {
     LOG.debug("Received file event: {}", message);
+    boolean hasFilesInFailed = s3Service.hasFilesInFailed(Optional.of(targetBaseRoutingKey + "/FAILED"));
+    if (hasFilesInFailed) {
+      LOG.error("Failed files found in S3");
+      System.exit(1);
+    }
     List<String> filesInBucket = s3Service.getExistingFilesInBucket(Optional.of(targetBaseRoutingKey));
     if (fileValidator.areAllFilesInBucket(targetBaseRoutingKey, filesInBucket)) {
       for (ProcessOrderFileItem fileItem : getOrderedList()) {
@@ -69,7 +74,7 @@ public class FileEventListener {
     }
   }
 
-  private boolean processFile(String filePath, Category category) throws Exception {
+  private void processFile(String filePath, Category category) throws Exception {
     LOG.debug("Processing file: {}", filePath);
     int lineCount = s3Service.getFileLineCount(filePath);
     InputStream stream = s3Service.getFile(filePath);
@@ -86,8 +91,6 @@ public class FileEventListener {
       s3Service.moveFileFromTo(filePath, FileStatus.QUEUING, FileStatus.FAILED, targetBaseRoutingKey);
       System.exit(1);
     }
-
-    return true;
   }
 
   public List<ProcessOrderFileItem> getOrderedList() throws IOException {

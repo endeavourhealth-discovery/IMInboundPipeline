@@ -83,6 +83,19 @@ public class S3Service {
     return filesInBucket;
   }
 
+
+  public boolean hasFilesInFailed(Optional<String> prefix) {
+    S3Client s3 = getS3Client();
+    ListObjectsV2Request request = ListObjectsV2Request.builder()
+      .bucket(BUCKET_NAME)
+      .prefix(prefix.orElse(""))
+      .maxKeys(1)
+      .build();
+
+    ListObjectsV2Response response = s3.listObjectsV2(request);
+    return response.hasContents();
+  }
+
   private String getFileName(String path) {
     return Paths.get(path).getFileName().toString();
   }
