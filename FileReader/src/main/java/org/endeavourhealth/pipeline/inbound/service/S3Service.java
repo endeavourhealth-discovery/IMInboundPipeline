@@ -58,13 +58,12 @@ public class S3Service {
       s3.copyObject(copyRequest);
 
       DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder().bucket(BUCKET_NAME).key(source).build();
-
       s3.deleteObject(deleteRequest);
       s3.close();
     } catch (Exception e) {
       LOG.error("Failed to move file from {} to {}", source, destination);
       LOG.error(e.getMessage());
-      throw new RuntimeException(e);
+      System.exit(1);
     }
   }
 

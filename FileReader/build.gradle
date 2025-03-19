@@ -16,6 +16,7 @@ dependencies {
   implementation libs.springLoader
   implementation libs.springWeb
   implementation libs.springDoc
+  implementation libs.commonsCsv
 
   runtimeOnly libs.springDevTools
 

@@ -2,6 +2,9 @@ package org.endeavourhealth.pipeline.inbound.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.endeavourhealth.pipeline.inbound.utils.Utils;
 import org.endeavourhealth.pipeline.inbound.model.Category;
 import org.endeavourhealth.pipeline.inbound.validator.FileValidator;
@@ -45,21 +48,27 @@ public class QueueSender {
 
   public int populateQueue(InputStream inputStream, String filePath, String targetBaseRoutingKey, String targetExchange, Category category, int maxRetries, int retryWait) throws Exception {
     int messageCount = 0;
-    try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
-      String line = br.readLine();
-      String separator = Utils.getSeparatorFromFileName(filePath);
-      List<String> headers = List.of(line.split(separator));
+    char delimiter = Utils.getSeparatorFromFileName(filePath);
 
+    CSVFormat csvFormat = CSVFormat.Builder.create()
+      .setDelimiter(delimiter)
+      .setHeader()
+      .setSkipHeaderRecord(true)
+      .build();
+
+    try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream)); CSVParser csvParser = new CSVParser(br, csvFormat)) {
+      List<String> headers = csvParser.getHeaderNames();
       if (fileValidator.isValidFile(filePath, headers)) {
         LOG.debug("Validated file: {}", filePath);
         String routingKey = "endeavour-inbound." + targetBaseRoutingKey + "." + filePath.substring(targetBaseRoutingKey.length() + 1);
-        while ((line = br.readLine()) != null) {
-          MessagePostProcessor messageHeaders = getHeaders(targetBaseRoutingKey, filePath, category, messageCount + 1, true);
-          String[] values = line.split(separator, -1);
+        MessagePostProcessor messageHeaders = getHeaders(targetBaseRoutingKey, filePath, category, messageCount + 1, true);
+        for (CSVRecord record : csvParser) {
+          LOG.debug("Row: {}", record);
           ObjectNode jsonObject = objectMapper.createObjectNode();
-          for (int i = 0; i < headers.size(); i++) {
-            jsonObject.put(Utils.stripQuotes(headers.get(i)), Utils.stripQuotes(values[i]));
+          for (String header : headers) {
+            jsonObject.put(header, record.get(header));
           }
+          LOG.debug("JSON: {}", jsonObject);
           boolean messageSent = Boolean.TRUE.equals(utils.executeWithRetry(() -> sendMessage(targetExchange, routingKey, jsonObject.toString(), messageHeaders), maxRetries, retryWait));
           if (!messageSent) throw new Exception("Message not sent");
           messageCount++;
