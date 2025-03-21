@@ -1,0 +1,36 @@
+{
+  "@id": .ObservationGuid,
+  "@type": "Condition",
+  "label": "Condition",
+  "patient": {
+    "@id": .PatientGuid,
+    "@type": "Patient",
+    "label": "Patient"
+  },
+  "organisation": if (.OrganisationGuid and .OrganisationGuid != "") {
+    "@id": .OrganisationGuid,
+    "@type": "Organisation",
+    "label": "Organisation"
+  } else null,
+  "parentProblem": if (.ParentProblemObservationGuid and .ParentProblemObservationGuid != "") {
+    "@id": .ParentProblemObservationGuid,
+    "@type": "Condition",
+    "label": "Parent Problem"
+  } else null,
+  "deleted": if (.Deleted == "true") true else false,
+  "comment": if (.Comment and .Comment != "") .Comment else null,
+  "endDate": if (.EndDate and .EndDate != "") .EndDate else null,
+  "endDatePrecision": if (.EndDatePrecision and .EndDatePrecision != "") .EndDatePrecision else null,
+  "expectedDuration": if (.ExpectedDuration and .ExpectedDuration != "") .ExpectedDuration else null,
+  "lastReviewDate": if (.LastReviewDate and .LastReviewDate != "") .LastReviewDate else null,
+  "lastReviewDatePrecision": if (.LastReviewDatePrecision and .LastReviewDatePrecision != "") .LastReviewDatePrecision else null,
+  "lastReviewUser": if (.LastReviewUserInRoleGuid and .LastReviewUserInRoleGuid != "") {
+    "@id": .LastReviewUserInRoleGuid,
+    "@type": "PersonInRole",
+    "label": "Last Review User"
+  } else null,
+  "parentProblemRelationship": if (.ParentProblemRelationship and .ParentProblemRelationship != "") .ParentProblemRelationship else null,
+  "problemStatusDescription": if (.ProblemStatusDescription and .ProblemStatusDescription != "") .ProblemStatusDescription else null,
+  "significanceDescription": if (.SignificanceDescription and .SignificanceDescription != "") .SignificanceDescription else null,
+  "processingId": if (.ProcessingId and .ProcessingId != "") .ProcessingId else null
+}

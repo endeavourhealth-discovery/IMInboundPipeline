@@ -1,0 +1,32 @@
+{
+    "@id": .SlotGuid,
+    "@type": "Appointment",
+    "label": "Appointment",
+    "patient": {
+        "@id": .PatientGuid,
+        "@type": "Patient",
+        "label": "Patient"
+    },
+    "organisation": {
+        "@id": .OrganisationGuid,
+        "@type": "Organisation",
+        "label": "Organisation"
+    },
+    "effectiveDate": .AppointmentDate,
+    "effectiveTime": .AppointmentStartTime,
+    "plannedDuration": if (.PlannedDurationInMinutes and .PlannedDurationInMinutes != "") .PlannedDurationInMinutes else null,
+    "sendInTime": if (.SendInTime and .SendInTime != "") .SendInTime else null,
+    "leftTime": if (.LeftTime and .LeftTime != "") .LeftTime else null,
+    "didNotAttend": if (.DidNotAttend == "Y") true else false,
+    "patientWaitInMin": if (.PatientWaitInMin and .PatientWaitInMin != "") .PatientWaitInMin else null,
+    "appointmentDelayInMin": if (.AppointmentDelayInMin and .AppointmentDelayInMin != "") .AppointmentDelayInMin else null,
+    "actualDurationInMinutes": if (.ActualDurationInMinutes and .ActualDurationInMinutes != "") .ActualDurationInMinutes else null,
+    "session": if (.SessionGuid and .SessionGuid != "") {
+        "@id": .SessionGuid,
+        "@type": "AppointmentSession",
+        "label": "Appointment Session"
+    } else null,
+    "dnaReasonCodeId": if (.DnaReasonCodeId and .DnaReasonCodeId != "") .DnaReasonCodeId else null,
+    "deleted": if (.Deleted and .Deleted == "true") true else false,
+    "processingId": if (.ProcessingId and .ProcessingId != "") .ProcessingId else null
+}

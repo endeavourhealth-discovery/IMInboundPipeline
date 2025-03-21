@@ -1,0 +1,18 @@
+{
+  "@id": .UserInRoleGuid,
+  "@type": "Person",
+  "label": "Person",
+  "organisation": {
+    "@id": .OrganisationGuid,
+    "@type": "Organisation",
+    "label": "Organisation"
+  },
+  "title": if (.Title and .Title != "") .Title else null,
+  "givenName": if (.GivenName and .GivenName != "") .GivenName else null,
+  "surname": if (.Surname and .Surname != "") .Surname else null,
+  "jobCategoryCode": if (.JobCategoryCode and .JobCategoryCode != "") .JobCategoryCode else null,
+  "jobCategoryName": if (.JobCategoryName and .JobCategoryName != "") .JobCategoryName else null,
+  "contractStartDate": if (.ContractStartDate and .ContractStartDate != "") .ContractStartDate else null,
+  "contractEndDate": if (.ContractEndDate and .ContractEndDate != "") .ContractEndDate else null,
+  "processingId": if (.ProcessingId and .ProcessingId != "") .ProcessingId else null
+}

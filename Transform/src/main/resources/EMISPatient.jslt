@@ -1,87 +1,63 @@
-import "Utilities.jslt" as utils
-
-let addressId = newUuid()
-
 {
-  "entities" : utils:cleanArray([
-    {
-      "@id" : formatUuid(.PatientGuid, "@id"),
-      "@type" : "Patient",
-      //"Provenance": .Provenance,
-      //"Component": .Component,
-      "title" : .Title,
-      "familyName" : .Surname,
-      //"CallingName": .CallingName,
-      "forenames" : .GivenName + " " + .MiddleNames,
-      //"FullName": .FullName,
-      "genderAsStated" : .Sex,
-      "homeTelephoneNumber" : .HomePhone,
-      //"TelephoneNumber": .TelephoneNumber,
-      "mobileTelephoneNumber" : .MobilePhone,
-      //"WorkTelephoneNumber": .WorkTelephoneNumber,
-      "email" : .EmailAddress,
-      "dateOfBirth" : if (.DateOfBirth) formatDate("yyyy-MM-dd", .DateOfBirth),
-      //"OdsCode": .ODSCode,
-      //"TimeOfBirth": .TimeOfBirth,
-      "deathIndicator" : boolean(.DateOfDeath),
-      //"Ethnicity": .Ethnicity,
-      //"CommunicationLanguage": .CommunicationLanguage,
-      "dateOfDeath" : if (.DateOfDeath) formatDate("yyyy-MM-dd", .DateOfDeath),
-      //"TimeOfDeath": .TimeOfDeath,
-      //TODO "Age": .Age,
-      //"PseudonymisedId": .PseudonymisedId,
-      //"SamePersonAs": .SamePersonAs,
-      //"PlaceOfResidenceAtEvent": .PlaceOfResidenceAtEvent,
-      "address" : if (boolean(.NumberAndStreet or .Village or .Town or .County or .Postcode)) $addressId,
-      //"HomeAddress": .HomeAddress,
-      //"WorkAddress": .WorkAddress,
-      //"TemporaryAddress": .TemporaryAddress,
-      //"PdsSensitive": .PdsSensitive,
-      "nhsNumber" : .NhsNumber
-    //"HospitalInpatientStay": .HospitalInpatientStay,
-    //"Appointment": .Appointment,
-    //"CarePlan": .CarePlan,
-    //"Condition": .Condition,
-    //"EmergencyCareEncounter": .EmergencyCareEncounter,
-    //"AllergyIntoleranceOrAdverseReaction": .AllergyIntoleranceOrAdverseReaction,
-    //"Event": .Event,
-    //"FamilyHistory": .FamilyHistory,
-    //"ServiceRequest": .ServiceRequest,
-    //"TestRequest": .TestRequest,
-    //"Immunisation": .Immunisation,
-    //"HospitalOutpatientEncounter": .HospitalOutpatientEncounter,
-    //"Encounter": .Encounter,
-    //"Consultation": .Consultation,
-    //"AdministrationNote": .AdministrationNote,
-    //"CriticalCareEncounter": .CriticalCareEncounter,
-    //"MedicationStatement": .MedicationStatement,
-    //"MedicationAuthorisation": .MedicationAuthorisation,
-    //"Prescription": .Prescription,
-    //"HospitalDischarge": .HospitalDischarge,
-    //"TextNote": .TextNote,
-    //"Observation": .Observation,
-    //"InvestigationTestHeader": .InvestigationTestHeader,
-    //"HospitalAdmission": .HospitalAdmission,
-    //"Procedure": .Procedure,
-    //"PromptResponse": .PromptResponse,
-    //"DiagnosticReport": .DiagnosticReport,
-    //"EpisodeOfCare": .EpisodeOfCare,
-    //"RegistrationCareEpisodes": .RegistrationCareEpisodes,
-    //"GpRegistrationAtEvent": .GpRegistrationAtEvent,
-    //"GmsRegistrationStatusOnReferenceDate": .GmsRegistrationStatusOnReferenceDate,
-    //"GmsRegistrationStatusAtEvent": .GmsRegistrationStatusAtEvent,
-    //"GmsPatientRegisteredPractice": .GmsPatientRegisteredPractice,
-    //"GpRegistrationAdministrationStatus": .GpRegistrationAdministrationStatus
+    "@id": .PatientGuid,
+    "@type": "Patient",
+    "label": "Patient",
+    "organisation": {
+        "@id": .OrganisationGuid,
+        "@type": "Organisation",
+        "label": "Organisation"
     },
-    if (boolean(.NumberAndStreet or .Village or .Town or .County or .Postcode))
-      {
-        "@id" : $addressId,
-        "@type" : "Address",
-        "addressLine1" : if (.HouseNameFlatNumber) .HouseNameFlatNumber else .NumberAndStreet,
-        "addressLine2" : .Village,
-        "city" : .Town,
-        "region" : .County,
-        "postCode" : .Postcode
-      }
-  ])
+    "usualGp": if (.UsualGpUserInRoleGuid and .UsualGpUserInRoleGuid != "") {
+        "@id": .UsualGpUserInRoleGuid,
+        "@type": "PersonInRole",
+        "label": "Usual GP"
+    } else null,
+    "statedGender": if (.Sex == "m") {
+        "@id": "http://hl7.org/fhir/ValueSet/administrative-gender#male",
+        "name": "Male"
+    } else if (.Sex == "f") {
+        "@id": "http://hl7.org/fhir/ValueSet/administrative-gender#female",
+        "name": "Female"
+    } else null,
+    "dateOfBirth": .DateOfBirth,
+    "dateOfDeath": if (.DateOfDeath and .DateOfDeath != "") .DateOfDeath else null,
+    "title": .Title,
+    "givenName": .GivenName,
+    "middleNames": if (.MiddleNames and .MiddleNames != "") .MiddleNames else null,
+    "dateOfRegistration": .DateOfRegistration,
+    "nhsNumber": .NhsNumber,
+    "patientNumber": .PatientNumber,
+    "patientTypeDescription": .PatientTypeDescription,
+    "dummyType": if (.DummyType and .DummyType != "") .DummyType else null,
+    "address": {
+        "houseNameFlatNumber": .HouseNameFlatNumber,
+        "numberAndStreet": .NumberAndStreet,
+        "village": .Village,
+        "town": .Town,
+        "county": if (.County and .County != "") .County else null,
+        "postcode": .Postcode
+    },
+    "residentialInstituteCode": if (.ResidentialInstituteCode and .ResidentialInstituteCode != "") .ResidentialInstituteCode else null,
+    "nhsNumberStatus": if (.NHSNumberStatus and .NHSNumberStatus != "") .NHSNumberStatus else null,
+    "carerName": if (.CarerName and .CarerName != "") .CarerName else null,
+    "carerRelation": if (.CarerRelation and .CarerRelation != "") .CarerRelation else null,
+    "personGuid": if (.PersonGuid and .PersonGuid != "") .PersonGuid else null,
+    "dateOfDeactivation": if (.DateofDeactivation and .DateofDeactivation != "") .DateofDeactivation else null,
+    "deleted": if (.Deleted and .Deleted == "true") true else false,
+    "spineSensitive": if (.SpineSensitive and .SpineSensitive == "true") true else false,
+    "isConfidential": if (.IsConfidential and .IsConfidential == "true") true else false,
+    "emailAddress": if (.EmailAddress and .EmailAddress != "") .EmailAddress else null,
+    "homePhone": if (.HomePhone and .HomePhone != "") .HomePhone else null,
+    "mobilePhone": if (.MobilePhone and .MobilePhone != "") .MobilePhone else null,
+    "externalUsualGp": if (.ExternalUsualGPGuid and .ExternalUsualGPGuid != "") {
+        "@id": .ExternalUsualGPGuid,
+        "@type": "PersonInRole",
+        "label": "External Usual GP"
+    } else null,
+    "externalUsualGpOrganisation": if (.ExternalUsualGPOrganisation and .ExternalUsualGPOrganisation != "") {
+        "@id": .ExternalUsualGPOrganisation,
+        "@type": "Organisation",
+        "label": "External Usual GP Organisation"
+    } else null,
+    "processingId": if (.ProcessingId and .ProcessingId != "") .ProcessingId else null
 }

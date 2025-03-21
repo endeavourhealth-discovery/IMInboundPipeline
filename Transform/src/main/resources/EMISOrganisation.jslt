@@ -1,36 +1,26 @@
-import "Utilities.jslt" as utils
-
-let relationshipIdParent = newUuid()
-let relationshipIdLocation = newUuid()
-
 {
-  "entities" : utils:cleanArray([
-    {
-      "@id" : formatUuid(.OrganisationGuid, "@id"),
-      "@type" : "Organisation",
-      "label" : .OrganisationName,
-      "operationalStartDate" : if (.OpenDate) formatDate("yyyy-MM-dd", .OpenDate),
-      "operationalEndDate" : if (.CloseDate) formatDate("yyyy-MM-dd", .CloseDate),
-      "odsCode" : if (.ODSCode) .ODSCode,
-      "organisationRelationship" :
-      utils:cleanArray([
-        if (.ParentOrganisationGuid) $relationshipIdParent,
-        if (.MainLocationGuid) $relationshipIdLocation
-      ])
-    },
-    if (.ParentOrganisationGuid)
-      {
-        "@id" : if (.ParentOrganisationGuid) $relationshipIdParent,
-        "@type" : "OrganisationRelationship",
-        "organisation" : if (.ParentOrganisationGuid) formatUuid(.ParentOrganisationGuid, "organisation (ParentOrganisationGuid)"),
-        "relationshipType" : "ODS_Relationship_6"
-      },
-    if (.MainLocationGuid)
-      {
-        "@id" : if (.MainLocationGuid)  $relationshipIdLocation,
-        "@type" : "OrganisationRelationship",
-        "organisation" : if (.MainLocationGuid) formatUuid(.MainLocationGuid, "organisation (MainLocationGuid)"),
-        "relationshipType" : if (.MainLocationGuid) "ODS_Relationship_5"
-      }
-  ])
+  "@id": .OrganisationGuid,
+  "@type": "Organisation",
+  "label": "Organisation",
+  "name": .OrganisationName,
+  "odsCode": .ODSCode,
+  "organisationType": .OrganisationType,
+  "openDate": if (.OpenDate and .OpenDate != "") .OpenDate else null,
+  "closeDate": if (.CloseDate and .CloseDate != "") .CloseDate else null,
+  "parentOrganisation": if (.ParentOrganisationGuid and .ParentOrganisationGuid != "") {
+    "@id": .ParentOrganisationGuid,
+    "@type": "Organisation",
+    "label": "Parent Organisation"
+  } else null,
+  "ccgOrganisation": if (.CCGOrganisationGuid and .CCGOrganisationGuid != "") {
+    "@id": .CCGOrganisationGuid,
+    "@type": "Organisation",
+    "label": "CCG Organisation"
+  } else null,
+  "mainLocation": if (.MainLocationGuid and .MainLocationGuid != "") {
+    "@id": .MainLocationGuid,
+    "@type": "Location",
+    "label": "Main Location"
+  } else null,
+  "processingId": if (.ProcessingId and .ProcessingId != "") .ProcessingId else null
 }

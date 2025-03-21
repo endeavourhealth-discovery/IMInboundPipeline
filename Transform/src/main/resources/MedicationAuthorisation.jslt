@@ -1,0 +1,48 @@
+{
+  "@id": .IssueRecordGuid,
+  "@type": "MedicationAuthorisation",
+  "label": "Medication Course (Authorisation)",
+  "patient": {
+    "@id": .PatientGuid,
+    "@type": "Patient",
+    "label": "Patient"
+  },
+  "organisation": {
+    "@id": .OrganisationGuid,
+    "@type": "Organisation",
+    "label": "Organisation"
+  },
+  "drugRecord": if (.DrugRecordGuid and .DrugRecordGuid != "") {
+    "@id": .DrugRecordGuid,
+    "@type": "Medication",
+    "label": "Drug Record"
+  } else null,
+  "effectiveDate": if (.EffectiveDate and .EffectiveDate != "") .EffectiveDate else null,
+  "effectiveDatePrecision": if (.EffectiveDatePrecision and .EffectiveDatePrecision != "") .EffectiveDatePrecision else null,
+  "enteredDate": if (.EnteredDate and .EnteredDate != "") .EnteredDate else null,
+  "enteredTime": if (.EnteredTime and .EnteredTime != "") .EnteredTime else null,
+  "clinician": if (.ClinicianUserInRoleGuid and .ClinicianUserInRoleGuid != "") {
+    "@id": .ClinicianUserInRoleGuid,
+    "@type": "PersonInRole",
+    "label": "Clinician"
+  } else null,
+  "enteredBy": if (.EnteredByUserInRoleGuid and .EnteredByUserInRoleGuid != "") {
+    "@id": .EnteredByUserInRoleGuid,
+    "@type": "PersonInRole",
+    "label": "Entered By"
+  } else null,
+  "codeId": if (.CodeId and .CodeId != "") .CodeId else null,
+  "dosage": if (.Dosage and .Dosage != "") .Dosage else null,
+  "quantity": if (.Quantity and .Quantity != "") .Quantity else null,
+  "quantityUnit": if (.QuantityUnit and .QuantityUnit != "") .QuantityUnit else null,
+  "problemObservation": if (.ProblemObservationGuid and .ProblemObservationGuid != "") {
+    "@id": .ProblemObservationGuid,
+    "@type": "Condition",
+    "label": "Problem Observation"
+  } else null,
+  "courseDurationInDays": if (.CourseDurationInDays and .CourseDurationInDays != "") .CourseDurationInDays else null,
+  "estimatedNhsCost": if (.EstimatedNhsCost and .EstimatedNhsCost != "") .EstimatedNhsCost else null,
+  "isConfidential": if (.IsConfidential == "true") true else false,
+  "deleted": if (.Deleted == "true") true else false,
+  "processingId": if (.ProcessingId and .ProcessingId != "") .ProcessingId else null
+}
