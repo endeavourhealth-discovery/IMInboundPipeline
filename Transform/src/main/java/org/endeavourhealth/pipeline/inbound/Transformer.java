@@ -79,14 +79,6 @@ public class Transformer {
   }
 
   public static String formatDate(String format, String date) {
-    return formatDateTime(format, date, false);
-  }
-
-  public static String formatDateTime(String format, String dateTime) {
-    return formatDateTime(format, dateTime, true);
-  }
-
-  public static String formatDateTime(String format, String date, boolean includesTime) {
     if (date == null) {
       LOG.error("Date is null");
       return "NULL";
@@ -95,9 +87,21 @@ public class Transformer {
       return null;
 
     DateTimeFormatter incomingFormatter = getFormatter(format);
-    LocalDateTime parsedDate = includesTime
-      ? LocalDateTime.parse(date, incomingFormatter)
-      : LocalDate.parse(date, incomingFormatter).atStartOfDay();
+    LocalDateTime parsedDate = LocalDate.parse(date, incomingFormatter).atStartOfDay();
+
+    return parsedDate.format(getFormatter("yyyy-MM-dd'T'HH:mm:ss.SSS")) + "Z";
+  }
+
+  public static String formatDateTime(String format, String dateTime) {
+    if (dateTime == null) {
+      LOG.error("DateTime is null");
+      return "NULL";
+    }
+    if (dateTime.isEmpty())
+      return null;
+
+    DateTimeFormatter incomingFormatter = getFormatter(format);
+    LocalDateTime parsedDate = LocalDateTime.parse(dateTime, incomingFormatter);
 
     return parsedDate.format(getFormatter("yyyy-MM-dd'T'HH:mm:ss.SSS")) + "Z";
   }
