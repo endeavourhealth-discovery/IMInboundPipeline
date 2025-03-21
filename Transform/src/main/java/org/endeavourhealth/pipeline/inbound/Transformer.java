@@ -32,6 +32,7 @@ public class Transformer {
         functions.add(FunctionUtils.wrapStaticMethod("formatUuid", className, "formatUuid"));
         functions.add(FunctionUtils.wrapStaticMethod("newUuid", className, "newUuid"));
         functions.add(FunctionUtils.wrapStaticMethod("formatDate", className, "formatDate"));
+        functions.add(FunctionUtils.wrapStaticMethod("formatDateTime", className, "formatDateTime"));
       } catch (ClassNotFoundException e) {
         LOG.error(e.getMessage());
       }
@@ -78,6 +79,14 @@ public class Transformer {
   }
 
   public static String formatDate(String format, String date) {
+    return formatDateTime(format, date, false);
+  }
+
+  public static String formatDateTime(String format, String dateTime) {
+    return formatDateTime(format, dateTime, true);
+  }
+
+  public static String formatDateTime(String format, String date, boolean includesTime) {
     if (date == null) {
       LOG.error("Date is null");
       return "NULL";
@@ -86,7 +95,10 @@ public class Transformer {
       return null;
 
     DateTimeFormatter incomingFormatter = getFormatter(format);
-    LocalDateTime parsedDate = LocalDateTime.parse(date, incomingFormatter);
+    LocalDateTime parsedDate = includesTime
+      ? LocalDateTime.parse(date, incomingFormatter)
+      : LocalDate.parse(date, incomingFormatter).atStartOfDay();
+
     return parsedDate.format(getFormatter("yyyy-MM-dd'T'HH:mm:ss.SSS")) + "Z";
   }
 

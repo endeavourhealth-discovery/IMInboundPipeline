@@ -15,6 +15,7 @@ dependencies {
 
   testImplementation libs.cucumber
   testImplementation libs.cucumberJunit
+  testImplementation libs.cucumberSpring
   testImplementation libs.junit
   testImplementation libs.junitSuite
   testImplementation libs.mockito
