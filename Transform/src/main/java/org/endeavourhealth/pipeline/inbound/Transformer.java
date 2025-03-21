@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 public class Transformer {
   private static final Logger LOG = LoggerFactory.getLogger(Transformer.class);
+  private static final HashMap<String, DateTimeFormatter> dtFormatter = new HashMap<>();
   HashMap<String, Expression> fileCache = new HashMap<>();
   Collection<Function> functions = new ArrayList<>();
   String className = this.getClass().getName();
@@ -84,9 +85,17 @@ public class Transformer {
     if (date.isEmpty())
       return null;
 
-    DateTimeFormatter incomingFormatter = DateTimeFormatter.ofPattern(format);
-    LocalDateTime parsedDate = LocalDate.parse(date, incomingFormatter).atStartOfDay();
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
-    return parsedDate.format(formatter) + "Z";
+    DateTimeFormatter incomingFormatter = getFormatter(format);
+    LocalDateTime parsedDate = LocalDateTime.parse(date, incomingFormatter);
+    return parsedDate.format(getFormatter("yyyy-MM-dd'T'HH:mm:ss.SSS")) + "Z";
+  }
+
+  private static DateTimeFormatter getFormatter(String format) {
+    DateTimeFormatter result =  dtFormatter.get(format);
+    if (result == null) {
+      result = DateTimeFormatter.ofPattern(format);
+      dtFormatter.put(format, result);
+    }
+    return result;
   }
 }
