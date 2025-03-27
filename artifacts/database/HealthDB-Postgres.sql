@@ -14,26 +14,17 @@ DROP TABLE IF EXISTS query_queue;
 
 CREATE TABLE query_queue (
     id UUID PRIMARY KEY,        -- Unique run identifier
-    iri VARCHAR(255) NOT NULL,  -- Query IRI
-    name VARCHAR(255) NOT NULL, -- Query name
+    query_iri VARCHAR(255) NOT NULL,  -- Query IRI
+    query_name VARCHAR(255) NOT NULL, -- Query name
     user_id UUID NOT NULL,         -- User UUID
-    queued TIMESTAMP NOT NULL,
-    started TIMESTAMP,
+    queued_at TIMESTAMP NOT NULL,
+    started_at TIMESTAMP,
     pid INT,                    -- Internal (postgres) process ID (for killing)
-    finished TIMESTAMP,
-    killed TIMESTAMP,
-    status TEXT
+    finished_at TIMESTAMP,
+    killed_at TIMESTAMP,
+    status TEXT,
+  query_results JSONB
 );
-
-
-DROP TABLE IF EXISTS query_result;
-
-CREATE TABLE query_result (
-    iri VARCHAR(255) NOT NULL,
-    id UUID NOT NULL
-);
-
-CREATE INDEX idx_query_result_iri ON query_result(iri);
 
 DROP TABLE IF EXISTS set_member;
 
