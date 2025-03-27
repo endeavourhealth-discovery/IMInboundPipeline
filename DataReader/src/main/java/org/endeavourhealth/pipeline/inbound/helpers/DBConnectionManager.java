@@ -60,10 +60,9 @@ public class DBConnectionManager {
 
   public static int fileEntity(String category, JsonNode entity) throws SQLException {
     PreparedStatement upsert = getUpsert(category);
-    String json = entity.toString();
-    upsert.setObject(1, UUID.fromString(entity.get("@id").asText()));
-    upsert.setString(2, json);
-    upsert.setString(3, json);
+    upsert.setObject(1, entity.get("@id").asText(), Types.OTHER);
+    upsert.setObject(2, entity, Types.OTHER);
+    upsert.setObject(3, entity, Types.OTHER);
     int rows = upsert.executeUpdate();
     LOG.debug("{} filed to database", category);
     return rows;

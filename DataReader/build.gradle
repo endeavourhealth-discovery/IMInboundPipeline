@@ -12,7 +12,6 @@ dependencies {
   implementation libs.rabbitmqAmqpClient
   implementation libs.springAmpq
   implementation libs.springContext
-  implementation libs.springDataJpa
   implementation libs.springOauthServer
   implementation libs.springSecurity
   implementation libs.springWeb

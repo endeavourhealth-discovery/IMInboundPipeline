@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 public class Transformer {
   private static final Logger LOG = LoggerFactory.getLogger(Transformer.class);
+  private static final HashMap<String, DateTimeFormatter> dtFormatter = new HashMap<>();
   HashMap<String, Expression> fileCache = new HashMap<>();
   Collection<Function> functions = new ArrayList<>();
   String className = this.getClass().getName();
@@ -31,6 +32,7 @@ public class Transformer {
         functions.add(FunctionUtils.wrapStaticMethod("formatUuid", className, "formatUuid"));
         functions.add(FunctionUtils.wrapStaticMethod("newUuid", className, "newUuid"));
         functions.add(FunctionUtils.wrapStaticMethod("formatDate", className, "formatDate"));
+        functions.add(FunctionUtils.wrapStaticMethod("formatDateTime", className, "formatDateTime"));
       } catch (ClassNotFoundException e) {
         LOG.error(e.getMessage());
       }
@@ -84,9 +86,32 @@ public class Transformer {
     if (date.isEmpty())
       return null;
 
-    DateTimeFormatter incomingFormatter = DateTimeFormatter.ofPattern(format);
+    DateTimeFormatter incomingFormatter = getFormatter(format);
     LocalDateTime parsedDate = LocalDate.parse(date, incomingFormatter).atStartOfDay();
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
-    return parsedDate.format(formatter) + "Z";
+
+    return parsedDate.format(getFormatter("yyyy-MM-dd'T'HH:mm:ss.SSS")) + "Z";
+  }
+
+  public static String formatDateTime(String format, String dateTime) {
+    if (dateTime == null) {
+      LOG.error("DateTime is null");
+      return "NULL";
+    }
+    if (dateTime.isEmpty())
+      return null;
+
+    DateTimeFormatter incomingFormatter = getFormatter(format);
+    LocalDateTime parsedDate = LocalDateTime.parse(dateTime, incomingFormatter);
+
+    return parsedDate.format(getFormatter("yyyy-MM-dd'T'HH:mm:ss.SSS")) + "Z";
+  }
+
+  private static DateTimeFormatter getFormatter(String format) {
+    DateTimeFormatter result =  dtFormatter.get(format);
+    if (result == null) {
+      result = DateTimeFormatter.ofPattern(format);
+      dtFormatter.put(format, result);
+    }
+    return result;
   }
 }
