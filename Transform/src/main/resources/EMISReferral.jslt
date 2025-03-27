@@ -1,39 +1,29 @@
+import "Utilities.jslt" as utils
+
 {
-  "@id": .ObservationGuid,
-  "@type": "ReferralOut",
-  "label": "Referral (outbound)",
-  "patient": {
-    "@id": .PatientGuid,
-    "@type": "Patient",
-    "label": "Patient"
-  },
-  "organisation": if (.OrganisationGuid and .OrganisationGuid != "") {
-    "@id": .OrganisationGuid,
-    "@type": "Organisation",
-    "label": "Organisation"
-  } else null,
-  "recipientService": if (.ReferralTargetOrganisationGuid and .ReferralTargetOrganisationGuid != "") {
-    "@id": .ReferralTargetOrganisationGuid,
-    "@type": "Organisation",
-    "label": "Recipient Service"
-  } else null,
-  "referralUrgency": if (.ReferralUrgency and .ReferralUrgency != "") .ReferralUrgency else null,
-  "referralServiceType": if (.ReferralServiceType and .ReferralServiceType != "") .ReferralServiceType else null,
-  "referralMode": if (.ReferralMode and .ReferralMode != "") .ReferralMode else null,
-  "referralReceivedDate": if (.ReferralReceivedDate and .ReferralReceivedDate != "") .ReferralReceivedDate else null,
-  "referralReceivedTime": if (.ReferralReceivedTime and .ReferralReceivedTime != "") .ReferralReceivedTime else null,
-  "referralEndDate": if (.ReferralEndDate and .ReferralEndDate != "") .ReferralEndDate else null,
-  "referralSourceId": if (.ReferralSourceId and .ReferralSourceId != "") .ReferralSourceId else null,
-  "referralSourceOrganisation": if (.ReferralSourceOrganisationGuid and .ReferralSourceOrganisationGuid != "") {
-    "@id": .ReferralSourceOrganisationGuid,
-    "@type": "Organisation",
-    "label": "Referral Source Organisation"
-  } else null,
-  "referralUBRN": if (.ReferralUBRN and .ReferralUBRN != "") .ReferralUBRN else null,
-  "referralReasonCodeId": if (.ReferralReasonCodeId and .ReferralReasonCodeId != "") .ReferralReasonCodeId else null,
-  "referringCareProfessionalStaffGroupCodeId": if (.ReferringCareProfessionalStaffGroupCodeId and .ReferringCareProfessionalStaffGroupCodeId != "") .ReferringCareProfessionalStaffGroupCodeId else null,
-  "referralEpisodeRTTMeasurementTypeId": if (.ReferralEpisodeRTTMeasurementTypeId and .ReferralEpisodeRTTMeasurementTypeId != "") .ReferralEpisodeRTTMeasurementTypeId else null,
-  "referralEpisodeClosureDate": if (.ReferralEpisodeClosureDate and .ReferralEpisodeClosureDate != "") .ReferralEpisodeClosureDate else null,
-  "referralEpisodeDischargeLetterIssuedDate": if (.ReferralEpisodeDischargeLetterIssuedDate and .ReferralEpisodeDischargeLetterIssuedDate != "") .ReferralEpisodeDischargeLetterIssuedDate else null,
-  "referralClosureReasonCodeId": if (.ReferralClosureReasonCodeId and .ReferralClosureReasonCodeId != "") .ReferralClosureReasonCodeId else null
+  "entities" : utils:cleanArray([
+    {
+      "@id" : formatUuid(.ObservationGuid),
+      "@type" : "ReferralOut",
+      "label" : "Referral (outbound)",
+      "patient" : formatUuid(.PatientGuid),
+      "organisation" : if (.OrganisationGuid and .OrganisationGuid != "") formatUuid(.OrganisationGuid) else null,
+      "recipientService" : if (.ReferralTargetOrganisationGuid and .ReferralTargetOrganisationGuid != "") formatUuid(.ReferralTargetOrganisationGuid) else null,
+      "referralUrgency" : if (.ReferralUrgency and .ReferralUrgency != "") .ReferralUrgency else null,
+      "referralServiceType" : if (.ReferralServiceType and .ReferralServiceType != "") .ReferralServiceType else null,
+      "referralMode" : if (.ReferralMode and .ReferralMode != "") .ReferralMode else null,
+      "referralReceivedDate" : if (.ReferralReceivedDate and .ReferralReceivedDate != "") formatDateTime("yyyy-MM-dd", .ReferralReceivedDate) else null,
+      "referralReceivedTime" : if (.ReferralReceivedTime and .ReferralReceivedTime != "") .ReferralReceivedTime else null,
+      "referralEndDate" : if (.ReferralEndDate and .ReferralEndDate != "") formatDateTime("yyyy-MM-dd", .ReferralEndDate) else null,
+      "referralSourceId" : if (.ReferralSourceId and .ReferralSourceId != "") .ReferralSourceId else null,
+      "referralSourceOrganisation" : if (.ReferralSourceOrganisationGuid and .ReferralSourceOrganisationGuid != "") formatUuid(.ReferralSourceOrganisationGuid) else null,
+      "referralUBRN" : if (.ReferralUBRN and .ReferralUBRN != "") .ReferralUBRN else null,
+      "referralReasonCodeId" : if (.ReferralReasonCodeId and .ReferralReasonCodeId != "") .ReferralReasonCodeId else null,
+      "referringCareProfessionalStaffGroupCodeId" : if (.ReferringCareProfessionalStaffGroupCodeId and .ReferringCareProfessionalStaffGroupCodeId != "") .ReferringCareProfessionalStaffGroupCodeId else null,
+      "referralEpisodeRTTMeasurementTypeId" : if (.ReferralEpisodeRTTMeasurementTypeId and .ReferralEpisodeRTTMeasurementTypeId != "") .ReferralEpisodeRTTMeasurementTypeId else null,
+      "referralEpisodeClosureDate" : if (.ReferralEpisodeClosureDate and .ReferralEpisodeClosureDate != "") .ReferralEpisodeClosureDate else null,
+      "referralEpisodeDischargeLetterIssuedDate" : if (.ReferralEpisodeDischargeLetterIssuedDate and .ReferralEpisodeDischargeLetterIssuedDate != "") .ReferralEpisodeDischargeLetterIssuedDate else null,
+      "referralClosureReasonCodeId" : if (.ReferralClosureReasonCodeId and .ReferralClosureReasonCodeId != "") .ReferralClosureReasonCodeId else null
+    }
+  ])
 }

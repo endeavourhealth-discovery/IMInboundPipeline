@@ -1,39 +1,25 @@
+import "Utilities.jslt" as utils
+
 {
-    "@id": .ConsultationGuid,
-    "@type": "Encounter",
-    "label": "Encounter",
-    "patient": {
-        "@id": .PatientGuid,
-        "@type": "Patient",
-        "label": "Patient"
-    },
-    "organisation": {
-        "@id": .OrganisationGuid,
-        "@type": "Organisation",
-        "label": "Organisation"
-    },
-    "effectiveDate": .EffectiveDate,
-    "enteredDate": if (.EnteredDate and .EnteredDate != "") .EnteredDate else null,
-    "enteredTime": if (.EnteredTime and .EnteredTime != "") .EnteredTime else null,
-    "practitioner": {
-        "@id": .ClinicianUserInRoleGuid,
-        "@type": "PersonInRole",
-        "label": "Clinician"
-    },
-    "enteredBy": if (.EnteredByUserInRoleGuid and .EnteredByUserInRoleGuid != "") {
-        "@id": .EnteredByUserInRoleGuid,
-        "@type": "PersonInRole",
-        "label": "Entered By"
-    } else null,
-    "appointmentSlot": if (.AppointmentSlotGuid and .AppointmentSlotGuid != "") {
-        "@id": .AppointmentSlotGuid,
-        "@type": "AppointmentSlot",
-        "label": "Appointment Slot"
-    } else null,
-    "consultationSourceTerm": if (.ConsultationSourceTerm and .ConsultationSourceTerm != "") .ConsultationSourceTerm else null,
-    "consultationSourceCodeId": if (.ConsultationSourceCodeId and .ConsultationSourceCodeId != "") .ConsultationSourceCodeId else null,
-    "complete": if (.Complete and .Complete == "true") true else false,
-    "deleted": if (.Deleted and .Deleted == "true") true else false,
-    "isConfidential": if (.IsConfidential and .IsConfidential == "true") true else false,
-    "processingId": if (.ProcessingId and .ProcessingId != "") .ProcessingId else null
+  "entities" : utils:cleanArray([
+    {
+      "@id" : formatUuid(.ConsultationGuid),
+      "@type" : "Encounter",
+      "label" : "Encounter",
+      "patient" : formatUuid(.PatientGuid),
+      "organisation" : formatUuid(.OrganisationGuid),
+      "effectiveDate" : if (.EffectiveDate) formatDateTime("yyyy-MM-dd", .EffectiveDate),
+      "enteredDate" : if (.EnteredDate and .EnteredDate != "") formatDateTime("yyyy-MM-dd", .EnteredDate) else null,
+      "enteredTime" : if (.EnteredTime and .EnteredTime != "") .EnteredTime else null,
+      "practitioner" : formatUuid(.ClinicianUserInRoleGuid),
+      "enteredBy" : if (.EnteredByUserInRoleGuid and .EnteredByUserInRoleGuid != "") formatUuid(.EnteredByUserInRoleGuid) else null,
+      "appointmentSlot" : if (.AppointmentSlotGuid and .AppointmentSlotGuid != "") formatUuid(.AppointmentSlotGuid) else null,
+      "consultationSourceTerm" : if (.ConsultationSourceTerm and .ConsultationSourceTerm != "") .ConsultationSourceTerm else null,
+      "consultationSourceCodeId" : if (.ConsultationSourceCodeId and .ConsultationSourceCodeId != "") .ConsultationSourceCodeId else null,
+      "complete" : if (.Complete and .Complete == "true") true else false,
+      "deleted" : if (.Deleted and .Deleted == "true") true else false,
+      "isConfidential" : if (.IsConfidential and .IsConfidential == "true") true else false,
+      "processingId" : if (.ProcessingId and .ProcessingId != "") .ProcessingId else null
+    }
+  ])
 }

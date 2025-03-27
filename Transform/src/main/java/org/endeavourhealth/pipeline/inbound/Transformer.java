@@ -67,12 +67,12 @@ public class Transformer {
   }
 
   public static String newUuid() {
-    return formatUuid(UUID.randomUUID().toString(), "new UUID");
+    return formatUuid(UUID.randomUUID().toString());
   }
 
-  public static String formatUuid(String uuid, String keyInfo) {
+  public static String formatUuid(String uuid) {
     if (uuid == null) {
-      LOG.error("UUID for {} is null", keyInfo);
+      LOG.error("UUID is null");
       return "NULL";
     }
     return uuid.replace("{", "").replace("}", "").toLowerCase();
@@ -107,7 +107,7 @@ public class Transformer {
   }
 
   private static DateTimeFormatter getFormatter(String format) {
-    DateTimeFormatter result =  dtFormatter.get(format);
+    DateTimeFormatter result = dtFormatter.get(format);
     if (result == null) {
       result = DateTimeFormatter.ofPattern(format);
       dtFormatter.put(format, result);

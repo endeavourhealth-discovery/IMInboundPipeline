@@ -1,26 +1,20 @@
+import "Utilities.jslt" as utils
+
 {
-  "@id": .OrganisationGuid,
-  "@type": "Organisation",
-  "label": "Organisation",
-  "name": .OrganisationName,
-  "odsCode": .ODSCode,
-  "organisationType": .OrganisationType,
-  "openDate": if (.OpenDate and .OpenDate != "") .OpenDate else null,
-  "closeDate": if (.CloseDate and .CloseDate != "") .CloseDate else null,
-  "parentOrganisation": if (.ParentOrganisationGuid and .ParentOrganisationGuid != "") {
-    "@id": .ParentOrganisationGuid,
-    "@type": "Organisation",
-    "label": "Parent Organisation"
-  } else null,
-  "ccgOrganisation": if (.CCGOrganisationGuid and .CCGOrganisationGuid != "") {
-    "@id": .CCGOrganisationGuid,
-    "@type": "Organisation",
-    "label": "CCG Organisation"
-  } else null,
-  "mainLocation": if (.MainLocationGuid and .MainLocationGuid != "") {
-    "@id": .MainLocationGuid,
-    "@type": "Location",
-    "label": "Main Location"
-  } else null,
-  "processingId": if (.ProcessingId and .ProcessingId != "") .ProcessingId else null
+  "entities" : utils:cleanArray([
+    {
+      "@id" : formatUuid(.OrganisationGuid),
+      "@type" : "Organisation",
+      "label" : "Organisation",
+      "name" : .OrganisationName,
+      "odsCode" : .ODSCode,
+      "organisationType" : .OrganisationType,
+      "openDate" : if (.OpenDate and .OpenDate != "") formatDateTime("yyyy-MM-dd", .OpenDate) else null,
+      "closeDate" : if (.CloseDate and .CloseDate != "") formatDateTime("yyyy-MM-dd", .CloseDate) else null,
+      "parentOrganisation" : if (.ParentOrganisationGuid and .ParentOrganisationGuid != "") formatUuid(.ParentOrganisationGuid) else null,
+      "ccgOrganisation" : if (.CCGOrganisationGuid and .CCGOrganisationGuid != "") formatUuid(.CCGOrganisationGuid) else null,
+      "mainLocation" : if (.MainLocationGuid and .MainLocationGuid != "") formatUuid(.MainLocationGuid) else null,
+      "processingId" : if (.ProcessingId and .ProcessingId != "") .ProcessingId else null
+    }
+  ])
 }

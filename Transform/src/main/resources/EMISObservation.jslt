@@ -1,62 +1,32 @@
+import "Utilities.jslt" as utils
+
 {
-    "@id": .ObservationGuid,
-    "@type": "Observation",
-    "label": "Observation",
-    "patient": {
-        "@id": .PatientGuid,
-        "@type": "Patient",
-        "label": "Patient"
-    },
-    "organisation": {
-        "@id": .OrganisationGuid,
-        "@type": "Organisation",
-        "label": "Organisation"
-    },
-    "effectiveDate": .EffectiveDate,
-    "enteredDate": if (.EnteredDate and .EnteredDate != "") .EnteredDate else null,
-    "enteredTime": if (.EnteredTime and .EnteredTime != "") .EnteredTime else null,
-    "practitioner": {
-        "@id": .ClinicianUserInRoleGuid,
-        "@type": "PersonInRole",
-        "label": "Clinician"
-    },
-    "enteredBy": if (.EnteredByUserInRoleGuid and .EnteredByUserInRoleGuid != "") {
-        "@id": .EnteredByUserInRoleGuid,
-        "@type": "PersonInRole",
-        "label": "Entered By"
-    } else null,
-    "parentObservation": if (.ParentObservationGuid and .ParentObservationGuid != "") {
-        "@id": .ParentObservationGuid,
-        "@type": "Observation",
-        "label": "Parent Observation"
-    } else null,
-    "concept": {
-        "@id": "emis_" + .CodeId,
-        "@type": "Concept",
-        "label": "Observation Concept"
-    },
-    "problem": if (.ProblemGuid and .ProblemGuid != "") {
-        "@id": .ProblemGuid,
-        "@type": "Problem",
-        "label": "Problem"
-    } else null,
-    "associatedText": if (.AssociatedText and .AssociatedText != "") .AssociatedText else null,
-    "consultation": {
-        "@id": .ConsultationGuid,
-        "@type": "Consultation",
-        "label": "Consultation"
-    },
-    "value": if (.Value and .Value != "") .Value else null,
-    "numericUnit": if (.NumericUnit and .NumericUnit != "") .NumericUnit else null,
-    "observationType": if (.ObservationType and .ObservationType != "") .ObservationType else null,
-    "numericRangeLow": if (.NumericRangeLow and .NumericRangeLow != "") .NumericRangeLow else null,
-    "numericRangeHigh": if (.NumericRangeHigh and .NumericRangeHigh != "") .NumericRangeHigh else null,
-    "document": if (.DocumentGuid and .DocumentGuid != "") {
-        "@id": .DocumentGuid,
-        "@type": "Document",
-        "label": "Document"
-    } else null,
-    "deleted": if (.Deleted and .Deleted == "true") true else false,
-    "isConfidential": if (.IsConfidential and .IsConfidential == "true") true else false,
-    "processingId": if (.ProcessingId and .ProcessingId != "") .ProcessingId else null
+  "entities" : utils:cleanArray([
+    {
+      "@id" : formatUuid(.ObservationGuid),
+      "@type" : "Observation",
+      "label" : "Observation",
+      "patient" : formatUuid(.PatientGuid),
+      "organisation" : formatUuid(.OrganisationGuid),
+      "effectiveDate" : if (.EffectiveDate) formatDateTime("yyyy-MM-dd", .EffectiveDate),
+      "enteredDate" : if (.EnteredDate and .EnteredDate != "") formatDateTime("yyyy-MM-dd", .EnteredDate) else null,
+      "enteredTime" : if (.EnteredTime and .EnteredTime != "") .EnteredTime else null,
+      "practitioner" : formatUuid(.ClinicianUserInRoleGuid),
+      "enteredBy" : if (.EnteredByUserInRoleGuid and .EnteredByUserInRoleGuid != "") formatUuid(.EnteredByUserInRoleGuid) else null,
+      "parentObservation" : if (.ParentObservationGuid and .ParentObservationGuid != "") formatUuid(.ParentObservationGuid) else null,
+      "concept" : "emis_" + .CodeId,
+      "problem" : if (.ProblemGuid and .ProblemGuid != "") formatUuid(.ProblemGuid) else null,
+      "associatedText" : if (.AssociatedText and .AssociatedText != "") .AssociatedText else null,
+      "consultation" : formatUuid(.ConsultationGuid),
+      "value" : if (.Value and .Value != "") .Value else null,
+      "numericUnit" : if (.NumericUnit and .NumericUnit != "") .NumericUnit else null,
+      "observationType" : if (.ObservationType and .ObservationType != "") .ObservationType else null,
+      "numericRangeLow" : if (.NumericRangeLow and .NumericRangeLow != "") .NumericRangeLow else null,
+      "numericRangeHigh" : if (.NumericRangeHigh and .NumericRangeHigh != "") .NumericRangeHigh else null,
+      "document" : if (.DocumentGuid and .DocumentGuid != "") formatUuid(.DocumentGuid) else null,
+      "deleted" : if (.Deleted and .Deleted == "true") true else false,
+      "isConfidential" : if (.IsConfidential and .IsConfidential == "true") true else false,
+      "processingId" : if (.ProcessingId and .ProcessingId != "") .ProcessingId else null
+    }
+  ])
 }
