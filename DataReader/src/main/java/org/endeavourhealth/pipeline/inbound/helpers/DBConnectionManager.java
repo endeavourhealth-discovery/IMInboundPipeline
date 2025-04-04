@@ -1,20 +1,21 @@
 package org.endeavourhealth.pipeline.inbound.helpers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.endeavourhealth.pipeline.inbound.config.DBConfig;
+import org.endeavourhealth.pipeline.inbound.config.EventDBConfig;
+import org.endeavourhealth.pipeline.inbound.config.InstanceDBConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.Properties;
-import java.util.UUID;
 
 public class DBConnectionManager {
 
   private static final Logger LOG = LoggerFactory.getLogger(DBConnectionManager.class);
   private static PreparedStatement upsertEvent = null;
   private static PreparedStatement upsertInstance = null;
-  private static Connection connection = null;
+  private static Connection eventConnection = null;
+  private static Connection instanceConnection = null;
 
   static {
     try {
@@ -30,25 +31,35 @@ public class DBConnectionManager {
     throw new IllegalStateException("Utility class");
   }
 
-  private static Connection getConnection() throws SQLException {
-    if (connection == null) {
+  private static Connection getEventConnection() throws SQLException {
+    if (eventConnection == null) {
       Properties props = new Properties();
-      props.setProperty("user", DBConfig.getSpringDatasourceUsername());
-      props.setProperty("password", DBConfig.getSpringDatasourcePassword());
-      return DriverManager.getConnection(DBConfig.getSpringDatasourceUrl(), props);
+      props.setProperty("user", EventDBConfig.getSpringEventDatasourceUsername());
+      props.setProperty("password", EventDBConfig.getSpringEventDatasourcePassword());
+      eventConnection = DriverManager.getConnection(EventDBConfig.getSpringEventDatasourceUrl(), props);
     }
-    return connection;
+    return eventConnection;
+  }
+
+  private static Connection getInstanceConnection() throws SQLException {
+    if (instanceConnection == null) {
+      Properties props = new Properties();
+      props.setProperty("user", InstanceDBConfig.getSpringInstanceDatasourceUsername());
+      props.setProperty("password", InstanceDBConfig.getSpringInstanceDatasourcePassword());
+      instanceConnection = DriverManager.getConnection(InstanceDBConfig.getSpringInstanceDatasourceUrl(), props);
+    }
+    return instanceConnection;
   }
 
   private static PreparedStatement prepareUpsertEvent() throws SQLException {
-    return getConnection().prepareStatement("INSERT INTO healthdb.event (id, json) VALUES (?,(?::json)) ON CONFLICT (id) DO UPDATE SET json=?::json");
+    return getEventConnection().prepareStatement("INSERT INTO healthdb.event (id, json) VALUES (?,(?::json)) ON CONFLICT (id) DO UPDATE SET json=?::json");
   }
 
   private static PreparedStatement prepareUpsertInstance() throws SQLException {
-    return getConnection().prepareStatement("INSERT INTO healthdb.instance (id, json) VALUES (?,(?::json)) ON CONFLICT (id) DO UPDATE SET json=?::json");
+    return getInstanceConnection().prepareStatement("INSERT INTO healthdb.instance (id, json) VALUES (?,(?::json)) ON CONFLICT (id) DO UPDATE SET json=?::json");
   }
 
-  private static PreparedStatement getUpsert(String category) throws SQLException {
+  private static PreparedStatement getUpsert(String category) {
     if ("EVENT".equals(category)) {
       return upsertEvent;
     } else if ("INSTANCE".equals(category)) {
