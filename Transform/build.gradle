@@ -42,8 +42,7 @@ sonar {
     property 'sonar.projectKey', 'IMInboundPipeline_Transform'
     property 'sonar.projectName', 'Transform'
     property 'sonar.host.url', 'https://sonarcloud.io'
-    property 'sonar.junit.reportPaths', 'build/test-results/test/binary'
-    property 'sonar.coverage.exclusions', '**/config/**, **/errorhandling/**, **/model,**'
+    property 'sonar.junit.reportPaths', 'build/test-results/test'
   }
 }
 
