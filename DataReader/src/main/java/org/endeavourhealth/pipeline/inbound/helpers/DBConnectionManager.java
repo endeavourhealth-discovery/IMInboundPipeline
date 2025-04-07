@@ -19,8 +19,8 @@ public class DBConnectionManager {
 
   static {
     try {
-      upsertEvent = prepareUpsertEvent();
-      upsertInstance = prepareUpsertInstance();
+      upsertEvent = prepareEventUpsert();
+      upsertInstance = prepareInstanceUpsert();
     } catch (SQLException e) {
       LOG.error("{}", e.toString());
       System.exit(1);
@@ -51,12 +51,12 @@ public class DBConnectionManager {
     return instanceConnection;
   }
 
-  private static PreparedStatement prepareUpsertEvent() throws SQLException {
-    return getEventConnection().prepareStatement("INSERT INTO event (id, json) VALUES (?,(?::json)) ON CONFLICT (id) DO UPDATE SET json=?::json");
+  private static PreparedStatement prepareEventUpsert() throws SQLException {
+    return getEventConnection().prepareStatement("INSERT INTO event (id, json) VALUES (?,?) ON CONFLICT (id) DO UPDATE SET json=?::json");
   }
 
-  private static PreparedStatement prepareUpsertInstance() throws SQLException {
-    return getInstanceConnection().prepareStatement("INSERT INTO instance (id, json) VALUES (?,(?::json)) ON CONFLICT (id) DO UPDATE SET json=?::json");
+  private static PreparedStatement prepareInstanceUpsert() throws SQLException {
+    return getInstanceConnection().prepareStatement("INSERT INTO instance (id, json) VALUES (?,?) ON CONFLICT (id) DO UPDATE SET json=?::json");
   }
 
   private static PreparedStatement getUpsert(String category) {
