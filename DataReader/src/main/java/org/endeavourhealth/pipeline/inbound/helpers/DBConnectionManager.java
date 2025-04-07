@@ -52,11 +52,11 @@ public class DBConnectionManager {
   }
 
   private static PreparedStatement prepareUpsertEvent() throws SQLException {
-    return getEventConnection().prepareStatement("INSERT INTO healthdb.event (id, json) VALUES (?,(?::json)) ON CONFLICT (id) DO UPDATE SET json=?::json");
+    return getEventConnection().prepareStatement("INSERT INTO event (id, json) VALUES (?,(?::json)) ON CONFLICT (id) DO UPDATE SET json=?::json");
   }
 
   private static PreparedStatement prepareUpsertInstance() throws SQLException {
-    return getInstanceConnection().prepareStatement("INSERT INTO healthdb.instance (id, json) VALUES (?,(?::json)) ON CONFLICT (id) DO UPDATE SET json=?::json");
+    return getInstanceConnection().prepareStatement("INSERT INTO instance (id, json) VALUES (?,(?::json)) ON CONFLICT (id) DO UPDATE SET json=?::json");
   }
 
   private static PreparedStatement getUpsert(String category) {
