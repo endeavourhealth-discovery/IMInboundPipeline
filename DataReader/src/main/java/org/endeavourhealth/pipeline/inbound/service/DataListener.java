@@ -40,7 +40,7 @@ public class DataListener {
         transformer.loadTransformation(headers.get("publisher").toString(), headers.get("datatype").toString());
         JsonNode entities = transformer.transform(dataNode).get("entities");
         String category = headers.get("category").toString();
-        saveToDB(entities, category);
+        saveToDB(entities, category, headers.get("datatype").toString());
         LOG.debug("Filed to DB");
       } catch (Exception e) {
         LOG.error("{}", e.toString());
@@ -49,10 +49,10 @@ public class DataListener {
     }
   }
 
-  private void saveToDB(JsonNode entities, String category) throws SQLException {
+  private void saveToDB(JsonNode entities, String category, String datatype) throws SQLException {
     if (entities.isArray()) {
       for (JsonNode jsonNode : entities) {
-        DBConnectionManager.fileEntity(category, jsonNode);
+        DBConnectionManager.fileEntity(category, jsonNode, datatype);
       }
     }
   }
