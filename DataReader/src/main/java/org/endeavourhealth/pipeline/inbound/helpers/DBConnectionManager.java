@@ -52,6 +52,9 @@ public class DBConnectionManager {
   }
 
   private static PreparedStatement prepareInstanceCreateTable(String datatype) throws SQLException {
+    if (!datatype.matches("^[a-zA-Z_][a-zA-Z0-9_]*$"))  // check for SQL injection
+      throw new IllegalArgumentException("Invalid table name: " + datatype);
+    
     return getInstanceConnection().prepareStatement("""
       CREATE OR REPLACE FUNCTION json_date(text)
         RETURNS timestamptz AS
