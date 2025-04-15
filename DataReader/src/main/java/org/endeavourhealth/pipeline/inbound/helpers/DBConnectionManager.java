@@ -49,29 +49,23 @@ public class DBConnectionManager {
     if (!datatype.matches("^[a-zA-Z_][a-zA-Z0-9_]*$"))  // check for SQL injection
       throw new IllegalArgumentException("Invalid table name: " + datatype);
 
-    return getInstanceConnection().prepareStatement("INSERT INTO datatype (id, json) VALUES (?,?) ON CONFLICT (id) DO UPDATE SET json=?::json".replace("datatype", datatype));
+    return getInstanceConnection().prepareStatement("INSERT INTO %s (id, json) VALUES (?,?) ON CONFLICT (id) DO UPDATE SET json=?::json".formatted(datatype));
   }
 
   private static PreparedStatement prepareInstanceCreateTable(String datatype) throws SQLException {
     if (!datatype.matches("^[a-zA-Z_][a-zA-Z0-9_]*$"))  // check for SQL injection
       throw new IllegalArgumentException("Invalid table name: " + datatype);
 
-    return getInstanceConnection().prepareStatement("""
-      CREATE OR REPLACE FUNCTION json_date(text)
-        RETURNS timestamptz AS
-      $$SELECT to_timestamp($1, 'YYYY-MM-DDTHH24:MI:SS')$$
-        LANGUAGE sql IMMUTABLE;
-      
-      
-      CREATE TABLE datatype (
+    return getInstanceConnection().prepareStatement("""      
+      CREATE TABLE %s (
             id UUID PRIMARY KEY,
             json JSON NOT NULL,
             type text generated always as (json ->> '@type') stored
             );
       
-            CREATE INDEX idx_datatype_pat_dob ON datatype ((json_date(json ->> 'dateOfBirth'))) WHERE type = 'Patient';
-            CREATE INDEX idx_datatype_pat_nhs ON datatype ((json ->> 'nhsNumber')) WHERE type = 'Patient';
-      """.replaceAll("datatype", datatype));
+            CREATE INDEX idx_%s_pat_dob ON %s ((json_date(json ->> 'dateOfBirth'))) WHERE type = 'Patient';
+            CREATE INDEX idx_%s_pat_nhs ON %s ((json ->> 'nhsNumber')) WHERE type = 'Patient';
+      """.formatted(datatype, datatype, datatype, datatype, datatype));
   }
 
   private static PreparedStatement getUpsert(String category, String datatype) throws SQLException {
