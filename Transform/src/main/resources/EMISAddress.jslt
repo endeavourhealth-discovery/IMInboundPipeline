@@ -1,0 +1,18 @@
+def addressTransform(root)
+  [
+    {
+      "type": "Address",
+      "addressLine": [
+        .HouseNameFlatNumber,
+        .NumberAndStreet
+      ],
+      "locality": .Village,
+      "city": .Town,
+      "region": .County,
+      "postcode": .Postcode,
+      "status": "Active",
+      "addressUse": "home",
+      "effectiveDate": format-time(now(), "yyyy-MM-dd"),  // Current date
+      "isA": ["Address", "RecordEntry"]
+    }
+  ]

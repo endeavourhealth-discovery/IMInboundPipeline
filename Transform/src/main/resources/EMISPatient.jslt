@@ -1,49 +1,65 @@
+import "EMISAddress.jslt" as addr
+import "EMISEpisodeOfCare.jslt" as eoc
 import "Utilities.jslt" as utils
 
 {
-  "entities" : utils:cleanArray([
-    {
-      "@id" : formatUuid(.PatientGuid),
-      "@type" : "Patient",
-      "label" : "Patient",
-      "organisation" : formatUuid(.OrganisationGuid),
-      "usualGp" : if (.UsualGpUserInRoleGuid and .UsualGpUserInRoleGuid != "") formatUuid(.UsualGpUserInRoleGuid) else null,
-      "statedGender" : if (.Sex == "m") "http://hl7.org/fhir/ValueSet/administrative-gender#male"
-      else if (.Sex == "f") "http://hl7.org/fhir/ValueSet/administrative-gender#female"
-      else null,
-      "dateOfBirth" : formatDateTime("yyyy-MM-dd", .DateOfBirth),
-      "dateOfDeath" : if (.DateOfDeath and .DateOfDeath != "") formatDateTime("yyyy-MM-dd", .DateOfDeath) else null,
-      "title" : .Title,
-      "givenName" : .GivenName,
-      "middleNames" : if (.MiddleNames and .MiddleNames != "") .MiddleNames else null,
-      "dateOfRegistration" : .DateOfRegistration,
-      "nhsNumber" : .NhsNumber,
-      "patientNumber" : .PatientNumber,
-      "patientTypeDescription" : .PatientTypeDescription,
-      "dummyType" : if (.DummyType and .DummyType != "") .DummyType else null,
-      "address" : {
-        "houseNameFlatNumber" : .HouseNameFlatNumber,
-        "numberAndStreet" : .NumberAndStreet,
-        "village" : .Village,
-        "town" : .Town,
-        "county" : if (.County and .County != "") .County else null,
-        "postcode" : .Postcode
-      },
-      "residentialInstituteCode" : if (.ResidentialInstituteCode and .ResidentialInstituteCode != "") .ResidentialInstituteCode else null,
-      "nhsNumberStatus" : if (.NHSNumberStatus and .NHSNumberStatus != "") .NHSNumberStatus else null,
-      "carerName" : if (.CarerName and .CarerName != "") .CarerName else null,
-      "carerRelation" : if (.CarerRelation and .CarerRelation != "") .CarerRelation else null,
-      "personGuid" : if (.PersonGuid and .PersonGuid != "") formatUuid(.PersonGuid) else null,
-      "dateOfDeactivation" : if (.DateofDeactivation and .DateofDeactivation != "") formatDateTime("yyyy-MM-dd", .DateofDeactivation) else null,
-      "deleted" : if (.Deleted and .Deleted == "true") true else false,
-      "spineSensitive" : if (.SpineSensitive and .SpineSensitive == "true") true else false,
-      "isConfidential" : if (.IsConfidential and .IsConfidential == "true") true else false,
-      "emailAddress" : if (.EmailAddress and .EmailAddress != "") .EmailAddress else null,
-      "homePhone" : if (.HomePhone and .HomePhone != "") .HomePhone else null,
-      "mobilePhone" : if (.MobilePhone and .MobilePhone != "") .MobilePhone else null,
-      "externalUsualGp" : if (.ExternalUsualGPGuid and .ExternalUsualGPGuid != "") formatUuid(.ExternalUsualGPGuid) else null,
-      "externalUsualGpOrganisation" : if (.ExternalUsualGPOrganisation and .ExternalUsualGPOrganisation != "") .ExternalUsualGPOrganisation else null,
-      "processingId" : if (.ProcessingId and .ProcessingId != "") .ProcessingId else null
-    }
-  ])
+    "entities" : utils:cleanArray([
+        {
+            "@id": .PatientGuid,
+            "@type": "Patient",
+            "label": "Patient",
+            "organisation": {
+                 "@id": .OrganisationGuid,
+                 "@type": "Organisation",
+                 "label": "Organisation"
+            },
+            "episodesOfCare": [eoc:episodeOfCareTransform(.)],
+            "usualGp": if (.UsualGpUserInRoleGuid and .UsualGpUserInRoleGuid != "") {
+                "@id": .UsualGpUserInRoleGuid,
+                "@type": "PersonInRole",
+                "label": "Usual GP"
+            } else null,
+                "statedGender": if (.Sex == "m") {
+                "@id": "http://hl7.org/fhir/ValueSet/administrative-gender#male",
+                "name": "Male"
+            } else if (.Sex == "f") {
+                "@id": "http://hl7.org/fhir/ValueSet/administrative-gender#female",
+                "name": "Female"
+            } else null,
+                "dateOfBirth": .DateOfBirth,
+                "dateOfDeath": if (.DateOfDeath and .DateOfDeath != "") .DateOfDeath else null,
+                "title": .Title,
+                "givenName": .GivenName,
+                "middleNames": if (.MiddleNames and .MiddleNames != "") .MiddleNames else null,
+                "dateOfRegistration": .DateOfRegistration,
+                "nhsNumber": .NhsNumber,
+                "patientNumber": .PatientNumber,
+                "patientTypeDescription": .PatientTypeDescription,
+                "dummyType": if (.DummyType and .DummyType != "") .DummyType else null,
+                "addresses": addr:addressTransform(.),
+                "residentialInstituteCode": if (.ResidentialInstituteCode and .ResidentialInstituteCode != "") .ResidentialInstituteCode else null,
+                "nhsNumberStatus": if (.NHSNumberStatus and .NHSNumberStatus != "") .NHSNumberStatus else null,
+                "carerName": if (.CarerName and .CarerName != "") .CarerName else null,
+                "carerRelation": if (.CarerRelation and .CarerRelation != "") .CarerRelation else null,
+                "personGuid": if (.PersonGuid and .PersonGuid != "") .PersonGuid else null,
+                "dateOfDeactivation": if (.DateofDeactivation and .DateofDeactivation != "") .DateofDeactivation else null,
+                "deleted": if (.Deleted and .Deleted == "true") true else false,
+                "spineSensitive": if (.SpineSensitive and .SpineSensitive == "true") true else false,
+                "isConfidential": if (.IsConfidential and .IsConfidential == "true") true else false,
+                "emailAddress": if (.EmailAddress and .EmailAddress != "") .EmailAddress else null,
+                "homePhone": if (.HomePhone and .HomePhone != "") .HomePhone else null,
+                "mobilePhone": if (.MobilePhone and .MobilePhone != "") .MobilePhone else null,
+                "externalUsualGp": if (.ExternalUsualGPGuid and .ExternalUsualGPGuid != "") {
+                    "@id": .ExternalUsualGPGuid,
+                    "@type": "PersonInRole",
+                    "label": "External Usual GP"
+                } else null,
+                "externalUsualGpOrganisation": if (.ExternalUsualGPOrganisation and .ExternalUsualGPOrganisation != "") {
+                "@id": .ExternalUsualGPOrganisation,
+                "@type": "Organisation",
+                "label": "External Usual GP Organisation"
+            } else null,
+            "processingId": if (.ProcessingId and .ProcessingId != "") .ProcessingId else null
+        }
+    ])
 }

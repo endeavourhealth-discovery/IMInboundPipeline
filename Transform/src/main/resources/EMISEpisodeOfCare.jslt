@@ -1,0 +1,19 @@
+def episodeOfCareTransform(root)
+  {
+    "type": "EpisodeOfCare",
+    "label": "Registration episode or episode of care",
+    "status": if (.DateofDeactivation != "") "Inactive" else "Active",
+    "isA": ["RecordEntry", "EpisodeOfCare"],
+    "effectiveDate": .DateOfRegistration,
+    "endDate": if (.DateofDeactivation != "") .DateofDeactivation else null,
+    "patient": {
+      "id": .PatientGuid,
+      "type": "Patient"
+    },
+    "provider": {
+      "id": .OrganisationGuid,
+      "type": "Organisation"
+    },
+    "gpPatientType": .PatientTypeDescription,
+    "scheme": "Endeavour"
+  }

@@ -1,0 +1,159 @@
+{
+  "PersonalIdentifiers": {
+    "entities": [
+      {
+        "type": "deathIndicator",
+        "comment": "If a patient has died an indicator that they are now dead",
+        "status": "Active"
+      },
+      {
+        "type": "statedGender",
+        "@id": "http://hl7.org/fhir/ValueSet/administrative-gender#female",
+        "name": "Female"
+      },
+      {
+        "Addresses": {
+          "entities": [
+            {
+              "type": "Address",
+              "addressLine": [
+                "FOLD BARN",
+                ""
+              ],
+              "locality": "BEWHOLME LANE",
+              "city": "HULL",
+              "region": "",
+              "postcode": "HU11 5SZ",
+              "status": "Active",
+              "addressUse": "home",
+              "effectiveDate": "2025-04-09",
+              "isA": [
+                "Address",
+                "RecordEntry"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "type": "dateOfBirth",
+        "name": "1950-01-29"
+      },
+      {
+        "type": "title",
+        "name": "Mr"
+      },
+      {
+        "type": "familyName",
+        "name": "Anderson"
+      },
+      {
+        "type": "callingName",
+        "name": ""
+      },
+      {
+        "type": "familyName",
+        "name": "Anderson"
+      },
+      {
+        "type": "forenames",
+        "name": "Nicholas"
+      },
+      {
+        "type": "fullName",
+        "name": "Nicolas Anderson"
+      },
+      {
+        "type": "nhsNumber",
+        "name": "9219976933"
+      },
+      {
+        "type": "pseudonymisedId",
+        "name": ""
+      },
+      {
+        "type": "ethnicity",
+        "@id": "http://snomed.info/sct#110761000000106",
+        "name": "Other White background - ethnic category 2001 census (finding)"
+      },
+      {
+        "type": "communicationLanguage",
+        "name": ""
+      },
+      {
+        "type": "pdsSensitive",
+        "status": "Active"
+      },
+      {
+        "type": "odsCode",
+        "name": "B86008"
+      },
+      {
+        "type": "timeOfBirth",
+        "name": ""
+      },
+      {
+        "@id": "http://endhealth.info/im#dateOfDeath",
+        "name": "1991-01-01"
+      },
+      {
+        "@id": "http://endhealth.info/im#timeOfDeath",
+        "name": ""
+      }
+    ]
+  },
+  "CareEpisodes": {
+    "entities": [
+      {
+        "type": "EpisodeOfCare",
+        "label": "Registration episode or episode of care",
+        "status": "Active",
+        "isA": [
+          "RecordEntry",
+          "EpisodeOfCare"
+        ],
+        "effectiveDate": "1938-05-25",
+        "patient": {
+          "id": "57f89784-74d9-4894-af4b-2845cde7a51e",
+          "type": "Patient"
+        },
+        "provider": {
+          "id": "88066333-14c9-4a1d-ae30-8c56ae9e7894",
+          "type": "Organisation"
+        },
+        "gpPatientType": "Regular/GMS",
+        "scheme": "Endeavour"
+      }
+    ]
+  },
+  "Appointments": {
+    "entities": []
+  },
+  "Contacts": {
+    "entities": [
+      {
+        "status": "Active",
+        "mobileTelephoneNumber": "08992641099",
+        "homeTelephoneNumber": "05484155920",
+        "email": "pyr0.pyr0.pyr0@gmail.com"
+      },
+      {
+        "mobileTelephoneNumber": "another-number",
+        "homeTelephoneNumber": "another-home-number",
+        "email": "another-email@example.com"
+      }
+    ]
+  },
+  "Encounters": {
+    "entities": [{
+      "type" : "consultation",
+      "concept" : "GP Surgery"
+    }]
+  },
+  "TreatmentReferralsAndDiagnostic": {
+    "entities": []
+  },
+  "MiscellaneousProperties": {
+    "entities": []
+  }
+}
