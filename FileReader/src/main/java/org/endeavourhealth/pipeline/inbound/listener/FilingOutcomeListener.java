@@ -25,7 +25,7 @@ public class FilingOutcomeListener {
 
   @RabbitListener(queues = "#{rabbitMQConfig.getFilingOutcomeQueue()}")
   public void handleEvent(Message message) {
-    LOG.debug("Received filing outcome message: {}", message);
+    LOG.info("Received filing outcome message: {}", message);
     String filePath = message.getMessageProperties().getHeaders().get("source").toString();
     s3Service.moveFileFromTo(filePath, FileStatus.FILING, FileStatus.FILED, targetBaseRoutingKey);
   }

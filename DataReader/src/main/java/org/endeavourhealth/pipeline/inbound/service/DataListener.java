@@ -11,6 +11,7 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -33,6 +34,7 @@ public class DataListener {
     LOG.debug("Received data body: {}", messageBody);
     if ("EOF".equals(messageBody)) {
       filingOutcomeSender.sendMessage(message);
+      DBConnectionManager.clearCache();
     } else {
       JsonNode dataNode = objectMapper.readTree(messageBody);
       try {

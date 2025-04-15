@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
+import java.util.HashMap;
 import java.util.Properties;
 
 public class DBConnectionManager {
@@ -14,7 +15,7 @@ public class DBConnectionManager {
   private static final Logger LOG = LoggerFactory.getLogger(DBConnectionManager.class);
   private static Connection eventConnection = null;
   private static Connection instanceConnection = null;
-
+  private static HashMap<String, PreparedStatement> upsertCache = new HashMap<>();
 
   private DBConnectionManager() {
     throw new IllegalStateException("Utility class");
@@ -54,7 +55,7 @@ public class DBConnectionManager {
   private static PreparedStatement prepareInstanceCreateTable(String datatype) throws SQLException {
     if (!datatype.matches("^[a-zA-Z_][a-zA-Z0-9_]*$"))  // check for SQL injection
       throw new IllegalArgumentException("Invalid table name: " + datatype);
-    
+
     return getInstanceConnection().prepareStatement("""
       CREATE OR REPLACE FUNCTION json_date(text)
         RETURNS timestamptz AS
@@ -77,9 +78,25 @@ public class DBConnectionManager {
     if ("EVENT".equals(category)) {
       return prepareEventUpsert();
     } else if ("INSTANCE".equals(category)) {
-      return prepareInstanceUpsert(datatype);
+      PreparedStatement returnUpsert = upsertCache.get(datatype);
+      if (returnUpsert == null) {
+        returnUpsert = prepareInstanceUpsert(datatype);
+        upsertCache.put(datatype, returnUpsert);
+      }
+      return returnUpsert;
     } else {
       throw new IllegalArgumentException("Provided category header '" + category + "' is invalid");
+    }
+  }
+
+  private static boolean createNewInstanceRelation(String datatype) throws SQLException {
+    PreparedStatement relationCreate = prepareInstanceCreateTable(datatype);
+    try {
+      relationCreate.execute();
+      return true;
+    } catch (Exception e) {
+      LOG.debug(e.getMessage());
+      return false;
     }
   }
 
@@ -108,14 +125,7 @@ public class DBConnectionManager {
     }
   }
 
-  public static boolean createNewInstanceRelation(String datatype) throws SQLException {
-    PreparedStatement relationCreate = prepareInstanceCreateTable(datatype);
-    try {
-      relationCreate.execute();
-      return true;
-    } catch (Exception e) {
-      LOG.debug(e.getMessage());
-      return false;
-    }
+  public static void clearCache() {
+    upsertCache = new HashMap<>();
   }
 }
