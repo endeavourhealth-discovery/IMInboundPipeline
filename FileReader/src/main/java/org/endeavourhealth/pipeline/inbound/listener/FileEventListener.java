@@ -53,7 +53,7 @@ public class FileEventListener {
 
   @RabbitListener(queues = "#{rabbitMQConfig.getSourceQueue()}")
   public void handleFileEvent(Message message) throws Exception {
-    LOG.debug("Received file event: {}", message);
+    LOG.info("Received file event: {}", message);
     boolean hasFilesInFailed = s3Service.hasFilesInFailed(Optional.of(targetBaseRoutingKey + "/FAILED"));
     if (hasFilesInFailed) {
       LOG.error("Failed files found in S3");

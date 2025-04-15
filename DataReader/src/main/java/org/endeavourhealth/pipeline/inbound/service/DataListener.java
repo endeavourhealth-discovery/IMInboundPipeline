@@ -11,6 +11,7 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -33,6 +34,7 @@ public class DataListener {
     LOG.debug("Received data body: {}", messageBody);
     if ("EOF".equals(messageBody)) {
       filingOutcomeSender.sendMessage(message);
+      DBConnectionManager.clearCache();
     } else {
       JsonNode dataNode = objectMapper.readTree(messageBody);
       try {
@@ -40,7 +42,7 @@ public class DataListener {
         transformer.loadTransformation(headers.get("publisher").toString(), headers.get("datatype").toString());
         JsonNode entities = transformer.transform(dataNode).get("entities");
         String category = headers.get("category").toString();
-        saveToDB(entities, category);
+        saveToDB(entities, category, headers.get("datatype").toString());
         LOG.debug("Filed to DB");
       } catch (Exception e) {
         LOG.error("{}", e.toString());
@@ -49,10 +51,10 @@ public class DataListener {
     }
   }
 
-  private void saveToDB(JsonNode entities, String category) throws SQLException {
+  private void saveToDB(JsonNode entities, String category, String datatype) throws SQLException {
     if (entities.isArray()) {
       for (JsonNode jsonNode : entities) {
-        DBConnectionManager.fileEntity(category, jsonNode);
+        DBConnectionManager.fileEntity(category, jsonNode, datatype);
       }
     }
   }

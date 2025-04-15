@@ -7,25 +7,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
+import java.util.HashMap;
 import java.util.Properties;
 
 public class DBConnectionManager {
 
   private static final Logger LOG = LoggerFactory.getLogger(DBConnectionManager.class);
-  private static PreparedStatement upsertEvent = null;
-  private static PreparedStatement upsertInstance = null;
   private static Connection eventConnection = null;
   private static Connection instanceConnection = null;
-
-  static {
-    try {
-      upsertEvent = prepareEventUpsert();
-      upsertInstance = prepareInstanceUpsert();
-    } catch (SQLException e) {
-      LOG.error("{}", e.toString());
-      System.exit(1);
-    }
-  }
+  private static HashMap<String, PreparedStatement> upsertCache = new HashMap<>();
 
   private DBConnectionManager() {
     throw new IllegalStateException("Utility class");
@@ -55,27 +45,81 @@ public class DBConnectionManager {
     return getEventConnection().prepareStatement("INSERT INTO event (id, json) VALUES (?,?) ON CONFLICT (id) DO UPDATE SET json=?::json");
   }
 
-  private static PreparedStatement prepareInstanceUpsert() throws SQLException {
-    return getInstanceConnection().prepareStatement("INSERT INTO instance (id, json) VALUES (?,?) ON CONFLICT (id) DO UPDATE SET json=?::json");
+  private static PreparedStatement prepareInstanceUpsert(String datatype) throws SQLException {
+    if (!datatype.matches("^[a-zA-Z_][a-zA-Z0-9_]*$"))  // check for SQL injection
+      throw new IllegalArgumentException("Invalid table name: " + datatype);
+
+    return getInstanceConnection().prepareStatement("INSERT INTO %s (id, json) VALUES (?,?) ON CONFLICT (id) DO UPDATE SET json=?::json".formatted(datatype));
   }
 
-  private static PreparedStatement getUpsert(String category) {
+  private static PreparedStatement prepareInstanceCreateTable(String datatype) throws SQLException {
+    if (!datatype.matches("^[a-zA-Z_][a-zA-Z0-9_]*$"))  // check for SQL injection
+      throw new IllegalArgumentException("Invalid table name: " + datatype);
+
+    return getInstanceConnection().prepareStatement("""      
+      CREATE TABLE %s (
+            id UUID PRIMARY KEY,
+            json JSON NOT NULL,
+            type text generated always as (json ->> '@type') stored
+            );
+      
+            CREATE INDEX idx_%s_pat_dob ON %s ((json_date(json ->> 'dateOfBirth'))) WHERE type = 'Patient';
+            CREATE INDEX idx_%s_pat_nhs ON %s ((json ->> 'nhsNumber')) WHERE type = 'Patient';
+      """.formatted(datatype, datatype, datatype, datatype, datatype));
+  }
+
+  private static PreparedStatement getUpsert(String category, String datatype) throws SQLException {
     if ("EVENT".equals(category)) {
-      return upsertEvent;
+      return prepareEventUpsert();
     } else if ("INSTANCE".equals(category)) {
-      return upsertInstance;
+      PreparedStatement returnUpsert = upsertCache.get(datatype);
+      if (returnUpsert == null) {
+        returnUpsert = prepareInstanceUpsert(datatype);
+        upsertCache.put(datatype, returnUpsert);
+      }
+      return returnUpsert;
     } else {
       throw new IllegalArgumentException("Provided category header '" + category + "' is invalid");
     }
   }
 
-  public static int fileEntity(String category, JsonNode entity) throws SQLException {
-    PreparedStatement upsert = getUpsert(category);
+  private static boolean createNewInstanceRelation(String datatype) throws SQLException {
+    PreparedStatement relationCreate = prepareInstanceCreateTable(datatype);
+    try {
+      relationCreate.execute();
+      return true;
+    } catch (Exception e) {
+      LOG.debug(e.getMessage());
+      return false;
+    }
+  }
+
+  public static int fileEntity(String category, JsonNode entity, String datatype) throws SQLException {
+    PreparedStatement upsert = getUpsert(category, datatype);
     upsert.setObject(1, entity.get("@id").asText(), Types.OTHER);
     upsert.setObject(2, entity, Types.OTHER);
     upsert.setObject(3, entity, Types.OTHER);
-    int rows = upsert.executeUpdate();
-    LOG.debug("{} filed to database", category);
-    return rows;
+    try {
+      int rows = upsert.executeUpdate();
+      LOG.debug("{} filed to database", category);
+      return rows;
+    } catch (Exception e) {
+      if (category.equals("INSTANCE") && e.getMessage().contains("ERROR: relation") && e.getMessage().contains("does not exist")) {
+        LOG.debug("Relation not found. Creating it and trying again.");
+        boolean created = createNewInstanceRelation(datatype);
+        if (created) {
+          LOG.debug("Relation created successfully.");
+          int rows = upsert.executeUpdate();
+          LOG.debug("{} refiled to database", category);
+          return rows;
+        }
+      }
+      LOG.debug(e.getMessage());
+      throw new RuntimeException(e);
+    }
+  }
+
+  public static void clearCache() {
+    upsertCache = new HashMap<>();
   }
 }
