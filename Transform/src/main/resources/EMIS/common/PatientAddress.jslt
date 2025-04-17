@@ -1,0 +1,18 @@
+import "/Utilities.jslt" as utils
+
+def EMISPatientAddressTransform(root, uuid) {
+  "@id" : formatUuid($uuid),
+  "@type" : "PatientAddress",
+  "label" : "Patient address",
+  "dateEffectiveDate": .DateEffectiveDate,
+  "timeEffectiveTime": .TimeEffectiveTime,
+  "duration": .Duration,
+  "endDate": .EndDate,
+  "endTime": .EndTime,
+  "addressLine": .NumberAndStreet,
+  "locality": .Village,
+  "city": .Town,
+  "region": .County,
+  "country": .Country,
+  "postcode": .Postcode
+}

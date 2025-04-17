@@ -1,0 +1,13 @@
+import "/EMIS/common/Patient.jslt" as pat
+import "/EMIS/common/PatientAddress.jslt" as addr
+import "/Utilities.jslt" as utils
+
+let addressId = newUuid()
+
+{
+    "entities" : utils:cleanArray([
+        pat:EMISPatientTransform(., $addressId),
+        if (boolean(.NumberAndStreet or .Village or .Town or .County or .Postcode))
+          addr:EMISPatientAddressTransform(., $addressId)
+    ])
+}
