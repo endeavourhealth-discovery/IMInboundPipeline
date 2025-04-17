@@ -12,6 +12,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -19,7 +20,7 @@ public class DataListener {
 
   private static final Logger LOG = LoggerFactory.getLogger(DataListener.class);
   private static final ObjectMapper objectMapper = new ObjectMapper();
-  Transformer transformer = new Transformer();
+  Map<String, Transformer> transformers = new HashMap<>();
   private FilingOutcomeSender filingOutcomeSender;
 
   public DataListener(FilingOutcomeSender filingOutcomeSender) {
@@ -37,7 +38,8 @@ public class DataListener {
       JsonNode dataNode = objectMapper.readTree(messageBody);
       try {
         Map<String, Object> headers = message.getMessageProperties().getHeaders();
-        transformer.loadTransformation(headers.get("publisher").toString(), headers.get("datatype").toString());
+        Transformer transformer = getTransformer(headers.get("publisher").toString());
+        transformer.loadTransformation(headers.get("datatype").toString());
         JsonNode entities = transformer.transform(dataNode).get("entities");
         String category = headers.get("category").toString();
         saveToDB(entities, category);
@@ -47,6 +49,15 @@ public class DataListener {
         System.exit(1);
       }
     }
+  }
+
+  private Transformer getTransformer(String publisher) {
+    Transformer result = transformers.get(publisher);
+    if (result == null) {
+      result = new Transformer(publisher);
+      transformers.put(publisher, result);
+    }
+    return result;
   }
 
   private void saveToDB(JsonNode entities, String category) throws SQLException {
