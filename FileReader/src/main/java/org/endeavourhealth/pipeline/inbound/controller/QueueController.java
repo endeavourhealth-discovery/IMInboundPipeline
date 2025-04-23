@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.Base64;
 
@@ -20,7 +21,7 @@ public class QueueController {
   @GetMapping("/queue")
   private String getQueues() throws Exception {
     String endpoint = RABBITMQ_HOST + ":" + RABBITMQ_PORT + "/api/queues";
-    URL url = new URL(endpoint);
+    URL url = new URI(endpoint).toURL();
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestMethod("GET");
     String encodedAuth = Base64.getEncoder().encodeToString((RABBITMQ_USER + ":" + RABBITMQ_PASSWORD).getBytes());
