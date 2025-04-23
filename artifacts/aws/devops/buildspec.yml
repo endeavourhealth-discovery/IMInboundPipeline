@@ -2,6 +2,9 @@ version: 0.2
 run-as: root
 
 phases:
+  install:
+    runtime-versions:
+      java: corretto21
   build:
     commands:
       - mkdir aws_scripts
