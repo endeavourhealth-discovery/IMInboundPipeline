@@ -45,15 +45,15 @@ public class DBConnectionManager {
     return getEventConnection().prepareStatement("INSERT INTO event (id, json) VALUES (?,?) ON CONFLICT (id) DO UPDATE SET json=?::json");
   }
 
-  private static PreparedStatement prepareInstanceUpsert(String datatype) throws SQLException {
-    if (!datatype.matches("^[a-zA-Z_][a-zA-Z0-9_]*$"))  // check for SQL injection
+  public static PreparedStatement prepareInstanceUpsert(String datatype) throws SQLException {
+    if (!datatype.matches("^[a-zA-Z_]\\w*$"))  // check for SQL injection
       throw new IllegalArgumentException("Invalid table name: " + datatype);
 
     return getInstanceConnection().prepareStatement("INSERT INTO %s (id, json) VALUES (?,?) ON CONFLICT (id) DO UPDATE SET json=?::json".formatted(datatype));
   }
 
-  private static PreparedStatement prepareInstanceCreateTable(String datatype) throws SQLException {
-    if (!datatype.matches("^[a-zA-Z_][a-zA-Z0-9_]*$"))  // check for SQL injection
+  public static PreparedStatement prepareInstanceCreateTable(String datatype) throws SQLException {
+    if (!datatype.matches("^[a-zA-Z_]\\w*$"))  // check for SQL injection
       throw new IllegalArgumentException("Invalid table name: " + datatype);
 
     return getInstanceConnection().prepareStatement("""      
@@ -62,13 +62,13 @@ public class DBConnectionManager {
             json JSON NOT NULL,
             type text generated always as (json ->> '@type') stored
             );
-      
+            
             CREATE INDEX idx_%s_pat_dob ON %s ((json_date(json ->> 'dateOfBirth'))) WHERE type = 'Patient';
             CREATE INDEX idx_%s_pat_nhs ON %s ((json ->> 'nhsNumber')) WHERE type = 'Patient';
       """.formatted(datatype, datatype, datatype, datatype, datatype));
   }
 
-  private static PreparedStatement getUpsert(String category, String datatype) throws SQLException {
+  public static PreparedStatement getUpsert(String category, String datatype) throws SQLException {
     if ("EVENT".equals(category)) {
       return prepareEventUpsert();
     } else if ("INSTANCE".equals(category)) {
