@@ -17,7 +17,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -63,7 +62,7 @@ public class SecurityConfig {
   private JwtAuthenticationConverter grantedAuthoritiesExtractor() {
     JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
     jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
-        List<String> list = (List<String>) jwt.getClaims().getOrDefault("cognito:groups", new ArrayList<String>());
+        List<String> list = jwt.getClaimAsStringList("cognito:groups");
         return list.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
       }
     );
