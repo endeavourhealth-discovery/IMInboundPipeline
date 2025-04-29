@@ -1,7 +1,7 @@
 plugins {
   id 'java'
   id 'groovy-gradle-plugin'
-  id("org.springframework.boot") version "3.4.3" apply false
+  id("org.springframework.boot") version "3.4.5" apply false
   id("io.spring.dependency-management") version "1.1.7"
 }
 
@@ -33,7 +33,7 @@ allprojects {
     targetCompatibility = JavaVersion.VERSION_21
   }
 
-  tasks.withType(JavaCompile) {
+  tasks.withType(JavaCompile).configureEach {
     options.compilerArgs += '-parameters'
     options.encoding = 'UTF-8'
   }
@@ -58,6 +58,6 @@ allprojects {
   }
 }
 
-task myJavadocs(type: Javadoc) {
+tasks.register('myJavadocs', Javadoc) {
   source = sourceSets.main.allJava
 }

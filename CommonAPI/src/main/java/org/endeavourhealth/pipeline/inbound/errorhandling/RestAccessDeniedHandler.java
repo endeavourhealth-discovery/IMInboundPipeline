@@ -1,6 +1,5 @@
 package org.endeavourhealth.pipeline.inbound.errorhandling;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -18,8 +17,8 @@ public class RestAccessDeniedHandler implements AccessDeniedHandler {
   private static final Logger LOG = LoggerFactory.getLogger(RestAccessDeniedHandler.class);
 
   @Override
-  public void handle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AccessDeniedException e) throws IOException, ServletException {
-    LOG.warn("Access denied for user: {}", httpServletRequest.getRemoteUser());
+  public void handle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AccessDeniedException e) throws IOException {
+    LOG.warn("Access denied for user: {} on resource {}", httpServletRequest.getRemoteUser(), httpServletRequest.getRequestURI());
     LOG.warn(e.getMessage());
     httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     try (OutputStream out = httpServletResponse.getOutputStream()) {

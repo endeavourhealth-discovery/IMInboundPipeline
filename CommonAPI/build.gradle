@@ -1,41 +1,26 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
 plugins {
   id 'org.sonarqube' version '4.4.1.3373'
 }
 
 dependencies {
-  implementation platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+  implementation platform(SpringBootPlugin.BOM_COORDINATES)
 
-  implementation libs.assertJ
-  implementation libs.awsSDKBOM
-  implementation libs.awsSDKCore
-  implementation libs.jacksonDatabind
-  implementation libs.mysql
-  implementation libs.rabbitmqAmqpClient
   implementation libs.springContext
-  implementation libs.springDataJpa
-  implementation libs.springOauthCore
   implementation libs.springOauthServer
-  implementation libs.springSecurity
   implementation libs.springWeb
-  implementation libs.springDoc
-  implementation libs.springAmpq
-
-  runtimeOnly libs.springDevTools
 
   testImplementation libs.cucumber
   testImplementation libs.cucumberJunit
+  testImplementation libs.cucumberSpring
   testImplementation libs.junit
   testImplementation libs.junitSuite
   testImplementation libs.mockito
+  testImplementation libs.mockitoJUnit
   testImplementation libs.springTest
   testImplementation libs.springTestSecurity
   testImplementation libs.systemStubs
-
-  compileOnly libs.jacksonAnnotations
-  compileOnly libs.lombok
-
-  annotationProcessor libs.jacksonAnnotations
-  annotationProcessor libs.lombok
 }
 
 if (ENV == 'prod') {
@@ -56,6 +41,7 @@ sonar {
 }
 
 test {
+  jvmArgs("-XX:+EnableDynamicAgentLoading")
   useJUnitPlatform()
 }
 
@@ -65,7 +51,7 @@ configurations {
   }
 }
 
-task cucumberCli() {
+tasks.register('cucumberCli') {
   dependsOn assemble, testClasses
   doLast {
     javaexec {
@@ -74,7 +60,7 @@ task cucumberCli() {
       args = [
         '--plugin', 'pretty',
         '--plugin', 'html:build/reports/cucumber/cucumber-report.html',
-        '--glue', 'org.endeavourhealth.im-inbound-pipeline',
+        '--glue', 'org.endeavourhealth.pipeline.inbound',
         'src/test/resources']
     }
   }

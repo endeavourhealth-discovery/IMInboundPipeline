@@ -1,6 +1,5 @@
 package org.endeavourhealth.pipeline.inbound.errorhandling;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -18,8 +17,8 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
   private static final Logger LOG = LoggerFactory.getLogger(RestAuthenticationEntryPoint.class);
 
   @Override
-  public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException ex) throws IOException, ServletException {
-    LOG.warn("Authentication failed for user: {}", httpServletRequest.getRemoteUser());
+  public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException ex) throws IOException {
+    LOG.warn("Authentication failed for user: {} on resource {}", httpServletRequest.getRemoteUser(), httpServletRequest.getRequestURI());
     LOG.warn(ex.getMessage());
     httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
     try (OutputStream out = httpServletResponse.getOutputStream()) {

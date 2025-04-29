@@ -5,6 +5,8 @@ import com.schibsted.spt.data.jslt.Expression;
 import com.schibsted.spt.data.jslt.Function;
 import com.schibsted.spt.data.jslt.FunctionUtils;
 import com.schibsted.spt.data.jslt.Parser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -14,9 +16,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Transformer {
   private static final Logger LOG = LoggerFactory.getLogger(Transformer.class);
@@ -55,7 +54,7 @@ public class Transformer {
       LOG.debug("Loading functions: {}", className);
       setFunctions();
       LOG.debug("Instantiate JSLT");
-      if (file != null) jslt = Parser.compileString(file, functions);
+      jslt = Parser.compileString(file, functions);
       fileCache.put(transformName, jslt);
     }
   }
