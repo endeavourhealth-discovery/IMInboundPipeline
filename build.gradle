@@ -9,8 +9,6 @@ repositories {
   gradlePluginPortal()
 }
 
-apply from: "dependencies.gradle"
-
 java {
   sourceCompatibility = '21'
 }
