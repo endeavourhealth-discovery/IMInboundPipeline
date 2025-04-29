@@ -2,6 +2,7 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
   id("java")
+  id("jacoco")
   id("org.springframework.boot")
   alias(libs.plugins.sonar)
 }
@@ -46,9 +47,16 @@ sonar.properties {
 tasks.test {
   jvmArgs("-XX:+EnableDynamicAgentLoading")
   useJUnitPlatform()
+  finalizedBy("jacocoTestReport")
 }
 
-val cucumberRuntime by configurations.creating {
+tasks.jacocoTestReport {
+  reports {
+    xml.required.set(true)
+  }
+}
+
+val cucumberRuntime by getConfigurations().creating {
   extendsFrom(configurations["testImplementation"])
 }
 

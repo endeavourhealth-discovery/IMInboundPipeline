@@ -13,6 +13,8 @@ springDoc = "2.3.0"
 
 [plugins]
 sonar = { id = "org.sonarqube", version = "4.4.1.3373" }
+spring-boot = { id = "org.springframework.boot", version = "3.4.5" }
+spring-dependency = { id = "io.spring.dependency-management", version = "1.1.7" }
 
 [libraries]
 # Implementation
