@@ -55,6 +55,7 @@ sonar {
 }
 
 test {
+  jvmArgs("-XX:+EnableDynamicAgentLoading")
   useJUnitPlatform()
 }
 
