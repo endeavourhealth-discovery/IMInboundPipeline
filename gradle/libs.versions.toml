@@ -8,6 +8,7 @@ jslt = "0.1.14"
 junit = "5.10.1"
 junitSuite = "1.11.4"
 mockito = "5.17.0"
+mysql = "9.2.0"
 slf4j = "1.7.25"
 springDoc = "2.3.0"
 
@@ -22,6 +23,7 @@ apache-csv = { module = "org.apache.commons:commons-csv", version.ref = "apache"
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
 jackson = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 jslt = { module = "com.schibsted.spt.data:jslt", version.ref = "jslt" }
+mysql = { module = "com.mysql:mysql-connector-j", version.ref = "mysql" }
 slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 spring-amqp = { module = "org.springframework.boot:spring-boot-starter-amqp" }
 spring-ctx = { module = "org.springframework:spring-context" }

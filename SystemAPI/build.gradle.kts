@@ -19,6 +19,7 @@ dependencies {
 
   implementation(libs.bundles.spring)
   implementation(libs.spring.doc)
+  implementation(libs.mysql)
 }
 
 if (System.getenv("ENV") == "prod") {
