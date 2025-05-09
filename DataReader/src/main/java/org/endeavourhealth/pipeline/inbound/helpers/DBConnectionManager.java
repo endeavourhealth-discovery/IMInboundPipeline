@@ -83,9 +83,8 @@ public class DBConnectionManager {
     }
   }
 
-  private static boolean createNewInstanceRelation(String datatype) throws SQLException {
-    PreparedStatement relationCreate = prepareInstanceCreateTable(datatype);
-    try {
+  private static boolean createNewInstanceRelation(String datatype) {
+    try (PreparedStatement relationCreate = prepareInstanceCreateTable(datatype)) {
       relationCreate.execute();
       return true;
     } catch (Exception e) {

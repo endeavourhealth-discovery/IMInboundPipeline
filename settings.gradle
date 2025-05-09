@@ -1,19 +1,21 @@
 pluginManagement {
-    repositories {
-        mavenCentral()
-        gradlePluginPortal()
-        maven {
-            url = uri('https://artifactory.endhealth.co.uk/repository/maven-releases')
-        }
-        maven {
-            url = uri('https://artifactory.endhealth.co.uk/repository/maven-snapshots')
-        }
-        mavenLocal()
+  repositories {
+    mavenCentral()
+    gradlePluginPortal()
+    maven {
+      url = uri('https://artifactory.endhealth.co.uk/repository/maven-releases')
     }
+    maven {
+      url = uri('https://artifactory.endhealth.co.uk/repository/maven-snapshots')
+    }
+    mavenLocal()
+  }
 }
 
 rootProject.name = 'IMInboundPipeline'
+include(':CommonAPI')
 include(':Transform')
 include(':MessageAPI')
 include(':DataReader')
 include(':FileReader')
+include(':SystemAPI')

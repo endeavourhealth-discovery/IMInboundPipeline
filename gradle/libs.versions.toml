@@ -1,0 +1,54 @@
+# gradle/libs.versions.toml
+[versions]
+apache = "1.11.0"
+aws = "2.30.11"
+cucumber = "7.14.0"
+jackson = "2.16.0"
+jslt = "0.1.14"
+junit = "5.10.1"
+junitSuite = "1.11.4"
+mockito = "5.17.0"
+mysql = "9.2.0"
+slf4j = "1.7.25"
+springDoc = "2.3.0"
+
+[plugins]
+sonar = { id = "org.sonarqube", version = "4.4.1.3373" }
+spring-boot = { id = "org.springframework.boot", version = "3.4.5" }
+spring-dependency = { id = "io.spring.dependency-management", version = "1.1.7" }
+
+[libraries]
+# Implementation
+apache-csv = { module = "org.apache.commons:commons-csv", version.ref = "apache" }
+aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
+jackson = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
+jslt = { module = "com.schibsted.spt.data:jslt", version.ref = "jslt" }
+mysql = { module = "com.mysql:mysql-connector-j", version.ref = "mysql" }
+slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+spring-amqp = { module = "org.springframework.boot:spring-boot-starter-amqp" }
+spring-ctx = { module = "org.springframework:spring-context" }
+spring-doc = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springDoc" }
+spring-oauth = { module = "org.springframework.boot:spring-boot-starter-oauth2-resource-server" }
+spring-web = { module = "org.springframework.boot:spring-boot-starter-web" }
+
+# Test Implementation
+cucumber-java = { module = "io.cucumber:cucumber-java", version.ref = "cucumber" }
+cucumber-junit = { module = "io.cucumber:cucumber-junit-platform-engine", version.ref = "cucumber" }
+cucumber-spring = { module = "io.cucumber:cucumber-spring", version.ref = "cucumber" }
+junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+junit-suite = { module = "org.junit.platform:junit-platform-suite", version.ref = "junitSuite" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+mockito-junit = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
+spring-test-boot = { module = "org.springframework.boot:spring-boot-starter-test" }
+spring-test-security = { module = "org.springframework.security:spring-security-test" }
+
+
+[bundles]
+# Implementation
+spring = ["spring-ctx", "spring-oauth", "spring-web"]
+
+# Test Implementation
+cucumber = ["cucumber-java", "cucumber-junit", "cucumber-spring"]
+junit = ["junit-api", "junit-suite"]
+mockito = ["mockito-core", "mockito-junit"]
+spring-test = ["spring-test-boot", "spring-test-security"]
