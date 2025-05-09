@@ -1,8 +1,5 @@
 plugins {
   id("java")
-  id("groovy-gradle-plugin")
-  alias(libs.plugins.spring.boot)
-  alias(libs.plugins.spring.dependency)
 }
 
 repositories {
