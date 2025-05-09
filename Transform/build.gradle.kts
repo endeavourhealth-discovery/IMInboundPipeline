@@ -3,6 +3,7 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin
 plugins {
   id("java")
   id("jacoco")
+  alias(libs.plugins.spring.boot) apply false
   alias(libs.plugins.sonar)
 }
 

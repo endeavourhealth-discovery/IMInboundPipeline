@@ -3,13 +3,14 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin
 plugins {
   id("java")
   id("jacoco")
-  id("org.springframework.boot")
+  alias(libs.plugins.spring.boot)
   alias(libs.plugins.sonar)
 }
 
 description = "File Reader"
 
 tasks.bootJar {
+  mainClass.set("org.endeavourhealth.im.FilePoller")
   archiveFileName.set("FileReader.jar")
 }
 
