@@ -60,7 +60,7 @@ public class DBConnectionManager {
       CREATE TABLE %s (
             id UUID PRIMARY KEY,
             json JSON NOT NULL,
-            type text generated always as (json ->> '@type') stored
+            type text generated always as (json ->> 'type') stored
             );
             
             CREATE INDEX idx_%s_pat_dob ON %s ((json_date(json ->> 'dateOfBirth'))) WHERE type = 'Patient';
@@ -95,7 +95,7 @@ public class DBConnectionManager {
 
   public static int fileEntity(String category, JsonNode entity, String datatype) throws SQLException {
     PreparedStatement upsert = getUpsert(category, datatype);
-    upsert.setObject(1, entity.get("@id").asText(), Types.OTHER);
+    upsert.setObject(1, entity.get("iri").asText(), Types.OTHER);
     upsert.setObject(2, entity, Types.OTHER);
     upsert.setObject(3, entity, Types.OTHER);
     try {

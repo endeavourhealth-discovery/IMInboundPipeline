@@ -6,8 +6,8 @@ let relationshipIdLocation = newUuid()
 {
   "entities" : utils:cleanArray([
     {
-      "@id" : formatUuid(.OrganisationGuid, "@id"),
-      "@type" : "Organisation",
+      "iri" : formatUuid(.OrganisationGuid, "iri"),
+      "type" : "Organisation",
       "label" : .OrganisationName,
       "operationalStartDate" : if (.OpenDate) formatDate("yyyy-MM-dd", .OpenDate),
       "operationalEndDate" : if (.CloseDate) formatDate("yyyy-MM-dd", .CloseDate),
@@ -20,15 +20,15 @@ let relationshipIdLocation = newUuid()
     },
     if (.ParentOrganisationGuid)
       {
-        "@id" : if (.ParentOrganisationGuid) $relationshipIdParent,
-        "@type" : "OrganisationRelationship",
+        "iri" : if (.ParentOrganisationGuid) $relationshipIdParent,
+        "type" : "OrganisationRelationship",
         "organisation" : if (.ParentOrganisationGuid) formatUuid(.ParentOrganisationGuid, "organisation (ParentOrganisationGuid)"),
         "relationshipType" : "ODS_Relationship_6"
       },
     if (.MainLocationGuid)
       {
-        "@id" : if (.MainLocationGuid)  $relationshipIdLocation,
-        "@type" : "OrganisationRelationship",
+        "iri" : if (.MainLocationGuid)  $relationshipIdLocation,
+        "type" : "OrganisationRelationship",
         "organisation" : if (.MainLocationGuid) formatUuid(.MainLocationGuid, "organisation (MainLocationGuid)"),
         "relationshipType" : if (.MainLocationGuid) "ODS_Relationship_5"
       }
