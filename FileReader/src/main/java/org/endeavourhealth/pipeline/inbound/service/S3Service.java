@@ -75,9 +75,8 @@ public class S3Service {
     ListObjectsV2Iterable response = s3.listObjectsV2Paginator(request);
 
     for (ListObjectsV2Response page : response) {
-      page.contents().forEach((S3Object object) -> {
-        filesInBucket.add(object.key());
-      });
+      page.contents().forEach((S3Object object) ->
+        filesInBucket.add(object.key()));
     }
 
     return filesInBucket;
