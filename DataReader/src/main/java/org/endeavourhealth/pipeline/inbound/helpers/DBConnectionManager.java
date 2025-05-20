@@ -102,7 +102,7 @@ public class DBConnectionManager {
       int rows = upsert.executeUpdate();
       LOG.debug("{} filed to database", category);
       return rows;
-    } catch (Exception e) {
+    } catch (SQLException e) {
       if (category.equals("INSTANCE") && e.getMessage().contains("ERROR: relation") && e.getMessage().contains("does not exist")) {
         LOG.debug("Relation not found. Creating it and trying again.");
         boolean created = createNewInstanceRelation(datatype);
@@ -114,7 +114,7 @@ public class DBConnectionManager {
         }
       }
       LOG.debug(e.getMessage());
-      throw new RuntimeException(e);
+      throw new SQLException(e.getMessage());
     }
   }
 

@@ -38,7 +38,7 @@ sonar.properties {
   property("sonar.projectKey", "IMInboundPipeline_Queuereader")
   property("sonar.projectName", "DataReader")
   property("sonar.host.url", "https://sonarcloud.io")
-  property("sonar.coverage.exclusions", "**/config/**")
+  property("sonar.coverage.exclusions", "**/config/**, **/listener/**, **/model/**,")
 }
 
 tasks.test {

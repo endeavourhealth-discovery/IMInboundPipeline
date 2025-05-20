@@ -11,7 +11,6 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map;
 
