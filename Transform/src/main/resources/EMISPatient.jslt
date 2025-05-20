@@ -5,8 +5,8 @@ let addressId = newUuid()
 {
   "entities" : utils:cleanArray([
     {
-      "@id" : formatUuid(.PatientGuid, "@id"),
-      "@type" : "Patient",
+      "iri" : formatUuid(.PatientGuid, "iri"),
+      "type" : "Patient",
       //"Provenance": .Provenance,
       //"Component": .Component,
       "title" : .Title,
@@ -75,8 +75,8 @@ let addressId = newUuid()
     },
     if (boolean(.NumberAndStreet or .Village or .Town or .County or .Postcode))
       {
-        "@id" : $addressId,
-        "@type" : "Address",
+        "iri" : $addressId,
+        "type" : "Address",
         "addressLine1" : if (.HouseNameFlatNumber) .HouseNameFlatNumber else .NumberAndStreet,
         "addressLine2" : .Village,
         "city" : .Town,

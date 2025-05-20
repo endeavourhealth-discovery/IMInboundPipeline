@@ -59,7 +59,7 @@ DROP TABLE IF EXISTS instance;
 CREATE TABLE instance (
     id UUID PRIMARY KEY,
     json JSON NOT NULL,
-    type text generated always as (json ->> '@type') stored
+    type text generated always as (json ->> 'type') stored
 );
 
 CREATE INDEX idx_inst_pat_dob ON instance ((json_date(json ->> 'dateOfBirth'))) WHERE type = 'Patient';
@@ -70,7 +70,7 @@ DROP TABLE IF EXISTS event;
 CREATE TABLE event (
     id UUID PRIMARY KEY,
     json JSON NOT NULL,
-    type text generated always as (json ->> '@type') stored
+    type text generated always as (json ->> 'type') stored
 );
 
 CREATE INDEX idx_evt_cpt_typ ON event (type, (json ->> 'concept'), (json_date(json -> 'effectiveDate' ->> 'dateTime')));

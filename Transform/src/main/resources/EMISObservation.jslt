@@ -3,8 +3,8 @@ import "Utilities.jslt" as utils
 {
   "entities" : utils:cleanArray([
     {
-      "@id" : formatUuid(.ObservationGuid, "@id"),
-      "@type" : "Observation",
+      "iri" : formatUuid(.ObservationGuid, "iri"),
+      "type" : "Observation",
       "patient" : if (.PatientGuid) formatUuid(.PatientGuid, "Patient Guid"),
       "concept" : "emis_" + .CodeId,
       "effectiveDate" : if (.EffectiveDate) formatDate("yyyy-MM-dd", .EffectiveDate),
