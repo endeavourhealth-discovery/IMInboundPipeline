@@ -25,20 +25,25 @@ dependencies {
   testImplementation(libs.bundles.spring.test)
 }
 
-if (System.getenv("ENV") == "prod") {
-  tasks.build {
-    finalizedBy("sonar")
-  }
-}
+val SONAR_LOGIN = System.getenv("SONAR_LOGIN") ?: "null"
+println("Sonar = [$SONAR_LOGIN]")
 
 sonar.properties {
-  property("sonar.token", System.getenv("SONAR_LOGIN"))
+  property("sonar.token", SONAR_LOGIN)
   property("sonar.gradle.skipCompile", true)
   property("sonar.organization", "endeavourhealth-discovery")
   property("sonar.projectKey", "IMInboundPipeline_Queuereader")
   property("sonar.projectName", "DataReader")
   property("sonar.host.url", "https://sonarcloud.io")
   property("sonar.coverage.exclusions", "**/config/**, **/listener/**, **/model/**,")
+}
+
+val ENV = System.getenv("ENV") ?: "dev"
+println("Build environment = [$ENV]")
+if (System.getenv(ENV) == "prod") {
+  tasks.build {
+    finalizedBy("sonar")
+  }
 }
 
 tasks.test {
