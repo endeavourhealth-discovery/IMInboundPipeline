@@ -1,5 +1,6 @@
 plugins {
   id("java")
+  alias(libs.plugins.sonar)
 }
 
 repositories {
@@ -9,7 +10,17 @@ repositories {
 java.sourceCompatibility = JavaVersion.VERSION_21
 java.targetCompatibility = JavaVersion.VERSION_21
 
-allprojects {
+sonar {
+  properties {
+    property("sonar.token", System.getenv("SONAR_LOGIN"))
+    property("sonar.host.url", "https://sonarcloud.io")
+    property("sonar.organization", "endeavourhealth-discovery")
+    property("sonar.projectKey", "IMInboundPipeline")
+    property("sonar.projectName", "IM Inbound Pipeline")
+  }
+}
+
+subprojects {
   repositories {
     mavenLocal()
     mavenCentral()
@@ -20,4 +31,55 @@ allprojects {
       url = uri("https://artifactory.endhealth.co.uk/repository/maven-snapshots")
     }
   }
+
+  sonar {
+    properties {
+      property("sonar.sources", "src/main/java")
+      property("sonar.tests", "src/test/java")
+      property("sonar.junit.reportPaths", "build/test-results/test")
+    }
+  }
+}
+
+project(":CommonAPI") {
+  sonar {
+    properties {
+      property("sonar.coverage.exclusions", "**/config/**, **/controller/**, **/errorhandling/**")
+    }
+  }
+}
+
+project(":DataReader") {
+  sonar {
+    properties {
+      property("sonar.coverage.exclusions", "**/config/**, **/listener/**, **/model/**,")
+    }
+  }
+}
+
+project(":FileReader") {
+  sonar {
+    properties {
+      property("sonar.coverage.exclusions", "**/config/**, **/controller/**, **/model,**")
+    }
+  }
+}
+
+project(":MessageAPI") {
+  sonar {
+    properties {
+      property("sonar.coverage.exclusions", "**/config/**, **/controller/**, **/errorhandling/**")
+    }
+  }
+}
+
+project(":SystemAPI") {
+  sonar {
+    properties {
+      property("sonar.coverage.exclusions", "**/config/**, **/controller/**, **/errorhandling/**")
+    }
+  }
+}
+
+project(":Transform") {
 }

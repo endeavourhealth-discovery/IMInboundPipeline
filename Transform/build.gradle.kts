@@ -4,7 +4,6 @@ plugins {
   id("java")
   id("jacoco")
   alias(libs.plugins.spring.boot) apply false
-  alias(libs.plugins.sonar)
 }
 
 description = "Transform"
@@ -24,22 +23,6 @@ dependencies {
   testImplementation(libs.bundles.junit)
   testImplementation(libs.bundles.mockito)
   testImplementation(libs.bundles.spring.test)
-}
-
-if (System.getenv("ENV") == "prod") {
-  tasks.build {
-    finalizedBy("sonar")
-  }
-}
-
-sonar.properties {
-  property("sonar.token", System.getenv("SONAR_LOGIN"))
-  property("sonar.gradle.skipCompile", true)
-  property("sonar.organization", "endeavourhealth-discovery")
-  property("sonar.projectKey", "IMInboundPipeline_Transform")
-  property("sonar.projectName", "Transform")
-  property("sonar.host.url", "https://sonarcloud.io")
-  property("sonar.junit.reportPaths", "build/test-results/test")
 }
 
 tasks.test {
