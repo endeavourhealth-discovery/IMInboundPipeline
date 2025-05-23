@@ -11,6 +11,12 @@ repositories {
 java.sourceCompatibility = JavaVersion.VERSION_21
 java.targetCompatibility = JavaVersion.VERSION_21
 
+val ENV = System.getenv("ENV") ?: "dev"
+println("Build environment = [$ENV]")
+if (ENV == "prod") {
+  tasks.build { finalizedBy("sonar") }
+}
+
 sonar {
   properties {
     property("sonar.token", System.getenv("SONAR_LOGIN"))
@@ -18,6 +24,9 @@ sonar {
     property("sonar.organization", "endeavourhealth-discovery")
     property("sonar.projectKey", "IMInboundPipeline")
     property("sonar.projectName", "IM Inbound Pipeline")
+    property("sonar.sources", "src/main/java")
+    property("sonar.tests", "src/test/java")
+    property("sonar.junit.reportPaths", "build/test-results/test")
   }
 }
 
@@ -46,14 +55,6 @@ subprojects {
   tasks.jacocoTestReport {
     reports {
       xml.required.set(true)
-    }
-  }
-
-  sonar {
-    properties {
-      property("sonar.sources", "src/main/java")
-      property("sonar.tests", "src/test/java")
-      property("sonar.junit.reportPaths", "build/test-results/test")
     }
   }
 }
