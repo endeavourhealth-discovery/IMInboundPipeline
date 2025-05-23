@@ -9,12 +9,6 @@ repositories {
 java.sourceCompatibility = JavaVersion.VERSION_21
 java.targetCompatibility = JavaVersion.VERSION_21
 
-if (System.getenv("ENV") == "prod") {
-  tasks.build {
-    finalizedBy("publish")
-  }
-}
-
 allprojects {
   repositories {
     mavenLocal()
