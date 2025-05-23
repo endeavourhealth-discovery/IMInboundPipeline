@@ -30,7 +30,6 @@ sonar {
   }
 }
 
-
 subprojects {
   apply(plugin = "java")
   apply(plugin = "jacoco")
@@ -57,47 +56,4 @@ subprojects {
       xml.required.set(true)
     }
   }
-}
-
-project(":CommonAPI") {
-  sonar {
-    properties {
-      property("sonar.coverage.exclusions", "**/config/**, **/controller/**, **/errorhandling/**")
-    }
-  }
-}
-
-project(":DataReader") {
-  sonar {
-    properties {
-      property("sonar.coverage.exclusions", "**/config/**, **/listener/**, **/model/**,")
-    }
-  }
-}
-
-project(":FileReader") {
-  sonar {
-    properties {
-      property("sonar.coverage.exclusions", "**/config/**, **/controller/**, **/model,**")
-    }
-  }
-}
-
-project(":MessageAPI") {
-  sonar {
-    properties {
-      property("sonar.coverage.exclusions", "**/config/**, **/controller/**, **/errorhandling/**")
-    }
-  }
-}
-
-project(":SystemAPI") {
-  sonar {
-    properties {
-      property("sonar.coverage.exclusions", "**/config/**, **/controller/**, **/errorhandling/**")
-    }
-  }
-}
-
-project(":Transform") {
 }
