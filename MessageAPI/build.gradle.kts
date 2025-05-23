@@ -4,7 +4,6 @@ plugins {
   id("war")
   id("jacoco")
   alias(libs.plugins.spring.boot)
-  alias(libs.plugins.sonar)
 }
 
 description = "Message API"
@@ -23,23 +22,6 @@ dependencies {
   testImplementation(libs.bundles.junit)
   testImplementation(libs.bundles.mockito)
   testImplementation(libs.bundles.spring.test)
-}
-
-if (System.getenv("ENV") == "prod") {
-  tasks.build {
-    finalizedBy("sonar")
-  }
-}
-
-sonar.properties {
-  property("sonar.token", System.getenv("SONAR_LOGIN"))
-  property("sonar.gradle.skipCompile", true)
-  property("sonar.organization", "endeavourhealth-discovery")
-  property("sonar.projectKey", "IMInboundPipeline_API")
-  property("sonar.projectName", "MessageAPI")
-  property("sonar.host.url", "https://sonarcloud.io")
-  property("sonar.junit.reportPaths", "build/test-results/test")
-  property("sonar.coverage.exclusions", "**/config/**, **/controller/**, **/errorhandling/**")
 }
 
 tasks.test {

@@ -4,7 +4,6 @@ plugins {
   id("war")
   id("jacoco")
   alias(libs.plugins.spring.boot)
-  alias(libs.plugins.sonar)
 }
 
 description = "System API"
@@ -21,23 +20,6 @@ dependencies {
   implementation(libs.bundles.spring)
   implementation(libs.spring.doc)
   implementation(libs.mysql)
-}
-
-if (System.getenv("ENV") == "prod") {
-  tasks.build {
-    finalizedBy("sonar")
-  }
-}
-
-sonar.properties {
-  property("sonar.token", System.getenv("SONAR_LOGIN"))
-  property("sonar.gradle.skipCompile", true)
-  property("sonar.organization", "endeavourhealth-discovery")
-  property("sonar.projectKey", "IMInboundPipeline_API")
-  property("sonar.projectName", "SystemAPI")
-  property("sonar.host.url", "https://sonarcloud.io")
-  property("sonar.junit.reportPaths", "build/test-results/test")
-  property("sonar.coverage.exclusions", "**/config/**, **/controller/**, **/errorhandling/**")
 }
 
 tasks.test {
@@ -57,6 +39,8 @@ val cucumberRuntime by getConfigurations().creating {
 }
 
 tasks.register("cucumberCli") {
+  group = JavaBasePlugin.VERIFICATION_GROUP
+  description = "Runs Cucumber Feature Files"
   dependsOn("assemble", "testClasses")
   doLast {
     providers.javaexec {
