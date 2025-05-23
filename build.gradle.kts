@@ -1,5 +1,6 @@
 plugins {
   id("java")
+  id("jacoco")
   alias(libs.plugins.sonar)
 }
 
@@ -20,7 +21,11 @@ sonar {
   }
 }
 
+
 subprojects {
+  apply(plugin = "java")
+  apply(plugin = "jacoco")
+
   repositories {
     mavenLocal()
     mavenCentral()
@@ -29,6 +34,18 @@ subprojects {
     }
     maven {
       url = uri("https://artifactory.endhealth.co.uk/repository/maven-snapshots")
+    }
+  }
+
+  tasks.test {
+    jvmArgs("-XX:+EnableDynamicAgentLoading")
+    useJUnitPlatform()
+    finalizedBy("jacocoTestReport")
+  }
+
+  tasks.jacocoTestReport {
+    reports {
+      xml.required.set(true)
     }
   }
 
