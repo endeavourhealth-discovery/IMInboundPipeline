@@ -20,3 +20,9 @@ dependencies {
   implementation(libs.spring.doc)
   implementation(libs.mysql)
 }
+
+sonar {
+  properties {
+    property("sonar.coverage.exclusions", "**/config/**, **/controller/**, **/errorhandling/**")
+  }
+}

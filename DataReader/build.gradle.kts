@@ -21,3 +21,9 @@ dependencies {
   testImplementation(libs.bundles.junit)
   testImplementation(libs.bundles.spring.test)
 }
+
+sonar {
+  properties {
+    property("sonar.coverage.exclusions", "**/config/**, **/listener/**, **/model/**,")
+  }
+}
