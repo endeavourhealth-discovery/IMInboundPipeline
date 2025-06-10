@@ -1,0 +1,10 @@
+import "/EMIS/common/HomeTelephoneNumber.jslt" as hometel
+import "/Utilities.jslt" as utils
+
+let HomeTelId = newUuid()
+
+{
+    "entities" : utils:cleanArray([
+        hometel:EMISHomeTelephoneNumberTransform(., $HomeTelId),
+    ])
+}

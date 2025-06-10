@@ -1,0 +1,18 @@
+import "/Utilities.jslt" as utils
+
+def EMISMedicationCourseCodeableConceptTransform(root, uuid, label) {
+  "@id" : formatUuid($uuid),
+  "@type" : "CodeableConcept",
+  "label" : $label,
+  // bug?  duplicated label element?
+  // "label": .Label,
+  // "name": .Name,
+  // "type": .Type,
+  "originalCode": .EmisCode,
+  // "comment": .Comment,
+  // "originalScheme": .OriginalScheme,
+  // "status": .Status,
+  // "originalCodeTerm": .OriginalCodeTerm,
+  // "scheme": .Scheme,
+  // "originalQualifierTerm": .OriginalQualifierTerm
+}

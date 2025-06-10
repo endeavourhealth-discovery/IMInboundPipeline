@@ -1,0 +1,21 @@
+import "/Utilities.jslt" as utils
+
+def EMISPatientPersonTransform(root) {
+  "@id" : formatUuid(.PersonGuid),
+  "@type" : "Person",
+  "label" : "Person"
+  //"genderAsStated": .GenderAsStated,
+  //"dateOfBirth": .DateOfBirth,
+  //"age": .Age,
+  //"title": .Title,
+  //"familyName": .FamilyName,
+  //"callingName": .CallingName,
+  //"forenames": .Forenames,
+  //"fullName": .FullName,
+  //"ethnicity": .Ethnicity,
+  //"odsCode": .OdsCode,
+  //"deathIndicator": .DeathIndicator,
+  //"timeOfBirth": .TimeOfBirth,
+  //"dateOfDeath": .DateOfDeath,
+  //"timeOfDeath": .TimeOfDeath
+}

@@ -1,0 +1,8 @@
+import "/EMIS/common/PersonInRole.jslt" as inrole
+import "/Utilities.jslt" as utils
+
+{
+    "entities" : utils:cleanArray([
+        inrole:EMISPersonInRoleTransform(.),
+    ])
+}

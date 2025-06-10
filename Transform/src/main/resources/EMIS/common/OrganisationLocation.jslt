@@ -1,0 +1,11 @@
+import "/Utilities.jslt" as utils
+
+def EMISOrganisationLocationTransform(root) {
+  "@id" : formatUuid(.MainLocationGuid),
+  "@type" : "Location",
+  "label" : "Location",
+  "contact": .MainContactName,
+  "locationType": .LocationTypeDescription,
+  "name": .LocationName,
+  "odsSiteCode": .OdsSiteCode
+}

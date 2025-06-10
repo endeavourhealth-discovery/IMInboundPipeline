@@ -1,0 +1,9 @@
+import "/Utilities.jslt" as utils
+
+def EMISMedicationCourseDateValueTransform(uuid, datevalue, label) {
+  "@id" : formatUuid($uuid),
+  "@type" : "DateValue",
+  "label" : $label,
+  "operator": .Operator,
+  "value": $datevalue
+}

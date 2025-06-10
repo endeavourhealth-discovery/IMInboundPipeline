@@ -1,0 +1,13 @@
+import "/Utilities.jslt" as utils
+
+def EMISLocationOrganisationRelationshipTransform(root) {
+  "@id" : formatUuid(.ParentLocationGuid),
+  "@type" : "OrganisationRelationship",
+  "label" : "Organisation relationship",
+  "dateEffectiveDate": .DateEffectiveDate,
+  "duration": .Duration,
+  "timeEffectiveTime": .TimeEffectiveTime,
+  "endDate": .EndDate,
+  "endTime": .EndTime,
+  "typeOfRelationship": .TypeOfRelationship
+}

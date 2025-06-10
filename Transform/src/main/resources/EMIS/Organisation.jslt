@@ -1,0 +1,10 @@
+import "/EMIS/common/Organisation.jslt" as org
+import "/EMIS/common/OrganisationLocation.jslt" as loc
+import "/Utilities.jslt" as utils
+
+{
+    "entities" : utils:cleanArray([
+        org:EMISOrganisationTransform(.),
+		loc:EMISOrganisationLocationTransform(.)
+    ])
+}

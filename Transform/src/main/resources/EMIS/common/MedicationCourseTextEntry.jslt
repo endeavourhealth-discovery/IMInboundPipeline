@@ -1,0 +1,8 @@
+import "/Utilities.jslt" as utils
+
+def EMISMedicationCourseTextEntryTransform(uuid, text, label) {
+  "@id" : formatUuid($uuid),
+  "@type" : "TextEntry",
+  "label" : $label,
+  "text": $text
+}

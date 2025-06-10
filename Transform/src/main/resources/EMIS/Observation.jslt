@@ -1,0 +1,8 @@
+import "/EMIS/common/Observation.jslt" as obs
+import "/Utilities.jslt" as utils
+
+{
+    "entities" : utils:cleanArray([
+        obs:EMISObservationTransform(., "http://endhealth.info/emis"),
+    ])
+}

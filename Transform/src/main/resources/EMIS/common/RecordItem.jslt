@@ -1,0 +1,8 @@
+import "/Utilities.jslt" as utils
+
+def EMISRecordItemTransform(root, uuid) {
+  "@id" : formatUuid($uuid),
+  "@type" : "RecordItem",
+  "label" : "Record item",
+  "order": .Order
+}

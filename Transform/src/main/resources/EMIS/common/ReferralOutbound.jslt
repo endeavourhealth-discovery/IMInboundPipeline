@@ -1,0 +1,23 @@
+import "/Utilities.jslt" as utils
+
+def EMISReferralOutboundTransform(root) {
+  "@id" : formatUuid(.ObservationGuid),
+  "@type" : "ReferralOutbound",
+  "label" : "Referral (outbound)",
+  "concept": .Concept,
+  "patient": .PatientGuid,
+  "organisation": .OrganisationGuid,
+  "dateEffectiveDate": .DateEffectiveDate,
+  "duration": .Duration,
+  "timeEffectiveTime": .TimeEffectiveTime,
+  "endDate": .ReferralEndDate,
+  "endTime": .EndTime,
+  "ageAtEvent": .AgeAtEvent,
+  "order": .Order,
+  "priority": .ReferralUrgency,
+  "requestReason": .RequestReason,
+  "specialityRequested": .ReferralServiceType,
+  "referralMode": .ReferralMode,
+  "referralUbrn": .ReferralUBRN,
+  "test": .ReferralTargetOrganisationGuid
+}

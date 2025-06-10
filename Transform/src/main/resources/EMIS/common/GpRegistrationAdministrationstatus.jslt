@@ -1,0 +1,16 @@
+import "/Utilities.jslt" as utils
+
+def EMISGpRegistrationAdministrationstatusTransform(root, uuid) {
+  "@id" : formatUuid($uuid),
+  "@type" : "GpRegistrationAdministrationstatus",
+  "label" : "GP Registration administrationstatus",
+  "patient" : formatUuid(.PatientGuid),
+  "organisation" : formatUuid(.OrganisationGuid),
+  "dateEffectiveDate": .HistoryDate,
+  "duration": .Duration,
+  "timeEffectiveTime": .HistoryTime,
+  "endDate": .EndDate,
+  "endTime": .EndTime,
+  "ageAtEvent": .AgeAtEvent,
+  "status": .StatusDescription
+}

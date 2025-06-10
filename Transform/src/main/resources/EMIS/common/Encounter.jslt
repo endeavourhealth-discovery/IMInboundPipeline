@@ -1,0 +1,14 @@
+import "/Utilities.jslt" as utils
+
+def EMISEncounterTransform(root, system) {
+  "@id" : formatUuid(.ConsultationGuid),
+  "@type" : "Encounter",
+  "label" : "Encounter",
+  //"patient" : formatUuid(.PatientGuid),
+  //"organisation" : formatUuid(.OrganisationGuid),
+  //"practitioner" : formatUuid(.ClinicianUserInRoleGuid),
+  "concept": $system + "#" + .ConsultationSourceCodeId,
+  "dateEffectiveDate": .EffectiveDate,
+  "timeEffectiveTime": .EnteredTime,
+  "order": .ProcessingId
+}

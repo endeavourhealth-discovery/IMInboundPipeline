@@ -1,0 +1,22 @@
+import "/Utilities.jslt" as utils
+
+def EMISMedicationStatementPersonTransform(root) {
+  // EnteredByUserInRoleGuid?
+  "@id" : formatUuid(.ClinicianUserInRoleGuid),
+  "@type" : "Person",
+  "label" : "Rx Statement Person in Role"
+  //"genderAsStated": .GenderAsStated,
+  //"dateOfBirth": .DateOfBirth,
+  //"age": .Age,
+  //"title": .Title,
+  //"familyName": .FamilyName,
+  //"callingName": .CallingName,
+  //"forenames": .Forenames,
+  //"fullName": .FullName,
+  //"ethnicity": .Ethnicity,
+  //"odsCode": .OdsCode,
+  //"deathIndicator": .DeathIndicator,
+  //"timeOfBirth": .TimeOfBirth,
+  //"dateOfDeath": .DateOfDeath,
+  //"timeOfDeath": .TimeOfDeath
+}

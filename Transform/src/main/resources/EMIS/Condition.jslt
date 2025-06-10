@@ -1,0 +1,10 @@
+import "/EMIS/common/Condition.jslt" as prob
+import "/EMIS/common/RecordItem.jslt" as recitem
+import "/Utilities.jslt" as utils
+
+{
+    "entities" : utils:cleanArray([
+        prob:EMISConditionTransform(., "http://endhealth.info/emis"),
+		if (.ParentProblemObservationGuid != "") recitem:EMISRecordItemTransform(., .ParentProblemObservationGuid)
+    ])
+}

@@ -1,0 +1,16 @@
+import "/EMIS/common/Location.jslt" as loc
+import "/EMIS/common/LocationAddress.jslt" as addr
+import "/EMIS/common/LocationEmail.jslt" as email
+import "/EMIS/common/LocationOrganisationRelationship.jslt" as relation
+import "/EMIS/common/LocationOrganisationRole.jslt" as role
+import "/Utilities.jslt" as utils
+
+{
+    "entities" : utils:cleanArray([
+        loc:EMISLocationTransform(.),
+		addr:EMISLocationAddressTransform(.),
+		email:EMISLocationEmailTransform(.),
+		relation:EMISLocationOrganisationRelationshipTransform(.),
+		role:EMISLocationOrganisationRoleTransform(.)
+    ])
+}

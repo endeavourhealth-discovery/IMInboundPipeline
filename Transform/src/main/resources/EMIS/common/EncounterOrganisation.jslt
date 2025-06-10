@@ -1,0 +1,13 @@
+import "/Utilities.jslt" as utils
+
+def EMISEncounterOrganisationTransform(root) {
+  "@id" : formatUuid(.OrganisationGuid),
+  "@type" : "Organisation",
+  "label" : "Organisation Reference",
+  // "odsCode": .ODSCode,
+  // "hasOrganisationRecordClass": .ParentOrganisationGuid,
+  // "organisationServiceCategory": .OrganisationType,
+  // "name": .OrganisationName,
+  // "operationalStartDate": .OpenDate,
+  // "operationalEndDate": .CloseDate
+}

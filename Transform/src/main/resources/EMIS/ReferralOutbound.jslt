@@ -1,0 +1,10 @@
+import "/EMIS/common/ReferralOutbound.jslt" as ref
+import "/EMIS/common/RecordItem.jslt" as recitem
+import "/Utilities.jslt" as utils
+
+{
+    "entities" : utils:cleanArray([
+        ref:EMISReferralOutboundTransform(.),
+		if (.ReferralTargetOrganisationGuid != "") recitem:EMISRecordItemTransform(., .ReferralTargetOrganisationGuid)
+    ])
+}

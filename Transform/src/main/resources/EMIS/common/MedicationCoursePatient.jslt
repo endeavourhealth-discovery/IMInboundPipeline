@@ -1,0 +1,26 @@
+import "/Utilities.jslt" as utils
+
+def EMISMedicationCoursePatientTransform(root) {
+  "@id" : formatUuid(.PatientGuid),
+  "@type" : "Patient",
+  "label" : "Rx Issue Patient Reference",
+  //"genderAsStated": .Sex,
+  //"gmsRegistrationStatusOnReferenceDate": .PatientTypeDescription,
+  //"dateOfBirth": .DateOfBirth,
+  //"age": .Age,
+  //"title": .Title,
+  //"familyName": .Surname,
+  //"callingName": .CallingName,
+  //"forenames": .GivenName,
+  //"fullName": .FullName,
+  //"nhsNumber": .NhsNumber,
+  //"pseudonymisedId": .PseudonymisedId,
+  //"ethnicity": .Ethnicity,
+  //"pdsSensitive": .PdsSensitive,
+  //"gmsRegistrationStatusAtEvent": .GmsRegistrationStatusAtEvent,
+  //"odsCode": .OdsCode,
+  //"deathIndicator": .DeathIndicator,
+  //"timeOfBirth": .TimeOfBirth,
+  //"dateOfDeath": .DateOfDeath,
+  //"timeOfDeath": .TimeOfDeath
+}

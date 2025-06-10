@@ -1,0 +1,17 @@
+import "/Utilities.jslt" as utils
+
+def EMISMobileTelephoneNumberTransform(root, uuid) {
+  "@id" : formatUuid($uuid),
+  "@type" : "MobileTelephoneNumber",
+  "label" : "Mobile Telephone number",
+  "status": "Active",
+  "dateEffectiveDate": .DateEffectiveDate,
+  "duration": .Duration,
+  "timeEffectiveTime": .TimeEffectiveTime,
+  "endDate": .EndDate,
+  "endTime": .EndTime,
+  "countrycode": .Countrycode,
+  "value": .MobilePhone,
+  "areaDiallingCode": .AreaDiallingCode,
+  "countryDiallingCode": .CountryDiallingCode
+}

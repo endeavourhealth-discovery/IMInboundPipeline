@@ -1,0 +1,14 @@
+import "/Utilities.jslt" as utils
+
+def EMISLocationAddressTransform(root) {
+  "@id" : formatUuid(.LocationGuid),
+  "@type" : "LocationAddress",
+  "label" : "Location address",
+  "dateEffectiveDate": .OpenDate,
+  "endDate": .CloseDate,
+  "addressLine": .HouseNameFlatNumber + "," + .NumberAndStreet + "," + .Village + "," + .Town + "," + .County + "," + .Postcode,
+  "locality": .Village,
+  "city": .Town,
+  "region": .County,
+  "postcode": .Postcode
+}

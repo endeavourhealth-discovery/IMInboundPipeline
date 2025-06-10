@@ -1,0 +1,25 @@
+import "/Utilities.jslt" as utils
+
+def EMISPersonInRoleTransform(root) {
+  "@id" : formatUuid(.UserInRoleGuid),
+  "@type" : "PersonInRole",
+  "label" : "Person in role",
+  "genderAsStated": .GenderAsStated,
+  "roleType": .RoleType,
+  "dateOfBirth": .DateOfBirth,
+  "age": .Age,
+  "speciality": .JobCategoryName,
+  "title": .Title,
+  "familyName": .Surname,
+  "callingName": .CallingName,
+  "forenames": .GivenName,
+  "fullName": .FullName,
+  "ethnicity": .Ethnicity,
+  "odsCode": .OdsCode,
+  "deathIndicator": .DeathIndicator,
+  "timeOfBirth": .TimeOfBirth,
+  "dateOfDeath": .DateOfDeath,
+  "timeOfDeath": .TimeOfDeath,
+  "mnemonic": .Mnemonic,
+  "organisation": .OrganisationGuid
+}

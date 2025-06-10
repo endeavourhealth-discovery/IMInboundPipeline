@@ -1,0 +1,15 @@
+import "/Utilities.jslt" as utils
+
+def EMISPatientRegistrationEpisodeOrEpisodeOfCareTransform(root, uuid) {
+  "@id" : formatUuid($uuid),
+  "@type" : "RegistrationEpisodeOrEpisodeOfCare",
+  "label" : "Registration episode or episode of care",
+  "gpPatientType": .PatientTypeDescription,
+  "dateEffectiveDate": .DateOfRegistration,
+  "duration": .Duration,
+  "timeEffectiveTime": .TimeEffectiveTime,
+  "endDate": .EndDate,
+  "endTime": .EndTime,
+  "ageAtEvent": .AgeAtEvent,
+  "order": .Order
+}

@@ -1,0 +1,14 @@
+import "/EMIS/common/Encounter.jslt" as enc
+import "/EMIS/common/EncounterPatient.jslt" as patient
+import "/EMIS/common/EncounterPersonInRole.jslt" as person
+import "/EMIS/common/EncounterOrganisation.jslt" as org
+import "/Utilities.jslt" as utils
+
+{
+    "entities" : utils:cleanArray([
+        enc:EMISEncounterTransform(., "http://endhealth.info/emis"),
+		person:EMISEncounterPersonTransform(.),
+		patient:EMISEncounterPatientTransform(.),
+		org:EMISEncounterOrganisationTransform(.)
+    ])
+}

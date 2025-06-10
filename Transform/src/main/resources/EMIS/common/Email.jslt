@@ -1,0 +1,12 @@
+import "/Utilities.jslt" as utils
+
+def EMISEmailTransform(root, uuid) {
+  "@id" : formatUuid($uuid),
+  "@type" : "Email",
+  "label" : "Email",
+  "patient" : formatUuid(.PatientGuid),
+  "status": "Active",
+  "value": .EmailAddress,
+  "use": if (.PatientTypeDescription == "Regular") "home" else "temp",
+  "orderOfUse": .OrderOfUse
+}

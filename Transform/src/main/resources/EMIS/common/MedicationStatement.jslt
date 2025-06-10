@@ -1,0 +1,22 @@
+import "/Utilities.jslt" as utils
+
+def EMISMedicationStatementTransform(root, system) {
+  "@id" : formatUuid(.DrugRecordGuid),
+  "@type" : "MedicationStatement",
+  "label" : "Medication statement",
+  "patient" : formatUuid(.PatientGuid),
+  "organisation": formatUuid(.OrganisationGuid),
+  "concept": $system + "#" + .CodeId,
+  "dateEffectiveDate": if (.IsActive == "true") .EffectiveDate,
+  "duration": .Duration,
+  "timeEffectiveTime": if (.IsActive == "true") .EnteredTime,
+  "endDate":  if (.IsActive == "false") .EffectiveDate,
+  "endTime":  if (.IsActive == "false") .EnteredTime,
+  "ageAtEvent": .AgeAtEvent,
+  "order": .Order,
+  "quantity": .Quantity + " " + .QuantityUnit,
+  "dosage": .Dosage,
+  "reasonForEnding": .ReasonForEnding,
+  "managementAuthority": .OrganisationGuid,
+  "originatedBy": .EnteredByUserInRoleGuid
+}

@@ -1,0 +1,14 @@
+import "/Utilities.jslt" as utils
+
+def EMISMedicationCourseEncounterTransform(root, uuid) {
+  "@id" : formatUuid($uuid),
+  "@type" : "Encounter",
+  "label" : "RX Issue Encounter Reference",
+  //"patient" : formatUuid(.PatientGuid),
+  //"organisation" : formatUuid(.OrganisationGuid),
+  //"practitioner" : formatUuid(.ClinicianUserInRoleGuid),
+  //"concept": $system + "#" + .ConsultationSourceCodeId,
+  //"dateEffectiveDate": .EffectiveDate,
+  //"timeEffectiveTime": .EnteredTime,
+  //"order": .ProcessingId
+}

@@ -1,0 +1,10 @@
+import "/EMIS/common/GpRegistrationAdministrationstatus.jslt" as reghis
+import "/Utilities.jslt" as utils
+
+let RegId = newUuid()
+
+{
+    "entities" : utils:cleanArray([
+        reghis:EMISGpRegistrationAdministrationstatusTransform(., $RegId),
+    ])
+}

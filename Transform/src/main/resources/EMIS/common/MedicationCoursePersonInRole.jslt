@@ -1,0 +1,21 @@
+import "/Utilities.jslt" as utils
+
+def EMISMedicationCoursePersonTransform(root, label, uuid) {
+  "@id" : formatUuid($uuid),
+  "@type" : "Person",
+  "label" : $label,
+  //"genderAsStated": .GenderAsStated,
+  //"dateOfBirth": .DateOfBirth,
+  //"age": .Age,
+  //"title": .Title,
+  //"familyName": .FamilyName,
+  //"callingName": .CallingName,
+  //"forenames": .Forenames,
+  //"fullName": .FullName,
+  //"ethnicity": .Ethnicity,
+  //"odsCode": .OdsCode,
+  //"deathIndicator": .DeathIndicator,
+  //"timeOfBirth": .TimeOfBirth,
+  //"dateOfDeath": .DateOfDeath,
+  //"timeOfDeath": .TimeOfDeath
+}

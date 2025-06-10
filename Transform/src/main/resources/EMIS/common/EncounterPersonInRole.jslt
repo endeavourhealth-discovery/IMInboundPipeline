@@ -1,0 +1,22 @@
+import "/Utilities.jslt" as utils
+
+def EMISEncounterPersonTransform(root) {
+  // EnteredByUserInRoleGuid?
+  "@id" : formatUuid(.ClinicianUserInRoleGuid),
+  "@type" : "Person",
+  "label" : "Person in Role Reference (clinician)"
+  //"genderAsStated": .GenderAsStated,
+  //"dateOfBirth": .DateOfBirth,
+  //"age": .Age,
+  //"title": .Title,
+  //"familyName": .FamilyName,
+  //"callingName": .CallingName,
+  //"forenames": .Forenames,
+  //"fullName": .FullName,
+  //"ethnicity": .Ethnicity,
+  //"odsCode": .OdsCode,
+  //"deathIndicator": .DeathIndicator,
+  //"timeOfBirth": .TimeOfBirth,
+  //"dateOfDeath": .DateOfDeath,
+  //"timeOfDeath": .TimeOfDeath
+}

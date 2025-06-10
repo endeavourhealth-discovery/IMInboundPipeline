@@ -1,0 +1,10 @@
+import "/EMIS/common/Email.jslt" as email
+import "/Utilities.jslt" as utils
+
+let EmailId = newUuid()
+
+{
+    "entities" : utils:cleanArray([
+        email:EMISEmailTransform(., $EmailId),
+    ])
+}

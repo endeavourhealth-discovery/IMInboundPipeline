@@ -1,0 +1,21 @@
+import "/Utilities.jslt" as utils
+
+def EMISConditionTransform(root, system) {
+  "@id" : formatUuid(.ObservationGuid),
+  "@type" : "Condition",
+  "label" : "Condition",
+  "concept": .Concept,
+  "patient": .PatientGuid,
+  "organisation": .OrganisationGuid,
+  "dateEffectiveDate": .DateEffectiveDate,
+  "duration": .ExpectedDuration,
+  "timeEffectiveTime": .TimeEffectiveTime,
+  "endDate": .EndDate,
+  "endTime": .EndTime,
+  "ageAtEvent": .AgeAtEvent,
+  "order": .Order,
+  "anticipatedDuration": .AnticipatedDuration,
+  "significance": .SignificanceDescription,
+  "description": .ProblemStatusDescription,
+  "problemEpisode": .ProblemEpisode
+}

@@ -1,0 +1,21 @@
+import "/Utilities.jslt" as utils
+
+def EMISObservationTransform(root, system) {
+  "@id" : formatUuid(.ObservationGuid),
+  "@type" : "Observation",
+  "label" : "Observation",
+  "patient" : formatUuid(.PatientGuid),
+  "organisation" : formatUuid(.OrganisationGuid),
+  "practitioner" : formatUuid(.ClinicianUserInRoleGuid),
+  "concept": $system + "#" + .CodeId,
+  "dateEffectiveDate": .EffectiveDate,
+  "duration": .Duration,
+  "numericValue": .Value,
+  "units": .NumericUnit,
+  "qualitativeValue": .QualitativeValue,
+  "timeEffectiveTime": .TimeEffectiveTime,
+  "endDate": .EndDate,
+  "endTime": .EndTime,
+  "ageAtEvent": .AgeAtEvent,
+  "order": .Order
+}

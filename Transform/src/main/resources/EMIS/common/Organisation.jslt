@@ -1,0 +1,13 @@
+import "/Utilities.jslt" as utils
+
+def EMISOrganisationTransform(root) {
+  "@id" : formatUuid(.OrganisationGuid),
+  "@type" : "Organisation",
+  "label" : "Organisation",
+  "odsCode": .ODSCode,
+  "hasOrganisationRecordClass": .ParentOrganisationGuid,
+  "organisationServiceCategory": .OrganisationType,
+  "name": .OrganisationName,
+  "operationalStartDate": .OpenDate,
+  "operationalEndDate": .CloseDate
+}

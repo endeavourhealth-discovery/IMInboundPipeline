@@ -1,0 +1,18 @@
+import "/Utilities.jslt" as utils
+
+def EMISHomeTelephoneNumberTransform(root, uuid) {
+  "@id" : formatUuid($uuid),
+  "@type" : "HomeTelephoneNumber",
+  "label" : "Home Telephone number",
+  "status": "Active",
+  "patient" : formatUuid(.PatientGuid),
+  "dateEffectiveDate": .DateEffectiveDate,
+  "duration": .Duration,
+  "timeEffectiveTime": .TimeEffectiveTime,
+  "endDate": .EndDate,
+  "endTime": .EndTime,
+  "countrycode": .Countrycode,
+  "value": .HomePhone,
+  "areaDiallingCode": .AreaDiallingCode,
+  "countryDiallingCode": .CountryDiallingCode
+}

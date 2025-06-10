@@ -1,0 +1,10 @@
+import "/EMIS/common/MobileTelephoneNumber.jslt" as mobiletel
+import "/Utilities.jslt" as utils
+
+let MobileTelId = newUuid()
+
+{
+    "entities" : utils:cleanArray([
+        mobiletel:EMISMobileTelephoneNumberTransform(., $MobileTelId),
+    ])
+}

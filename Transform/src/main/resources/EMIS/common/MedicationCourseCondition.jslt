@@ -1,0 +1,21 @@
+import "/Utilities.jslt" as utils
+
+def EMISMedicationCourseConditionTransform(root) {
+  "@id" : formatUuid(.ProblemObservationGuid),
+  "@type" : "Condition",
+  "label" : "Rx Issue Condition",
+  //"concept": .Concept,
+  //"patient": .PatientGuid,
+  //"organisation": .OrganisationGuid,
+  //"dateEffectiveDate": .DateEffectiveDate,
+  //"duration": .ExpectedDuration,
+  //"timeEffectiveTime": .TimeEffectiveTime,
+  //"endDate": .EndDate,
+  //"endTime": .EndTime,
+  //"ageAtEvent": .AgeAtEvent,
+  //"order": .Order,
+  //"anticipatedDuration": .AnticipatedDuration,
+  //"significance": .SignificanceDescription,
+  //"description": .ProblemStatusDescription,
+  //"problemEpisode": .ProblemEpisode
+}

@@ -1,0 +1,9 @@
+import "/Utilities.jslt" as utils
+
+def EMISMedicationCourseNumericMeasurementTransform(root, uuid, label, concept, value) {
+  "@id" : formatUuid($uuid),
+  "@type" : "NumericMeasurement",
+  "label" : $label,
+  "concept": $concept,
+  "numericValue": $value
+}

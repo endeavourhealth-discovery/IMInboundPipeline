@@ -1,40 +1,26 @@
 import "/Utilities.jslt" as utils
 
-def EMISPatientTransform(root, addressId) {
-            "@id": formatUuid(.PatientGuid),
-            "@type": "Patient",
-            "label": "Patient",
-            "organisation": formatUuid(.OrganisationGuid),
-            "usualGp": if (.UsualGpUserInRoleGuid and .UsualGpUserInRoleGuid != "") formatUuid(.UsualGpUserInRoleGuid) else null,
-            "statedGender": if (.Sex == "m")
-              "http://hl7.org/fhir/ValueSet/administrative-gender#male"
-            else if (.Sex == "f")
-              "http://hl7.org/fhir/ValueSet/administrative-gender#female"
-            else null,
-            "dateOfBirth": .DateOfBirth,
-            "dateOfDeath": if (.DateOfDeath and .DateOfDeath != "") .DateOfDeath else null,
-            "title": .Title,
-            "givenName": .GivenName,
-            "middleNames": if (.MiddleNames and .MiddleNames != "") .MiddleNames else null,
-            "dateOfRegistration": .DateOfRegistration,
-            "nhsNumber": .NhsNumber,
-            "patientNumber": .PatientNumber,
-            "patientTypeDescription": .PatientTypeDescription,
-            "dummyType": if (.DummyType and .DummyType != "") .DummyType else null,
-            "residentialInstituteCode": if (.ResidentialInstituteCode and .ResidentialInstituteCode != "") .ResidentialInstituteCode else null,
-            "nhsNumberStatus": if (.NHSNumberStatus and .NHSNumberStatus != "") .NHSNumberStatus else null,
-            "carerName": if (.CarerName and .CarerName != "") .CarerName else null,
-            "carerRelation": if (.CarerRelation and .CarerRelation != "") .CarerRelation else null,
-            "personGuid": if (.PersonGuid and .PersonGuid != "") .PersonGuid else null,
-            "dateOfDeactivation": if (.DateofDeactivation and .DateofDeactivation != "") .DateofDeactivation else null,
-            "deleted": if (.Deleted and .Deleted == "true") true else false,
-            "spineSensitive": if (.SpineSensitive and .SpineSensitive == "true") true else false,
-            "isConfidential": if (.IsConfidential and .IsConfidential == "true") true else false,
-            "emailAddress": if (.EmailAddress and .EmailAddress != "") .EmailAddress else null,
-            "homePhone": if (.HomePhone and .HomePhone != "") .HomePhone else null,
-            "mobilePhone": if (.MobilePhone and .MobilePhone != "") .MobilePhone else null,
-            "externalUsualGp": if (.ExternalUsualGPGuid and .ExternalUsualGPGuid != "") formatUuid(.ExternalUsualGPGuid) else null,
-            "externalUsualGpOrganisation": if (.ExternalUsualGPOrganisation and .ExternalUsualGPOrganisation != "") formatUuid(.ExternalUsualGPOrganisation) else null,
-            "processingId": if (.ProcessingId and .ProcessingId != "") .ProcessingId else null,
-            "address" : if (boolean(.NumberAndStreet or .Village or .Town or .County or .Postcode)) $addressId
-        }
+def EMISPatientTransform(root, uuid) {
+  "@id" : formatUuid(.PatientGuid),
+  "@type" : "Patient",
+  "label" : "Patient",
+  "genderAsStated": .Sex,
+  //"gmsRegistrationStatusOnReferenceDate": .PatientTypeDescription,
+  "dateOfBirth": .DateOfBirth,
+  "age": .Age,
+  "title": .Title,
+  "familyName": .Surname,
+  "callingName": .CallingName,
+  "forenames": .GivenName,
+  "fullName": .GivenName + " " + .MiddleNames + " " + .Surname,
+  "nhsNumber": .NhsNumber,
+  "pseudonymisedId": .PseudonymisedId,
+  "ethnicity": .Ethnicity,
+  "pdsSensitive": .SpineSensitive,
+  "gmsRegistrationStatusAtEvent": .GmsRegistrationStatusAtEvent,
+  "odsCode": .OdsCode,
+  "deathIndicator": .DeathIndicator,
+  "timeOfBirth": .TimeOfBirth,
+  "dateOfDeath": .DateOfDeath,
+  "timeOfDeath": .TimeOfDeath
+}

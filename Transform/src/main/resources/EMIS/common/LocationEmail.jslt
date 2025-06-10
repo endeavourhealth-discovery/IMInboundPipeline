@@ -1,0 +1,11 @@
+import "/Utilities.jslt" as utils
+
+def EMISLocationEmailTransform(root) {
+  "@id" : formatUuid(.EmailGuid),
+  "@type" : "Email",
+  "label" : "Email",
+  "status": .Status,
+  "value": .EmailAddress,
+  "use": .Use,
+  "orderOfUse": .OrderOfUse
+}

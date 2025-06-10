@@ -1,0 +1,24 @@
+import "/Utilities.jslt" as utils
+
+def EMISPatientPersonInRoleTransform(root) {
+  "@id" : formatUuid(.UsualGpUserInRoleGuid),
+  "@type" : "PersonInRole",
+  "label" : "Person in role"
+  //"genderAsStated": .GenderAsStated,
+  //"roleType": .RoleType,
+  //"dateOfBirth": .DateOfBirth,
+  //"age": .Age,
+  //"speciality": .JobCategoryName,
+  //"title": .Title,
+  //"familyName": .FamilyName,
+  //"callingName": .CallingName,
+  //"forenames": .GivenName,
+  //"fullName": .FullName,
+  //"ethnicity": .Ethnicity,
+  //"odsCode": .OdsCode,
+  //"deathIndicator": .DeathIndicator,
+  //"timeOfBirth": .TimeOfBirth,
+  //"dateOfDeath": .DateOfDeath,
+  //"timeOfDeath": .TimeOfDeath,
+  //"mnemonic": .Mnemonic
+}

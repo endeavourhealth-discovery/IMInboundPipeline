@@ -1,0 +1,10 @@
+import "/EMIS/common/MedicationStatement.jslt" as rx
+import "/EMIS/common/MedicationStatementPersonInRole.jslt" as pinrole
+import "/Utilities.jslt" as utils
+
+{
+    "entities" : utils:cleanArray([
+        rx:EMISMedicationStatementTransform(., "http://endhealth.info/emis"),
+		pinrole:EMISMedicationStatementPersonTransform(.),
+    ])
+}

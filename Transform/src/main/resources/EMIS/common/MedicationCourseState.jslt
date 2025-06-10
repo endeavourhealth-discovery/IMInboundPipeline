@@ -1,0 +1,8 @@
+import "/Utilities.jslt" as utils
+
+def EMISMedicationCourseStateEntryTransform(root, uuid, status, label) {
+  "@id" : formatUuid($uuid),
+  "@type" : "StateEntry",
+  "label" : $label,
+  "status": if ($status == "TRUE") "Active" else "InActive",
+}

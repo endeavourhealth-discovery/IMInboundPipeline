@@ -1,0 +1,13 @@
+import "/Utilities.jslt" as utils
+
+def EMISLocationOrganisationRoleTransform(root) {
+  "@id" : formatUuid(.OrganisationRoleGuid),
+  "@type" : "OrganisationRole",
+  "label" : "Organisation role",
+  "concept": .LocationTypeDescription,
+  "dateEffectiveDate": .DateEffectiveDate,
+  "duration": .Duration,
+  "timeEffectiveTime": .TimeEffectiveTime,
+  "endDate": .EndDate,
+  "endTime": .EndTime
+}

@@ -1,0 +1,61 @@
+import "/EMIS/common/MedicationCourseAuthorisation.jslt" as issues
+import "/EMIS/common/MedicationCoursePersonInRole.jslt" as pinrole
+import "/EMIS/common/MedicationCourseCodeableConcept.jslt" as emiscode
+import "/EMIS/common/MedicationCoursePatient.jslt" as patient
+import "/EMIS/common/MedicationCourseOrganisation.jslt" as org
+import "/EMIS/common/MedicationCourseDrugRecord.jslt" as drugrec
+import "/EMIS/common/MedicationCourseTextEntry.jslt" as rxtext
+import "/EMIS/common/MedicationCourseCondition.jslt" as problem
+import "/EMIS/common/MedicationCourseDateValue.jslt" as dates
+import "/EMIS/common/MedicationCourseNumericMeasurement.jslt" as values
+import "/EMIS/common/MedicationCourseState.jslt" as state
+import "/EMIS/common/MedicationCourseEncounter.jslt" as encounter
+import "/Utilities.jslt" as utils
+
+let codeuuid = newUuid()
+let dateentuuid = newUuid()
+let dateexpuuid = newUuid()
+let daterevuuid = newUuid()
+let pharmacymsguuid = newUuid()
+let pharmacytxtguid = newUuid()
+let durindaysuuid = newUuid()
+let estimatedcostuuid = newUuid()
+let stateuuid = newUuid()
+let stampuuid = newUuid()
+let complienceuuid = newUuid()
+let avgcomplienceuuid = newUuid()
+let isprescribeduuid = newUuid()
+let isprivateuuid = newUuid()
+let deleteduuid = newUuid()
+let dateprecisionguid = newUuid()
+let processinguuid = newUuid()
+
+{
+    "entities" : utils:cleanArray([
+        issues:EMISMedicationCourseAuthorisationTransform(., "http://endhealth.info/emis"),
+		pinrole:EMISMedicationCoursePersonTransform(., "Rx Issue Clinician", .ClinicianUserInRoleGuid),
+		pinrole:EMISMedicationCoursePersonTransform(., "Rx Issue Entered By", .EnteredByUserInRoleGuid),
+		emiscode:EMISMedicationCourseCodeableConceptTransform(., $codeuuid, "EMIS Code"),
+		patient:EMISMedicationCoursePatientTransform(.),
+		org:EMISMedicationCourseOrganisationTransform(.),
+		drugrec:EMISMedicationCourseDrugRecordTransform(.),
+		dates:EMISMedicationCourseDateValueTransform($dateentuuid, .EnteredDate, "Rx Issue Entered Date"),
+		dates:EMISMedicationCourseDateValueTransform($dateexpuuid, .ExpiryDate, "Rx Issue Expiry Date"),
+		dates:EMISMedicationCourseDateValueTransform($daterevuuid, .ReviewDate, "Rx Issue Review Date"),
+		rxtext:EMISMedicationCourseTextEntryTransform($pharmacymsguuid, .PharmacyMessage, "Rx pharmacy message"),
+		rxtext:EMISMedicationCourseTextEntryTransform($pharmacytxtguid, .PharmacyText, "Rx Pharmacy text"),
+		problem:EMISMedicationCourseConditionTransform(.),
+		values:EMISMedicationCourseNumericMeasurementTransform(., $durindaysuuid, "Rx Duration in Days", "http://snomed.info/sct#228864003", .CourseDurationInDays),
+		values:EMISMedicationCourseNumericMeasurementTransform(., $estimatedcostuuid, "Estimated Nhs Cost", "", .EstimatedNhsCost),
+		values:EMISMedicationCourseNumericMeasurementTransform(., $complienceuuid, "Compliance", "", .Compliance),
+		values:EMISMedicationCourseNumericMeasurementTransform(., $avgcomplienceuuid, "AverageCompliance", "", .AverageCompliance),
+		state:EMISMedicationCourseStateEntryTransform(., $stateuuid, .IsConfidential, "Is Confidential"),
+		state:EMISMedicationCourseStateEntryTransform(., $isprescribeduuid, .IsPrescribedAsContraceptive, "Is Prescribed As Contraceptive"),
+		state:EMISMedicationCourseStateEntryTransform(., $isprivateuuid, .IsPrivatelyPrescribed, "Is Privately Prescribed"),
+		rxtext:EMISMedicationCourseTextEntryTransform($stampuuid, .ScriptPharmacyStamp, "Rx Stamp"),
+		encounter:EMISMedicationCourseEncounterTransform(., .ConsultationGuid),
+		state:EMISMedicationCourseStateEntryTransform(., $deleteduuid, .Deleted, "Deleted"),
+		rxtext:EMISMedicationCourseTextEntryTransform($dateprecisionguid, .EffectiveDatePrecision, "Effective Date Precision"),
+		values:EMISMedicationCourseNumericMeasurementTransform(., $processinguuid, "Processing Id", "", .ProcessingId),
+    ])
+}

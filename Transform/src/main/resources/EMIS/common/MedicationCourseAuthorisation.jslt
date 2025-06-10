@@ -1,0 +1,25 @@
+import "/Utilities.jslt" as utils
+
+def EMISMedicationCourseAuthorisationTransform(root, system) {
+  "@id" : formatUuid(.IssueRecordGuid),
+  "@type" : "MedicationCourseAuthorisation",
+  "label" : "Medication course (authorisation)",
+  "concept": $system + "#" + .CodeId,
+  "dateEffectiveDate": .DateEffectiveDate,
+  "duration": .Duration,
+  "timeEffectiveTime": .EffectiveDate,
+  "endDate": .EndDate,
+  "endTime": .EndTime,
+  "ageAtEvent": .AgeAtEvent,
+  "order": .Order,
+  "quantity": .Quantity + " " + .QuantityUnit,
+  "courseType": .CourseType,
+  "pharmacyInstructions": .PharmacyInstructions,
+  "reasonForEnding": .ReasonForEnding,
+  "prescriptionDuration": .PrescriptionDuration,
+  "medicationReview": .MedicationReview,
+  "additionalInstructions": .AdditionalInstructions,
+  "dosage": .Dosage,
+  "authorisationStatus": .AuthorisationStatus,
+  "numberRepeatsAuthorised": .NumberRepeatsAuthorised
+}

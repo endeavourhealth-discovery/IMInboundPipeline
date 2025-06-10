@@ -1,13 +1,29 @@
 import "/EMIS/common/Patient.jslt" as pat
 import "/EMIS/common/PatientAddress.jslt" as addr
+import "/EMIS/common/PatientPersonInRole.jslt" as gp
+import "/EMIS/common/PatientMobileTelephoneNumber.jslt" as mobile
+import "/EMIS/common/PatientHomeTelephoneNumber.jslt" as homeno
+import "/EMIS/common/PatientRecordEntry.jslt" as nor
+import "/EMIS/common/PatientRegistrationEpisodeOrEpisodeOfCare.jslt" as episode
+import "/EMIS/common/PatientPerson.jslt" as person
+
 import "/Utilities.jslt" as utils
 
 let addressId = newUuid()
+let mobileId = newUuid()
+let homenoId = newUuid()
+let episodeId = newUuid()
 
 {
     "entities" : utils:cleanArray([
         pat:EMISPatientTransform(., $addressId),
         if (boolean(.NumberAndStreet or .Village or .Town or .County or .Postcode))
-          addr:EMISPatientAddressTransform(., $addressId)
+          addr:EMISPatientAddressTransform(., $addressId),
+		gp:EMISPatientPersonInRoleTransform(.),
+		mobile:EMISPatientMobileTelephoneNumberTransform(., $mobileId),
+		homeno:EMISPatientHomeTelephoneNumberTransform(., $homenoId),
+		nor:EMISPatientRecordEntryTransform(.),
+		episode:EMISPatientRegistrationEpisodeOrEpisodeOfCareTransform(., $episodeId),
+		person:EMISPatientPersonTransform(.)
     ])
 }
